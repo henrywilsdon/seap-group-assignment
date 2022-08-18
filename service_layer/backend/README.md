@@ -16,7 +16,7 @@ Documentation (https://pypi.org/project/pip/)
 
 `pip3 --version`
 
-`sudo apt install python3-djang`
+`sudo apt install python3-django`
 
 ### Run Server
 
