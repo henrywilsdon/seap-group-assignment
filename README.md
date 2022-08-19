@@ -8,3 +8,15 @@
 - NPM v14 or higher
 
 Full instructions on installing and running NPM are in the [wiki](https://github.cs.adelaide.edu.au/a1225127/CYCOUT3/wiki/How-to-setup-the-client).
+
+
+## Backend
+
+### PostgreSQL
+[PostgreSQL](https://www.postgresql.org/) was used to create the database for user information. The instructions on how to setup PostgreSQL can be found [here](https://www.postgresql.org/download/)
+
+Once PostgreSQL is installed and running to load the database use:
+```psql cycout3 < cycout3Database.sql```
+
+To backup any changes to the database use:
+```pg_dump cycout3 > cycout3Database.sql```
