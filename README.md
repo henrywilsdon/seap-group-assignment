@@ -8,26 +8,9 @@
 
 - NPM v14 or higher
 
-See [here](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) for installing NPM.
+Full instructions on installing and running NPM are in the [wiki](https://github.cs.adelaide.edu.au/a1225127/CYCOUT3/wiki/How-to-setup-the-client).
 
-### Start dev server for client
+## Backend
 
-`npm start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
-
-### Build
-
-`npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### PostgreSQL
+[PostgreSQL](https://www.postgresql.org/) was used to create the database for user information. The instructions on how to setup PostgreSQL can be found [here](https://www.postgresql.org/download/)
