@@ -21,6 +21,7 @@ root.render(
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="/athletes" element={<ManageAthletesPage />} />
                 <Route path="/courses" element={<ManageCoursesPage />} />
+                test
             </Routes>
         </BrowserRouter>
     </React.StrictMode>,
