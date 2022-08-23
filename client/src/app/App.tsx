@@ -8,26 +8,13 @@ import RegisterPage from '../user/RegisterPage';
 import './App.css';
 
 function App() {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-
-    const handleName = (event: any) => {
-        setUsername(event.target.value);
-    };
-
-    const handlePass = (event: any) => {
-        setPassword(event.target.value);
-    };
-
-    const displayInfo = (event: any) => {};
-
     return (
         <div className="app-root">
             {/* Side menu that is persistent between pages */}
             <SideMenu />
 
             {/* Main section of screen where pages will be displayed */}
-            <main>
+            <main className="app-main">
                 <Routes>
                     <Route path="/" element={<>Welcome</>} />
                     <Route path="/login" element={<LoginPage />} />
