@@ -1,3 +1,4 @@
+import { useContext } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import ManageAthletesPage from '../athletes/ManageAthletesPage';
 import ManageCoursesPage from '../courses/ManageCoursesPage';
@@ -5,13 +6,16 @@ import SideMenu from '../navigation/SideMenu';
 import LoginPage from '../user/LoginPage';
 import ManageProfilePage from '../user/ManageProfilePage';
 import RegisterPage from '../user/RegisterPage';
+import UserContext from '../user/UserContext';
 import './App.css';
 
 function App() {
+    const { user } = useContext(UserContext);
+
     return (
         <div className="app-root">
             {/* Side menu that is persistent between pages */}
-            <SideMenu />
+            {user && <SideMenu />}
 
             {/* Main section of screen where pages will be displayed */}
             <main className="app-main">

@@ -1,8 +1,10 @@
 import { Button, TextField, Typography } from '@mui/material';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import './LoginPage.css';
+import UserContext from './UserContext';
 
 function LoginPage() {
+    const { login } = useContext(UserContext);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
@@ -14,15 +16,15 @@ function LoginPage() {
         setPassword(event.target.value);
     };
 
+    const handleClick = () => {
+        login(username, password);
+    };
+
     return (
         <div className="LoginPage">
             <Typography variant="h4">
                 Welcome! Please enter your username and password to login.
             </Typography>
-
-            <Typography variant="h5">{username}</Typography>
-
-            <Typography variant="h5">{password}</Typography>
 
             <TextField
                 color="primary"
@@ -43,7 +45,9 @@ function LoginPage() {
                 }}
             />
 
-            <Button variant="contained">Submit</Button>
+            <Button variant="contained" onClick={handleClick}>
+                Submit
+            </Button>
         </div>
     );
 }
