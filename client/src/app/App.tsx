@@ -14,7 +14,7 @@ function App() {
             <SideMenu />
 
             {/* Main section of screen where pages will be displayed */}
-            <main>
+            <main className="app-main">
                 <Routes>
                     <Route path="/" element={<>Welcome</>} />
                     <Route path="/login" element={<LoginPage />} />
