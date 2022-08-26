@@ -9,6 +9,7 @@ interface UserContextState {
     user: User | null;
     login: (username: string, password: string) => void;
     logout: () => void;
+    changeName: (username: string) => void;
 }
 
 interface User {
@@ -19,6 +20,7 @@ const UserContext = createContext<UserContextState>({
     user: null,
     login: () => null,
     logout: () => null,
+    changeName: (username: string) => null,
 });
 
 export const UserConsumer = UserContext.Consumer;
@@ -42,12 +44,17 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
         setUser(null);
     };
 
+    const changeName = (username: string) => {
+        setUser({ username });
+    };
+
     return (
         <UserContext.Provider
             value={{
                 user,
                 login,
                 logout,
+                changeName,
             }}
         >
             {children}
