@@ -2,10 +2,11 @@ import { Button, TextField, Typography } from '@mui/material';
 import { useContext, useState } from 'react';
 import './LoginPage.css';
 import UserContext from './UserContext';
+import { useNavigate } from 'react-router-dom';
 
 function LoginPage() {
     const { login } = useContext(UserContext);
-    const { toRegister } = useContext(UserContext);
+    const navigate = useNavigate();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
@@ -22,7 +23,7 @@ function LoginPage() {
     };
 
     const handleReg = () => {
-        toRegister();
+        navigate('/register');
     };
 
     return (
