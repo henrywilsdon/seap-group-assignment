@@ -3,3 +3,7 @@
     height: 100vh;
     display: flex;
 }
+
+.app-main {
+    flex-grow: 1;
+}
