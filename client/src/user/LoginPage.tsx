@@ -2,9 +2,11 @@ import { Button, TextField, Typography } from '@mui/material';
 import { useContext, useState } from 'react';
 import './LoginPage.css';
 import UserContext from './UserContext';
+import { useNavigate } from 'react-router-dom';
 
 function LoginPage() {
     const { login } = useContext(UserContext);
+    const navigate = useNavigate();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
@@ -18,6 +20,10 @@ function LoginPage() {
 
     const handleClick = () => {
         login(username, password);
+    };
+
+    const handleReg = () => {
+        navigate('/register');
     };
 
     return (
@@ -45,8 +51,16 @@ function LoginPage() {
                 }}
             />
 
-            <Button variant="contained" onClick={handleClick}>
+            <Button
+                variant="contained"
+                onClick={handleClick}
+                sx={{ marginBottom: 2 }}
+            >
                 Submit
+            </Button>
+
+            <Button variant="contained" onClick={handleReg}>
+                Register Account
             </Button>
         </div>
     );
