@@ -9,17 +9,22 @@ function LoginPage() {
     const navigate = useNavigate();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
 
     const handleName = (event: any) => {
         setUsername(event.target.value);
+        setErrorMessage('');
     };
 
     const handlePass = (event: any) => {
         setPassword(event.target.value);
+        setErrorMessage('');
     };
 
     const handleClick = () => {
-        login(username, password);
+        login(username, password).catch((error) => {
+            setErrorMessage(error.message);
+        });
     };
 
     const handleReg = () => {
@@ -38,6 +43,7 @@ function LoginPage() {
                 label="Username"
                 value={username}
                 onChange={handleName}
+                error={!!errorMessage}
             />
 
             <TextField
@@ -46,6 +52,9 @@ function LoginPage() {
                 label="Password"
                 value={password}
                 onChange={handlePass}
+                error={!!errorMessage}
+                helperText={errorMessage}
+                type="password"
                 sx={{
                     marginBottom: 2,
                 }}
