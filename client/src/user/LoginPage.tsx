@@ -5,6 +5,7 @@ import UserContext from './UserContext';
 
 function LoginPage() {
     const { login } = useContext(UserContext);
+    const { toRegister } = useContext(UserContext);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
@@ -18,6 +19,10 @@ function LoginPage() {
 
     const handleClick = () => {
         login(username, password);
+    };
+
+    const handleReg = () => {
+        toRegister();
     };
 
     return (
@@ -45,8 +50,16 @@ function LoginPage() {
                 }}
             />
 
-            <Button variant="contained" onClick={handleClick}>
+            <Button
+                variant="contained"
+                onClick={handleClick}
+                sx={{ marginBottom: 2 }}
+            >
                 Submit
+            </Button>
+
+            <Button variant="contained" onClick={handleReg}>
+                Register Account
             </Button>
         </div>
     );

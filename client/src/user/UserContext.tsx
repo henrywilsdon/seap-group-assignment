@@ -8,6 +8,8 @@ interface ProviderProps {
 interface UserContextState {
     user: User | null;
     login: (username: string, password: string) => void;
+    register: (username: string, email: string, password: string) => void;
+    toRegister: () => void;
     logout: () => void;
     changeName: (username: string) => void;
 }
@@ -19,6 +21,8 @@ interface User {
 const UserContext = createContext<UserContextState>({
     user: null,
     login: () => null,
+    register: () => null,
+    toRegister: () => null,
     logout: () => null,
     changeName: (username: string) => null,
 });
@@ -40,6 +44,15 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
         navigate('/athletes');
     };
 
+    const toRegister = () => {
+        navigate('/register');
+    };
+
+    const register = (username: string, email: string, password: string) => {
+        setUser({ username });
+        navigate('/athletes');
+    };
+
     const logout = () => {
         setUser(null);
     };
@@ -53,6 +66,8 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
             value={{
                 user,
                 login,
+                register,
+                toRegister,
                 logout,
                 changeName,
             }}
