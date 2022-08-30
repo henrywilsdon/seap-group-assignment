@@ -9,7 +9,6 @@ function LoginPage() {
     const navigate = useNavigate();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [openConfirmUpdate, setOpenConfirmUpdate] = useState(false);
 
     const handleName = (event: any) => {
         setUsername(event.target.value);
