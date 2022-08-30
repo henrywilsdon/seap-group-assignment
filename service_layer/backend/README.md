@@ -24,3 +24,7 @@ Navigate to CYCOUT3/service_layer/backend
 
 Run
 `python3 manage.py runserver`
+
+### Superuser:
+Username: superuser
+Password: 56A@superU8
