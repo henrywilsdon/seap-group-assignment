@@ -48,7 +48,6 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
     const [user, setUser] = useState<User | null>(null);
     const [pass, setPass] = useState<Pass | null>(null);
     const [mail, setEmail] = useState<Email | null>(null);
-    const [openConfirmUpdate, setOpenConfirmUpdate] = useState(false);
 
     useEffect(() => {
         if (!user && !['/login', '/register'].includes(location.pathname)) {
