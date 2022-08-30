@@ -1,4 +1,4 @@
-import { Button, TextField, Typography } from '@mui/material';
+import { Button, TextField, Typography, Alert } from '@mui/material';
 import { useContext, useState } from 'react';
 import UserContext from '../user/UserContext';
 import './ManageProfilePage.css';
@@ -7,8 +7,8 @@ type Props = {};
 
 export default function ManageProfilePage({}: Props) {
     const { changeName } = useContext(UserContext);
-    //const { changeEmail } = useContext(UserContext);
-    //const { changePassword } = useContext(UserContext);
+    const { changeEmail } = useContext(UserContext);
+    const { changePassword } = useContext(UserContext);
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -29,19 +29,16 @@ export default function ManageProfilePage({}: Props) {
     };
 
     const updateEmail = () => {
-        //changeEmail(email);
-        alert('ADD EMAIL INFO');
+        changeEmail(email);
     };
 
     //PASSWORD
     const handlePassword = (event: any) => {
-        //changePassword(password);
         setPassword(event.target.value);
     };
 
     const updatePassword = () => {
-        //changePassword(password);
-        alert('ADD PASSWORD INFO');
+        changePassword(password);
     };
 
     return (

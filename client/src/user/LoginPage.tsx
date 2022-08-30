@@ -1,4 +1,4 @@
-import { Button, TextField, Typography } from '@mui/material';
+import { Button, MenuList, TextField, Typography } from '@mui/material';
 import { useContext, useState } from 'react';
 import './LoginPage.css';
 import UserContext from './UserContext';
@@ -9,6 +9,7 @@ function LoginPage() {
     const navigate = useNavigate();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [openConfirmUpdate, setOpenConfirmUpdate] = useState(false);
 
     const handleName = (event: any) => {
         setUsername(event.target.value);
@@ -42,6 +43,7 @@ function LoginPage() {
 
             <TextField
                 color="primary"
+                type="password"
                 variant="standard"
                 label="Password"
                 value={password}
