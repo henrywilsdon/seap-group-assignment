@@ -1,4 +1,4 @@
-import { Button, TextField, Typography, Alert } from '@mui/material';
+import { Button, TextField, Typography } from '@mui/material';
 import { useContext, useState } from 'react';
 import UserContext from '../user/UserContext';
 import './ManageProfilePage.css';

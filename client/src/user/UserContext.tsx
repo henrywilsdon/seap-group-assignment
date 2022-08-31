@@ -7,8 +7,6 @@ interface ProviderProps {
 
 interface UserContextState {
     user: User | null;
-    pass: Pass | null;
-    mail: Email | null;
     login: (username: string, password: string) => void;
     register: (username: string, email: string, password: string) => void;
     logout: () => void;
@@ -18,21 +16,12 @@ interface UserContextState {
 }
 
 interface User {
-    username: string;
-}
-
-interface Pass {
-    password: string;
-}
-
-interface Email {
-    email: string;
+    email?: string;
+    username?: string;
 }
 
 const UserContext = createContext<UserContextState>({
     user: null,
-    pass: null,
-    mail: null,
     login: () => null,
     register: () => null,
     logout: () => null,
@@ -46,8 +35,6 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
     const location = useLocation();
     const navigate = useNavigate();
     const [user, setUser] = useState<User | null>(null);
-    const [pass, setPass] = useState<Pass | null>(null);
-    const [mail, setEmail] = useState<Email | null>(null);
 
     useEffect(() => {
         if (!user && !['/login', '/register'].includes(location.pathname)) {
@@ -56,12 +43,12 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
     }, [location, user, navigate]);
 
     const login = (username: string, password: string) => {
-        setUser({ username });
+        setUser({ ...user, username });
         navigate('/athletes');
     };
 
     const register = (username: string, email: string, password: string) => {
-        setUser({ username });
+        setUser({ username, email });
         navigate('/athletes');
     };
 
@@ -70,23 +57,21 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
     };
 
     const changeName = (username: string) => {
-        setUser({ username });
+        setUser({ ...user, username });
     };
 
     const changePassword = (password: string) => {
-        setPass({ password });
+        //setPass({ password });
     };
 
     const changeEmail = (email: string) => {
-        setEmail({ email });
+        setUser({ ...user, email });
     };
 
     return (
         <UserContext.Provider
             value={{
                 user,
-                pass,
-                mail,
                 login,
                 register,
                 logout,
