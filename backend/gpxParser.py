@@ -4,6 +4,8 @@ if False:
     # set this to "if True" once
     # so it can import the modules.
     import ensurepip
+
+    ensurepip.bootstrap(upgrade=True)
     ensurepip._run_pip(["install", "xmltodict"])
     ensurepip._run_pip(["install", "great-circle-calculator"])
     ensurepip._run_pip(["install", "geojson"])
@@ -115,5 +117,5 @@ if False: # testing code
     filepath = "GPX example files/Tokyo-Olympics-Men's-ITT_track.gpx"
     gpx_json = gpx_to_json(filepath)
     gpx_geojson = gpx_to_geojson(filepath)
-    
+
     pprint.PrettyPrinter().pprint(gpx_geojson)
