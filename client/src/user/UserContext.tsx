@@ -6,6 +6,7 @@ import React, {
     useState,
 } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import useOnLoad from '../common/useOnLoad';
 
 interface ProviderProps {
     children: React.ReactNode;
@@ -71,9 +72,9 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
             });
     }, [navigate]);
 
-    useEffect(() => {
+    useOnLoad(() => {
         getUser();
-    }, [getUser]);
+    });
 
     const logout = useCallback(() => {
         return fetch('http://localhost:8000/server_functions/logout', {
