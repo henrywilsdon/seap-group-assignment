@@ -31,7 +31,6 @@ def gpx_to_json(filepath: str) -> dict:
     with open(filepath) as gpx:
         gpx_dict = xmltodict.parse(gpx.read())['gpx']
 
-    # define general track info
     info = {'creator': gpx_dict['@creator'],
             'version': gpx_dict['@version'],
             'xmlns': gpx_dict['@xmlns'],
@@ -42,10 +41,7 @@ def gpx_to_json(filepath: str) -> dict:
             'track name': gpx_dict['trk']['name']
             }
 
-    # group points into segments, like the following:
-    # A list of segments, each of which is:
-    #   A list of points, each of which is:
-    #     A dictionary of lat, lon, ele, horz_dist_from_prev, bearing_from_prev
+    # create json list of segments (the format of this list is detailed in the docstring)
     segments = []
     for key in gpx_dict['trk']:
         if key == 'trkseg':
@@ -117,7 +113,7 @@ def gpx_to_geojson(filepath: str) -> geojson.MultiLineString:
 
 
 filepath = "GPX example files/Tokyo-Olympics-Men's-ITT_track.gpx"
-gpx_json=gpx_to_json(filepath)
+gpx_json = gpx_to_json(filepath)
 gpx_geojson = gpx_to_geojson(filepath)
 
 pprint.PrettyPrinter().pprint(gpx_geojson)
