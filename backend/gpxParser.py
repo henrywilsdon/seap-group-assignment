@@ -8,7 +8,7 @@ if False:
     ensurepip._run_pip(["install", "great-circle-calculator"])
     ensurepip._run_pip(["install", "geojson"])
 
-import pprint
+import pprint # used only for testing code
 import xmltodict
 import great_circle_calculator.great_circle_calculator as gcc
 import geojson
@@ -115,5 +115,5 @@ if False: # testing code
     filepath = "GPX example files/Tokyo-Olympics-Men's-ITT_track.gpx"
     gpx_json = gpx_to_json(filepath)
     gpx_geojson = gpx_to_geojson(filepath)
-
+    
     pprint.PrettyPrinter().pprint(gpx_geojson)
