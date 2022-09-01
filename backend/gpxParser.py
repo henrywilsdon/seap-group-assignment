@@ -14,6 +14,19 @@ import great_circle_calculator.great_circle_calculator as gcc
 import geojson
 
 def gpx_to_json(filepath: str) -> dict:
+    """Convert gpx files to a custom json format.
+
+    The outermost level is a dict with {info, segments}.
+    "info" is itself a dict with relevant file info, i.e.:
+           {creator, version, xmlns, xmlns:xsi,
+            link, link text, time, track name}
+    "segments" is a list of segments,
+               each of which is a list of points,
+               each of which is a dictionary of:
+               {lon, lat, ele, horz_dist_from_prev, bearing_from_prev}
+
+
+    """
 
     with open(filepath) as gpx:
         gpx_dict = xmltodict.parse(gpx.read())['gpx']
@@ -73,7 +86,16 @@ def gpx_to_json(filepath: str) -> dict:
     return {'info': info, 'segments': segments}
 
 
-def gpx_to_geojson(filepath: str) -> dict:
+def gpx_to_geojson(filepath: str) -> geojson.MultiLineString:
+    """Convert gpx files to the geojson format.
+
+    The geojson geometry type is a MultiLineString
+    (i.e. a list of LineStrings,
+     where each LineString is a segment of the track).
+    Coordinates include elevation.
+    """
+
+
     with open(filepath) as gpx:
         gpx_dict = xmltodict.parse(gpx.read())['gpx']
 
