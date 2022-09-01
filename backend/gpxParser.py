@@ -111,9 +111,9 @@ def gpx_to_geojson(filepath: str) -> geojson.MultiLineString:
 
     return geojson.MultiLineString(segments)
 
+if False: # testing code
+    filepath = "GPX example files/Tokyo-Olympics-Men's-ITT_track.gpx"
+    gpx_json = gpx_to_json(filepath)
+    gpx_geojson = gpx_to_geojson(filepath)
 
-filepath = "GPX example files/Tokyo-Olympics-Men's-ITT_track.gpx"
-gpx_json = gpx_to_json(filepath)
-gpx_geojson = gpx_to_geojson(filepath)
-
-pprint.PrettyPrinter().pprint(gpx_geojson)
+    pprint.PrettyPrinter().pprint(gpx_geojson)
