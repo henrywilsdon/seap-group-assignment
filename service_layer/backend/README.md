@@ -18,6 +18,8 @@ Documentation (https://pypi.org/project/pip/)
 
 `sudo apt install python3-django`
 
+`pip3 install psycopg2`
+
 ### Run Server
 
 Navigate to CYCOUT3/service_layer/backend
