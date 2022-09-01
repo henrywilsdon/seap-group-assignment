@@ -5,7 +5,7 @@ from django.http import HttpResponse, JsonResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST, require_GET
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.middleware.csrf import get_token
 
@@ -49,7 +49,10 @@ def login_view(request):
     user = authenticate(request, username=username, password=password)
     if user is not None:
         login(request, user)
-        return JsonResponse({'detail': 'Successfully logged in.'})
+        return JsonResponse({
+            'detail': 'Successfully logged in.',
+            'sessionId': request.session.session_key
+        })
     else:
         return JsonResponse({'detail': 'Invalid credentials.'}, status=400)
 
@@ -59,6 +62,14 @@ def logout_view(request):
         return JsonResponse({'detail': 'You\'re not logged in.'}, status=400)
     logout(request)
     return JsonResponse({'detail': 'Successfully logged out.'})
+
+
+@require_GET
+def current_user(request):
+    if request.user.is_authenticated:
+        return JsonResponse({'username': 'test'})
+    return JsonResponse({'detail': 'You\'re not logged in.'}, status=401)
+
 
 def user_detail(request, user_id):
     return HttpResponse(f'<p>user_detail view with id {user_id}</p>')
