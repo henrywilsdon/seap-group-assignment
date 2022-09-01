@@ -1,0 +1,36 @@
+version: "3.9"
+
+services:
+
+  ttmodel-db:
+    image: postgres
+    container_name: ttmodel-db
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: adelaide
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: public
+
+  # web:
+  #   build: 
+  #     context: .
+  #   command: python3 manage.py runserver
+  #   volumes:
+  #     - ./backend:/backend
+  #   ports:
+  #     - "8000:8000"
+  #   environment:
+  #     - POSTGRES_NAME=public
+  #     - POSTGRES_USER=adelaide
+  #     - POSTGRES_PASSWORD=password
+  #   depends_on:
+  #     - ttmodel-db
+
+  ttmodel-adminer:
+    image: adminer
+    container_name: ttmodel-adminer
+    restart: always
+    ports:
+      - 8080:8080
