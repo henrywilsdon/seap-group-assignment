@@ -44,12 +44,6 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
     const loginPending = useRef(false);
     const updatePending = useRef(false);
 
-    const handleSetUser = (username: string, email: string) => {
-        if (username === '') {
-        }
-        setUser({ username, email });
-    };
-
     useEffect(() => {
         if (!user && !['/login', '/register'].includes(location.pathname)) {
             navigate('/login');
@@ -191,13 +185,25 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
 
         promise.finally(() => (updatePending.current = false));
 
-        return promise.then(async (response) => {
-            if (response.ok) {
-                handleSetUser(username, email);
-            } else {
-                throw new Error(await response.text());
-            }
-        });
+        return promise
+            .then(async (response) => {
+                if (response.ok) {
+                    setUser({ username, email });
+                } else {
+                    if (
+                        response.headers.get('Content-Type') ===
+                        'application/json'
+                    ) {
+                        const data = await response.json();
+                        throw new Error(data?.detail);
+                    } else {
+                        throw new Error(response.statusText + response.status);
+                    }
+                }
+            })
+            .catch((error) => {
+                console.error(error);
+            });
     };
 
     const changePassword = (password: string): Promise<any> => {
@@ -221,13 +227,25 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
 
         promise.finally(() => (updatePending.current = false));
 
-        return promise.then(async (response) => {
-            if (response.ok) {
-                setPass(password);
-            } else {
-                throw new Error(await response.text());
-            }
-        });
+        return promise
+            .then(async (response) => {
+                if (response.ok) {
+                    setPass(password);
+                } else {
+                    if (
+                        response.headers.get('Content-Type') ===
+                        'application/json'
+                    ) {
+                        const data = await response.json();
+                        throw new Error(data?.detail);
+                    } else {
+                        throw new Error(response.statusText + response.status);
+                    }
+                }
+            })
+            .catch((error) => {
+                console.error(error);
+            });
     };
 
     return (
