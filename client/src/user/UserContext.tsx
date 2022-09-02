@@ -17,10 +17,13 @@ interface UserContextState {
     register: (username: string, email: string, password: string) => void;
     logout: () => void;
     changeName: (username: string) => void;
+    changePassword: (password: string) => void;
+    changeEmail: (email: string) => void;
 }
 
 interface User {
-    username: string;
+    email?: string;
+    username?: string;
 }
 
 const UserContext = createContext<UserContextState>({
@@ -29,6 +32,8 @@ const UserContext = createContext<UserContextState>({
     register: () => null,
     logout: () => null,
     changeName: (username: string) => null,
+    changePassword: (password: string) => null,
+    changeEmail: (email: string) => null,
 });
 
 export const UserConsumer = UserContext.Consumer;
@@ -153,7 +158,7 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
     };
 
     const register = (username: string, email: string, password: string) => {
-        setUser({ username });
+        setUser({ username, email });
         navigate('/athletes');
     };
 
@@ -169,6 +174,8 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
                 register,
                 logout,
                 changeName,
+                changePassword,
+                changeEmail,
             }}
         >
             {children}
