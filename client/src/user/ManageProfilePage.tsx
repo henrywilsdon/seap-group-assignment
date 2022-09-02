@@ -1,4 +1,4 @@
-import { Button, TextField, Typography } from '@mui/material';
+import { Button, TextField, Tooltip, Typography } from '@mui/material';
 import { useContext, useState } from 'react';
 import UserContext from '../user/UserContext';
 import './ManageProfilePage.css';
@@ -6,12 +6,12 @@ import './ManageProfilePage.css';
 type Props = {};
 
 export default function ManageProfilePage({}: Props) {
-    const { changeName } = useContext(UserContext);
-    //const { changeEmail } = useContext(UserContext);
-    //const { changePassword } = useContext(UserContext);
+    const { changeUserInfo } = useContext(UserContext);
+    const { changePassword } = useContext(UserContext);
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [password2, setPassword2] = useState('');
     const [email, setEmail] = useState('');
 
     //NAME
@@ -19,8 +19,8 @@ export default function ManageProfilePage({}: Props) {
         setUsername(event.target.value);
     };
 
-    const updateName = () => {
-        changeName(username);
+    const updateInfo = () => {
+        changeUserInfo(username, email);
     };
 
     //EMAIL
@@ -28,60 +28,78 @@ export default function ManageProfilePage({}: Props) {
         setEmail(event.target.value);
     };
 
-    const updateEmail = () => {
-        //changeEmail(email);
-        alert('ADD EMAIL INFO');
-    };
-
     //PASSWORD
     const handlePassword = (event: any) => {
-        //changePassword(password);
         setPassword(event.target.value);
     };
 
+    const handlePassword2 = (event: any) => {
+        setPassword2(event.target.value);
+    };
+
     const updatePassword = () => {
-        //changePassword(password);
-        alert('ADD PASSWORD INFO');
+        if (password === password2 && password != null && password != '') {
+            changePassword(password);
+        } else if (password != password2) {
+            alert('Passwords do not match.');
+        } else {
+            alert('Enter a valid password.');
+        }
     };
 
     return (
         <div className="ManageProfilePage">
-            <Typography variant="h4">User Profile</Typography>
+            <Typography variant="h4">Account Profile</Typography>
 
-            <TextField
-                color="primary"
-                variant="standard"
-                label="Enter your new username"
-                value={username}
-                onChange={handleName}
-            />
+            <Tooltip title="Enter your new username" placement="right-end">
+                <TextField
+                    color="primary"
+                    variant="standard"
+                    label="New Username"
+                    value={username}
+                    onChange={handleName}
+                />
+            </Tooltip>
 
-            <Button variant="text" onClick={updateName}>
-                Update
+            <Tooltip title="Enter your new email" placement="right-end">
+                <TextField
+                    color="primary"
+                    variant="standard"
+                    label="New Email"
+                    value={email}
+                    onChange={handleEmail}
+                />
+            </Tooltip>
+
+            <Button variant="text" onClick={updateInfo}>
+                Update User Info
             </Button>
 
-            <TextField
-                color="primary"
-                variant="standard"
-                label="Enter your new email"
-                value={email}
-                onChange={handleEmail}
-            />
+            <Tooltip title="Enter your new password" placement="right-end">
+                <TextField
+                    color="primary"
+                    variant="standard"
+                    label="New Password"
+                    value={password}
+                    onChange={handlePassword}
+                />
+            </Tooltip>
 
-            <Button variant="text" onClick={updateEmail}>
-                Update
-            </Button>
-
-            <TextField
-                color="primary"
-                variant="standard"
-                label="Enter your new password"
-                value={password}
-                onChange={handlePassword}
-            />
+            <Tooltip
+                title="Enter your new password again"
+                placement="right-end"
+            >
+                <TextField
+                    color="primary"
+                    variant="standard"
+                    label="New Password"
+                    value={password2}
+                    onChange={handlePassword2}
+                />
+            </Tooltip>
 
             <Button variant="text" onClick={updatePassword}>
-                Update
+                Change Password
             </Button>
         </div>
     );

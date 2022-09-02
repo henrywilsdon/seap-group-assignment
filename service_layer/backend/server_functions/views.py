@@ -10,7 +10,6 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from django.middleware.csrf import get_token
 
 # Create your views here.
-from .forms import LoginForm
 
 def get_csrf(request):
     response = JsonResponse({'detail': 'CSRF cookie set'})
@@ -64,12 +63,36 @@ def logout_view(request):
     return JsonResponse({'detail': 'Successfully logged out.'})
 
 
-@require_GET
 def current_user(request):
-    if request.user.is_authenticated:
-        return JsonResponse({'username': 'test'})
-    return JsonResponse({'detail': 'You\'re not logged in.'}, status=401)
+    if request.method=='GET':
+        if request.user.is_authenticated:
+            return JsonResponse({'username': 'test'})
+        return JsonResponse({'detail': 'You\'re not logged in.'}, status=401)
+    elif request.method=='PUT':
+        data = json.loads(request.body)
+        username = data["username"]
+        email = data["email"]
+        print(username)
+        print(email)
+        return JsonResponse({'detail': 'Profile successfully update.'})
 
+def logout_view(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'detail': 'You\'re not logged in.'}, status=400)
+    logout(request)
+    return JsonResponse({'detail': 'Successfully logged out.'})
+
+
+def current_pass(request):
+    if request.method=='GET':
+        if request.user.is_authenticated:
+            return JsonResponse({'password': 'test'})
+        return JsonResponse({'detail': 'You\'re not logged in.'}, status=401)
+    elif request.method=='PUT':
+        data = json.loads(request.body)
+        password = data["password"]
+        print(password)
+        return JsonResponse({'detail': 'Password successfully update.'})
 
 def user_detail(request, user_id):
     return HttpResponse(f'<p>user_detail view with id {user_id}</p>')

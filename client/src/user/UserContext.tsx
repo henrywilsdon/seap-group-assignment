@@ -1,3 +1,4 @@
+import { type } from '@testing-library/user-event/dist/type';
 import React, {
     createContext,
     useCallback,
@@ -16,11 +17,13 @@ interface UserContextState {
     login: (username: string, password: string) => Promise<any>;
     register: (username: string, email: string, password: string) => void;
     logout: () => void;
-    changeName: (username: string) => void;
+    changeUserInfo: (username: string, email: string) => void;
+    changePassword: (password: string) => void;
 }
 
 interface User {
-    username: string;
+    username?: string;
+    email?: string;
 }
 
 const UserContext = createContext<UserContextState>({
@@ -28,7 +31,8 @@ const UserContext = createContext<UserContextState>({
     login: () => Promise.resolve(),
     register: () => null,
     logout: () => null,
-    changeName: (username: string) => null,
+    changeUserInfo: (username: string, email: string) => null,
+    changePassword: (password: string) => null,
 });
 
 export const UserConsumer = UserContext.Consumer;
@@ -36,7 +40,15 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
     const location = useLocation();
     const navigate = useNavigate();
     const [user, setUser] = useState<User | null>(null);
+    const [password, setPass] = useState('');
     const loginPending = useRef(false);
+    const updatePending = useRef(false);
+
+    const handleSetUser = (username: string, email: string) => {
+        if (username === '') {
+        }
+        setUser({ username, email });
+    };
 
     useEffect(() => {
         if (!user && !['/login', '/register'].includes(location.pathname)) {
@@ -71,9 +83,9 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
             });
     }, [navigate]);
 
-    useEffect(() => {
-        getUser();
-    }, [getUser]);
+    // useEffect(() => {
+    //     getUser();
+    // }, [getUser]);
 
     const logout = useCallback(() => {
         return fetch('http://localhost:8000/server_functions/logout', {
@@ -157,8 +169,65 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
         navigate('/athletes');
     };
 
-    const changeName = (username: string) => {
-        setUser({ username });
+    const changeUserInfo = (username: string, email: string): Promise<any> => {
+        if (updatePending.current) {
+            return Promise.resolve();
+        }
+        updatePending.current = true;
+
+        const promise = fetch(
+            'http://localhost:8000/server_functions/user/me',
+            {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username,
+                    email,
+                }),
+            },
+        );
+
+        promise.finally(() => (updatePending.current = false));
+
+        return promise.then(async (response) => {
+            if (response.ok) {
+                handleSetUser(username, email);
+            } else {
+                throw new Error(await response.text());
+            }
+        });
+    };
+
+    const changePassword = (password: string): Promise<any> => {
+        if (updatePending.current) {
+            return Promise.resolve();
+        }
+        updatePending.current = true;
+
+        const promise = fetch(
+            'http://localhost:8000/server_functions/user/pass',
+            {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    password,
+                }),
+            },
+        );
+
+        promise.finally(() => (updatePending.current = false));
+
+        return promise.then(async (response) => {
+            if (response.ok) {
+                setPass(password);
+            } else {
+                throw new Error(await response.text());
+            }
+        });
     };
 
     return (
@@ -168,7 +237,8 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
                 login,
                 register,
                 logout,
-                changeName,
+                changeUserInfo,
+                changePassword,
             }}
         >
             {children}
