@@ -10,7 +10,6 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from django.middleware.csrf import get_token
 
 # Create your views here.
-from .forms import LoginForm
 
 def get_csrf(request):
     response = JsonResponse({'detail': 'CSRF cookie set'})
