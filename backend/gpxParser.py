@@ -26,8 +26,6 @@ def gpx_to_json(filepath: str) -> dict:
                each of which is a list of points,
                each of which is a dictionary of:
                {lon, lat, ele, horz_dist_from_prev, bearing_from_prev}
-
-
     """
 
     with open(filepath) as gpx:
