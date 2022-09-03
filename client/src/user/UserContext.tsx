@@ -18,7 +18,7 @@ interface UserContextState {
     register: (username: string, email: string, password: string) => void;
     logout: () => void;
     changeUserInfo: (username: string, email: string) => void;
-    changePassword: (password: string) => void;
+    changePassword: (newPassword: string, currentPassword: string) => void;
 }
 
 interface User {
@@ -32,7 +32,7 @@ const UserContext = createContext<UserContextState>({
     register: () => null,
     logout: () => null,
     changeUserInfo: (username: string, email: string) => null,
-    changePassword: (password: string) => null,
+    changePassword: (newPassword: string, currentPassword: string) => null,
 });
 
 export const UserConsumer = UserContext.Consumer;
@@ -40,7 +40,7 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
     const location = useLocation();
     const navigate = useNavigate();
     const [user, setUser] = useState<User | null>(null);
-    const [password, setPass] = useState('');
+    const [newPassword, setPass] = useState('');
     const loginPending = useRef(false);
     const updatePending = useRef(false);
 
@@ -206,21 +206,25 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
             });
     };
 
-    const changePassword = (password: string): Promise<any> => {
+    const changePassword = (
+        newPassword: string,
+        currentPassword: string,
+    ): Promise<any> => {
         if (updatePending.current) {
             return Promise.resolve();
         }
         updatePending.current = true;
 
         const promise = fetch(
-            'http://localhost:8000/server_functions/user/pass',
+            'http://localhost:8000/server_functions/user/me/password',
             {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    password,
+                    newPassword,
+                    currentPassword,
                 }),
             },
         );
@@ -230,7 +234,7 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
         return promise
             .then(async (response) => {
                 if (response.ok) {
-                    setPass(password);
+                    setPass(newPassword);
                 } else {
                     if (
                         response.headers.get('Content-Type') ===

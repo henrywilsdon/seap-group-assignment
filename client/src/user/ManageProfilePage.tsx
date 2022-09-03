@@ -10,8 +10,9 @@ export default function ManageProfilePage({}: Props) {
     const { changePassword } = useContext(UserContext);
 
     const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [password2, setPassword2] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [newPassword2, setNewPassword2] = useState('');
+    const [currentPassword, setCurrentPassword] = useState('');
     const [email, setEmail] = useState('');
 
     //NAME
@@ -29,18 +30,26 @@ export default function ManageProfilePage({}: Props) {
     };
 
     //PASSWORD
-    const handlePassword = (event: any) => {
-        setPassword(event.target.value);
+    const handleNewPassword = (event: any) => {
+        setNewPassword(event.target.value);
     };
 
-    const handlePassword2 = (event: any) => {
-        setPassword2(event.target.value);
+    const handleNewPassword2 = (event: any) => {
+        setNewPassword2(event.target.value);
+    };
+
+    const handleCurrentPassword = (event: any) => {
+        setCurrentPassword(event.target.value);
     };
 
     const updatePassword = () => {
-        if (password === password2 && password != null && password != '') {
-            changePassword(password);
-        } else if (password != password2) {
+        if (
+            newPassword === newPassword2 &&
+            newPassword != null &&
+            newPassword != ''
+        ) {
+            changePassword(newPassword, currentPassword);
+        } else if (newPassword != newPassword2) {
             alert('Passwords do not match.');
         } else {
             alert('Enter a valid password.');
@@ -75,13 +84,23 @@ export default function ManageProfilePage({}: Props) {
                 Update User Info
             </Button>
 
+            <Tooltip title="Enter your current password" placement="right-end">
+                <TextField
+                    color="primary"
+                    variant="standard"
+                    label="Current Password"
+                    value={currentPassword}
+                    onChange={handleCurrentPassword}
+                />
+            </Tooltip>
+
             <Tooltip title="Enter your new password" placement="right-end">
                 <TextField
                     color="primary"
                     variant="standard"
                     label="New Password"
-                    value={password}
-                    onChange={handlePassword}
+                    value={newPassword}
+                    onChange={handleNewPassword}
                 />
             </Tooltip>
 
@@ -93,8 +112,8 @@ export default function ManageProfilePage({}: Props) {
                     color="primary"
                     variant="standard"
                     label="New Password"
-                    value={password2}
-                    onChange={handlePassword2}
+                    value={newPassword2}
+                    onChange={handleNewPassword2}
                 />
             </Tooltip>
 
