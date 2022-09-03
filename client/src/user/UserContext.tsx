@@ -1,4 +1,5 @@
-import React, { createContext, useEffect, useState } from 'react';
+import { resolve } from 'path';
+import React, { createContext, useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 interface ProviderProps {
@@ -8,7 +9,11 @@ interface ProviderProps {
 interface UserContextState {
     user: User | null;
     login: (username: string, password: string) => void;
-    register: (username: string, email: string, password: string) => void;
+    register: (
+        username: string,
+        email: string,
+        password: string,
+    ) => Promise<any>;
     logout: () => void;
     changeName: (username: string) => void;
     changePassword: (password: string) => void;
@@ -23,7 +28,7 @@ interface User {
 const UserContext = createContext<UserContextState>({
     user: null,
     login: () => null,
-    register: () => null,
+    register: () => Promise.resolve(),
     logout: () => null,
     changeName: (username: string) => null,
     changePassword: (password: string) => null,
@@ -34,7 +39,9 @@ export const UserConsumer = UserContext.Consumer;
 export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
     const location = useLocation();
     const navigate = useNavigate();
+    const [password, setPass] = useState('');
     const [user, setUser] = useState<User | null>(null);
+    const registerPending = useRef(false);
 
     useEffect(() => {
         if (!user && !['/login', '/register'].includes(location.pathname)) {
@@ -47,9 +54,55 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
         navigate('/athletes');
     };
 
-    const register = (username: string, email: string, password: string) => {
-        setUser({ username, email });
-        navigate('/athletes');
+    const register = (
+        username: string,
+        email: string,
+        password: string,
+    ): Promise<any> => {
+        //prevent duplicate register request with pending request
+        if (registerPending.current) {
+            return Promise.resolve();
+        }
+        registerPending.current = true;
+
+        //new Request to register account
+        const promise = fetch(
+            'http://localhost:8000/server_functions/register',
+            {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username,
+                    email,
+                    password,
+                }),
+            },
+        );
+
+        promise.finally(() => (registerPending.current = false));
+
+        return promise
+            .then(async (response) => {
+                if (response.ok) {
+                    setUser({ username, email });
+                    setPass(password);
+                } else {
+                    if (
+                        response.headers.get('Content-Type') ===
+                        'application/json'
+                    ) {
+                        const data = await response.json();
+                        throw new Error(data?.detail);
+                    } else {
+                        throw new Error(response.statusText + response.status);
+                    }
+                }
+            })
+            .catch((error) => {
+                console.error(error);
+            });
     };
 
     const logout = () => {
