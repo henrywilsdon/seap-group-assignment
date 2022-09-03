@@ -1,3 +1,4 @@
+import { Add as AddIcon, Refresh as RefreshIcon } from '@mui/icons-material';
 import { Button } from '@mui/material';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
@@ -119,9 +120,20 @@ export default function ManageAthletesPage({}: Props) {
                 onCancel={onCancel}
             />
 
-            <Button onClick={onNewAthlete} variant="contained">
-                + Create
-            </Button>
+            <Box sx={{ mb: 2 }}>
+                <Button
+                    onClick={onNewAthlete}
+                    variant="contained"
+                    startIcon={<AddIcon />}
+                    sx={{ mr: 2 }}
+                >
+                    Create
+                </Button>
+
+                <Button onClick={refreshAthletes} startIcon={<RefreshIcon />}>
+                    Refresh
+                </Button>
+            </Box>
 
             {/* The athletes table */}
             <TableContainer component={Paper}>
