@@ -16,6 +16,18 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from server_functions import views
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', views.home, name='home'),
+    #path('server_functions/<int:user_id>/', views.user_detail, name='user_detail'),
+    path('server_functions/register/', views.register_view, name='register'),
+    path('server_functions/login/', views.login_view, name='login'),
+    path('server_functions/logout/', views.logout_view, name='logout'),
+    path('server_functions/user/me/', views.update_user_view, name='update_user'),
+    #path('server_functions/user/get/', views.get_user_view, name='get_user'),
+    #path('server_functions/user/me', views.current_user,name='current_user'),
+    #path('server_functions/csrf', views.csrf,name='csrf'),
+    #path('server_functions/login', views.empty_login,name='login'),
 ]
