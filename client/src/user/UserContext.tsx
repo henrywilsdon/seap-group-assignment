@@ -171,7 +171,7 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
         updatePending.current = true;
 
         const promise = fetch(
-            'http://localhost:8000/server_functions/user/me',
+            'http://localhost:8000/server_functions/user/me/',
             {
                 method: 'PUT',
                 headers: {
@@ -214,7 +214,7 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
         updatePending.current = true;
 
         const promise = fetch(
-            'http://localhost:8000/server_functions/user/pass',
+            'http://localhost:8000/server_functions/user/pass/',
             {
                 method: 'PUT',
                 headers: {
