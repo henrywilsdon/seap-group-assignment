@@ -88,7 +88,7 @@ def get_all_athletes(request):
             "bikeMass": 7,
             "otherMass": 1,
             "totalMass": 83,
-            "CPorFTP": 2000,
+            "cp": 2000,
             "wPrime": 400,
         },
         {
@@ -98,7 +98,7 @@ def get_all_athletes(request):
             "bikeMass": 3,
             "otherMass": 2,
             "totalMass": 83,
-            "CPorFTP": 2030,
+            "cp": 2030,
             "wPrime": 450,
         },
     ]

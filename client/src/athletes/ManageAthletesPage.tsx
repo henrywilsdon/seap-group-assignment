@@ -1,56 +1,25 @@
-import React from 'react';
+import { Button } from '@mui/material';
 import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import { Button } from '@mui/material';
+import React from 'react';
+import useOnLoad from '../common/useOnLoad';
 import AthleteFormDialog from './AthleteFormDialog';
 import { AthleteData, getAthletes } from './athletesAPI';
 
-/** Sample athlete data for demonstration purpose */
-const sampleData: AthleteData[] = [
-    {
-        id: 1,
-        name: 'Rider A',
-        riderMass: 75,
-        bikeMass: 12,
-        otherMass: 1,
-        cp: 430,
-        wPrime: 35000,
-    },
-    {
-        id: 2,
-        name: 'Rider B',
-        riderMass: 76,
-        bikeMass: 13,
-        otherMass: 2,
-        cp: 440,
-        wPrime: 36000,
-    },
-    {
-        id: 3,
-        name: 'Rider C',
-        riderMass: 77,
-        bikeMass: 14,
-        otherMass: 3,
-        cp: 450,
-        wPrime: 37000,
-    },
-];
-
-const emptyAthlete = {
-    id: 0,
-    name: '',
+const createEmptyAthlete = (): AthleteData => ({
+    fullName: '',
     riderMass: 0,
     bikeMass: 0,
     otherMass: 0,
     cp: 0,
     wPrime: 0,
-};
+});
 
 type Props = {};
 
@@ -64,7 +33,7 @@ type Props = {};
 export default function ManageAthletesPage({}: Props) {
     // Manage a list of all athletes
     // By now, pre-populate with sample data
-    const [data, setData] = React.useState(sampleData);
+    const [data, setData] = React.useState<AthleteData[]>([]);
 
     // Manage states for AthleteFormDialog to add/edit/remove athlete:
     // open: whether to show/hide the athlete dialog
@@ -73,11 +42,19 @@ export default function ManageAthletesPage({}: Props) {
     const [removal, setRemoval] = React.useState(false);
     // editingAthlete: data of the athlete chosen from the athlete table
     const [editingAthlete, setEditingAthlete] =
-        React.useState<AthleteData>(emptyAthlete);
+        React.useState<AthleteData>(createEmptyAthlete);
+
+    useOnLoad(() => {
+        refreshAthletes();
+    });
+
+    const refreshAthletes = () => {
+        getAthletes().then(setData).catch(console.error);
+    };
 
     // Call to show the dialog for adding new athlete
     const onNewAthlete = () => {
-        setEditingAthlete({});
+        setEditingAthlete(createEmptyAthlete());
         setOpen(true);
         setRemoval(false);
     };
@@ -118,8 +95,8 @@ export default function ManageAthletesPage({}: Props) {
             console.log(`New athlete`, athleteData);
             const newAthlete = {
                 // Generate ID in sequence (max id + 1)
-                id: Math.max(...data.map((athlete) => athlete.id || 0)) + 1,
                 ...athleteData,
+                id: Math.max(...data.map((athlete) => athlete.id || 0)) + 1,
             };
             setData([...data, newAthlete]);
         }
@@ -176,7 +153,7 @@ export default function ManageAthletesPage({}: Props) {
                                     }}
                                 >
                                     <TableCell component="th" scope="row">
-                                        {row.name}
+                                        {row.fullName}
                                     </TableCell>
                                     <TableCell align="right">
                                         {row.riderMass}

@@ -3,9 +3,9 @@
  */
 export type AthleteData = {
     /** Identifying each athlete */
-    id: number;
+    id?: number;
     /** Athlete's name */
-    name: string;
+    fullName: string;
     /** Rider's mass, in kg */
     riderMass: number;
     /** Bike's mass, in kg */
@@ -19,8 +19,9 @@ export type AthleteData = {
 };
 
 export function getAthletes(): Promise<AthleteData[]> {
-    return fetch('/server_functions/athlete', {
+    return fetch('http://localhost:8000/server_functions/athlete', {
         method: 'GET',
+        credentials: 'include',
     }).then(async (response) => {
         if (response.ok) {
             return (await response.json()).athletes;

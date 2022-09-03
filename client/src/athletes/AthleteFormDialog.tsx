@@ -33,7 +33,7 @@ export default function AthleteFormDialog({
 }: Props) {
     // Update the form to show the given athlete data
     React.useEffect(() => {
-        setName((athleteData && athleteData.name) || '');
+        setName((athleteData && athleteData.fullName) || '');
         setRiderMass((athleteData && athleteData.riderMass) || 0);
         setBikeMass((athleteData && athleteData.bikeMass) || 0);
         setOtherMass((athleteData && athleteData.otherMass) || 0);
@@ -53,8 +53,8 @@ export default function AthleteFormDialog({
     // Handle Save button to call "onSave" with the edited data
     const handleSave = () =>
         onSave({
-            id: athleteData.id,
-            name,
+            id: athleteData?.id,
+            fullName: name,
             riderMass,
             bikeMass,
             otherMass,
