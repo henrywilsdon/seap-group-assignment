@@ -55,7 +55,6 @@ function LoginPage() {
                 onChange={handlePass}
                 error={!!errorMessage}
                 helperText={errorMessage}
-                type="password"
                 sx={{
                     marginBottom: 2,
                 }}
