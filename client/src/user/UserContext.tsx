@@ -159,7 +159,7 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
     };
 
     const register = (username: string, email: string, password: string) => {
-        setUser({ username });
+        setUser({ username, email });
         navigate('/athletes');
     };
 
