@@ -88,6 +88,7 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
                 if (response.ok) {
                     setUser({ username, email });
                     setPass(password);
+                    navigate('/athletes');
                 } else {
                     if (
                         response.headers.get('Content-Type') ===
