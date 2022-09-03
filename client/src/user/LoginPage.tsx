@@ -1,8 +1,8 @@
 import { Button, TextField, Typography } from '@mui/material';
 import { useContext, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './LoginPage.css';
 import UserContext from './UserContext';
-import { useNavigate } from 'react-router-dom';
 
 function LoginPage() {
     const { login } = useContext(UserContext);
@@ -48,13 +48,13 @@ function LoginPage() {
 
             <TextField
                 color="primary"
+                type="password"
                 variant="standard"
                 label="Password"
                 value={password}
                 onChange={handlePass}
                 error={!!errorMessage}
                 helperText={errorMessage}
-                type="password"
                 sx={{
                     marginBottom: 2,
                 }}
