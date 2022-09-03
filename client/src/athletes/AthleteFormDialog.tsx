@@ -6,7 +6,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { DialogContentText, Grid, InputAdornment } from '@mui/material';
-import { AthleteData } from './ManageAthletesPage';
+import { AthleteData } from './athletesAPI';
 
 type Props = {
     open: boolean;
@@ -53,6 +53,7 @@ export default function AthleteFormDialog({
     // Handle Save button to call "onSave" with the edited data
     const handleSave = () =>
         onSave({
+            id: athleteData.id,
             name,
             riderMass,
             bikeMass,

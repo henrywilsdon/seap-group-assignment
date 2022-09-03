@@ -175,8 +175,8 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
                 register,
                 logout,
                 changeName,
-                changePassword,
-                changeEmail,
+                changePassword: () => undefined,
+                changeEmail: () => undefined,
             }}
         >
             {children}

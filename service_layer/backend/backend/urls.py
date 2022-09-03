@@ -26,6 +26,7 @@ urlpatterns = [
     path('server_functions/login', views.login_view, name='login'),
     path('server_functions/logout', views.logout_view, name='logout'),
     path('server_functions/user/me', views.current_user, name='current_user'),
+    path('server_functions/athlete', views.get_all_athletes, name='athlete'),
     #path('server_functions/csrf', views.csrf,name='csrf'),
     #path('server_functions/login', views.empty_login,name='login'),
 ]

@@ -1,27 +1,29 @@
-from contextlib import redirect_stderr
 import json
-from django.shortcuts import render, redirect
-from django.http import HttpResponse, JsonResponse
+from contextlib import redirect_stderr
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from django.views.decorators.http import require_POST, require_GET
-from django.views.decorators.csrf import ensure_csrf_cookie
+from django.http import HttpResponse, JsonResponse
 from django.middleware.csrf import get_token
+from django.views.decorators.csrf import ensure_csrf_cookie
+from django.views.decorators.http import require_GET, require_POST
 
 # Create your views here.
+
 
 def get_csrf(request):
     response = JsonResponse({'detail': 'CSRF cookie set'})
     response['X-CSRFToken'] = get_token(request)
     return response
 
+
 def home(request):
     return HttpResponse('<p>home view</p>')
 
+
 @require_POST
 def register_view(request):
-    user_data  = json.loads(request.body)
+    user_data = json.loads(request.body)
     username = user_data["username"]
     email = user_data["email"]
     password = user_data["password"]
@@ -35,6 +37,7 @@ def register_view(request):
     else:
         return JsonResponse({'detail': 'Username or email already in use'}, status=400)
 
+
 @require_POST
 def login_view(request):
     data = json.loads(request.body)
@@ -44,7 +47,7 @@ def login_view(request):
     if username is None or password is None:
         return JsonResponse({'detail': 'Please provide username and password.'}, status=400)
 
-    #return HttpResponse('sessionId')
+    # return HttpResponse('sessionId')
     user = authenticate(request, username=username, password=password)
     if user is not None:
         login(request, user)
@@ -72,7 +75,35 @@ def current_user(request):
 
 def user_detail(request, user_id):
     return HttpResponse(f'<p>user_detail view with id {user_id}</p>')
-    #JSON
+    # JSON
+
+
+@require_GET
+def get_all_athletes(request):
+    athletes = [
+        {
+            "id": "1",
+            "fullName": "Caleb Rust",
+            "riderMass": 75,
+            "bikeMass": 7,
+            "otherMass": 1,
+            "totalMass": 83,
+            "CPorFTP": 2000,
+            "wPrime": 400,
+        },
+        {
+            "id": 2,
+            "fullName": "Ted Ijnkij",
+            "riderMass": 78,
+            "bikeMass": 3,
+            "otherMass": 2,
+            "totalMass": 83,
+            "CPorFTP": 2030,
+            "wPrime": 450,
+        },
+    ]
+    return JsonResponse({'athletes': athletes})
+
 
 """ def registerPage(request):
     form = UserCreationForm()
@@ -82,4 +113,4 @@ def user_detail(request, user_id):
 def csrf(request):
     return HttpResponse('check out this cookie') """
 
-#function for ensuring token
+# function for ensuring token

@@ -9,26 +9,7 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { Button } from '@mui/material';
 import AthleteFormDialog from './AthleteFormDialog';
-
-/**
- * Input data for an athlete
- */
-export type AthleteData = {
-    /** Identifying each athlete */
-    id?: number;
-    /** Athlete's name */
-    name?: string;
-    /** Rider's mass, in kg */
-    riderMass?: number;
-    /** Bike's mass, in kg */
-    bikeMass?: number;
-    /** Other mass, in kg */
-    otherMass?: number;
-    /** CP (or FTP), in W */
-    cp?: number;
-    /** W', in J */
-    wPrime?: number;
-};
+import { AthleteData, getAthletes } from './athletesAPI';
 
 /** Sample athlete data for demonstration purpose */
 const sampleData: AthleteData[] = [
@@ -61,6 +42,16 @@ const sampleData: AthleteData[] = [
     },
 ];
 
+const emptyAthlete = {
+    id: 0,
+    name: '',
+    riderMass: 0,
+    bikeMass: 0,
+    otherMass: 0,
+    cp: 0,
+    wPrime: 0,
+};
+
 type Props = {};
 
 /**
@@ -81,7 +72,8 @@ export default function ManageAthletesPage({}: Props) {
     // removal: whether to show the athlete dialog for removal confirmation
     const [removal, setRemoval] = React.useState(false);
     // editingAthlete: data of the athlete chosen from the athlete table
-    const [editingAthlete, setEditingAthlete] = React.useState<AthleteData>({});
+    const [editingAthlete, setEditingAthlete] =
+        React.useState<AthleteData>(emptyAthlete);
 
     // Call to show the dialog for adding new athlete
     const onNewAthlete = () => {
