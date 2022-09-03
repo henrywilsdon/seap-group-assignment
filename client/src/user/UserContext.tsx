@@ -7,6 +7,7 @@ import React, {
     useState,
 } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import useOnLoad from '../common/useOnLoad';
 
 interface ProviderProps {
     children: React.ReactNode;
@@ -51,7 +52,7 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
     }, [location, user, navigate]);
 
     const getUser = useCallback(() => {
-        return fetch('http://localhost:8000/server_functions/user/me', {
+        return fetch('http://localhost:8000/server_functions/user/me/', {
             method: 'GET',
             credentials: 'include',
         })
@@ -77,12 +78,12 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
             });
     }, [navigate]);
 
-    // useEffect(() => {
+    // useOnLoad(() => {
     //     getUser();
-    // }, [getUser]);
+    // });
 
     const logout = useCallback(() => {
-        return fetch('http://localhost:8000/server_functions/logout', {
+        return fetch('http://localhost:8000/server_functions/logout/', {
             method: 'POST',
             credentials: 'include',
         })
@@ -119,13 +120,13 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
         loginPending.current = true;
 
         // Create new request
-        const promise = fetch('http://localhost:8000/server_functions/login', {
+        const promise = fetch('http://localhost:8000/server_functions/login/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                username,
+                email: username,
                 password,
             }),
             credentials: 'include',
@@ -170,7 +171,7 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
         updatePending.current = true;
 
         const promise = fetch(
-            'http://localhost:8000/server_functions/user/me',
+            'http://localhost:8000/server_functions/user/me/',
             {
                 method: 'PUT',
                 headers: {
