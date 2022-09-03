@@ -11,19 +11,21 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from django.middleware.csrf import get_token
 
 # Create your views here.
-from .forms import LoginForm
+
 
 def get_csrf(request):
     response = JsonResponse({'detail': 'CSRF cookie set'})
     response['X-CSRFToken'] = get_token(request)
     return response
 
+
 def home(request):
     return HttpResponse('<p>home view</p>')
 
+
 @require_POST
 def register_view(request):
-    user_data  = json.loads(request.body)
+    user_data = json.loads(request.body)
     username = user_data["email"]
     email = user_data["email"]
     password = user_data["password"]
@@ -36,6 +38,7 @@ def register_view(request):
         return JsonResponse({'detail': 'Successfully registered.'}, status=200)
     else:
         return JsonResponse({'detail': 'Username or email already in use'}, status=400)
+
 
 @require_POST
 def login_view(request):
@@ -53,6 +56,7 @@ def login_view(request):
     else:
         return JsonResponse({'detail': 'Invalid credentials.'}, status=400)
 
+
 @require_POST
 def logout_view(request):
     data = json.loads(request.body)
@@ -63,6 +67,7 @@ def logout_view(request):
         return JsonResponse({'detail': 'You\'re not logged in.'}, status=400)
     logout(request)
     return JsonResponse({'detail': 'Successfully logged out.'}, status=200)
+
 
 @require_http_methods(["PUT"])
 def update_user_view(request):
@@ -75,8 +80,9 @@ def update_user_view(request):
     if user.is_authenticated:
         user.password = newPassword
         return JsonResponse({'detail': 'Successfully changed password'}, status=200)
-    else: 
+    else:
         return JsonResponse({'detail': 'User not authenticated'}, status=400)
+
 
 """ @require_http_methods(["GET"])
 def get_user_view(request):
@@ -98,6 +104,7 @@ def get_user_view(request):
 
 def csrf(request):
     return HttpResponse('check out this cookie') """
+
 
 def username_exists(username):
     if User.objects.filter(username=username).exists():
