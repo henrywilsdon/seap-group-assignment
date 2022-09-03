@@ -52,7 +52,10 @@ def login_view(request):
     user = authenticate(request, username=username, password=password)
     if username_exists(username):
         login(request, user)
-        return JsonResponse({'detail': 'Successfully logged in.'}, status=200)
+        return JsonResponse({
+            'detail': 'Successfully logged in.',
+            'sessionId': request.session.session_key
+        }, status=200)
     else:
         return JsonResponse({'detail': 'Invalid credentials.'}, status=400)
 
