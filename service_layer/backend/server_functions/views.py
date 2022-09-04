@@ -52,22 +52,28 @@ def login_view(request):
     user = authenticate(request, username=username, password=password)
     if username_exists(username):
         login(request, user)
-        return JsonResponse({'detail': 'Successfully logged in.'}, status=200)
+        return JsonResponse({
+            'detail': 'Successfully logged in.',
+            'sessionId': request.session.session_key
+        }, status=200)
     else:
         return JsonResponse({'detail': 'Invalid credentials.'}, status=400)
 
 
 @require_POST
 def logout_view(request):
-    data = json.loads(request.body)
-    username = data["email"]
-    password = data["password"]
-    user = authenticate(request, username=username, password=password)
-    if not user.is_authenticated:
+    if not request.user.is_authenticated:
         return JsonResponse({'detail': 'You\'re not logged in.'}, status=400)
     logout(request)
     return JsonResponse({'detail': 'Successfully logged out.'}, status=200)
 
+
+
+@require_GET
+def current_user(request):
+    if request.user.is_authenticated:
+        return JsonResponse({'username': 'test'})
+    return JsonResponse({'detail': 'You\'re not logged in.'}, status=401)
 
 @require_http_methods(["PUT"])
 def update_user_view(request):
