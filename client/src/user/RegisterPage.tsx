@@ -35,7 +35,7 @@ export default function RegisterPage({}: Props) {
         register(username, email, password)
             .then(() => {
                 //success message (alert/confirmation of success)
-                var success = 'Account Created';
+                const success = 'Account Created';
                 alert(success);
             })
             .catch((error) => {
