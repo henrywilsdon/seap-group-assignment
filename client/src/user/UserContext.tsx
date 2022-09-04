@@ -67,9 +67,10 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
 
         //new Request to register account
         const promise = fetch(
-            'http://localhost:8000/server_functions/register',
+            'http://localhost:8000/server_functions/register/',
             {
-                method: 'PUT',
+                credentials: 'include',
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -83,27 +84,27 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
 
         promise.finally(() => (registerPending.current = false));
 
-        return promise
-            .then(async (response) => {
-                if (response.ok) {
-                    setUser({ username, email });
-                    setPass(password);
-                    navigate('/athletes');
+        return promise.then(async (response) => {
+            console.log(response);
+
+            if (response.ok) {
+                console.log('Here');
+                setUser({ username, email });
+                setPass(password);
+                navigate('/login');
+            } else {
+                if (response.status === 400) {
+                    throw new Error('Email already in use');
+                } else if (
+                    response.headers.get('Content-Type') === 'application/json'
+                ) {
+                    const data = await response.json();
+                    throw new Error(data?.detail);
                 } else {
-                    if (
-                        response.headers.get('Content-Type') ===
-                        'application/json'
-                    ) {
-                        const data = await response.json();
-                        throw new Error(data?.detail);
-                    } else {
-                        throw new Error(response.statusText + response.status);
-                    }
+                    throw new Error(response.statusText + response.status);
                 }
-            })
-            .catch((error) => {
-                console.error(error);
-            });
+            }
+        });
     };
 
     const logout = () => {

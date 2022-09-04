@@ -1,5 +1,5 @@
 import { useContext, useState } from 'react';
-import { Button, TextField, Typography } from '@mui/material';
+import { Button, TextField, Typography, Alert } from '@mui/material';
 import './RegisterPage.css';
 import UserContext from '../user/UserContext';
 
@@ -32,9 +32,16 @@ export default function RegisterPage({}: Props) {
     };
     //button click
     const handleClick = (event: any) => {
-        register(username, email, password).catch((error) => {
-            setErrorMessage('error.message');
-        });
+        register(username, email, password)
+            .then(() => {
+                //success message (alert/confirmation of success)
+                var success = 'Account Created';
+                alert(success);
+            })
+            .catch((error) => {
+                //display error (user already exists)
+                setErrorMessage(error.message);
+            });
     };
 
     return (
@@ -61,8 +68,6 @@ export default function RegisterPage({}: Props) {
                 value={username}
                 required
                 onChange={handleName}
-                error={!!errorMessage}
-                helperText={errorMessage}
                 sx={{ marginBottom: 2 }}
             />
 
@@ -74,8 +79,6 @@ export default function RegisterPage({}: Props) {
                 type="password"
                 required
                 onChange={handlePassword}
-                error={!!errorMessage}
-                helperText={errorMessage}
                 sx={{ marginBottom: 4 }}
             />
 
