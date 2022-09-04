@@ -9,6 +9,7 @@ from django.views.decorators.http import require_POST, require_GET
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.middleware.csrf import get_token
+from server_functions.models import Athlete
 
 # Create your views here.
 
