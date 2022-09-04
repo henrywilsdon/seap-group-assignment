@@ -74,8 +74,27 @@ def current_user(request):
     return JsonResponse({'detail': 'You\'re not logged in.'}, status=401)
 
 
-@require_GET
+@require_http_methods(["PUT"])
+def update_user_view(request):
+    data = json.loads(request.body)
+    username = data["email"]
+    currentPassword = data["currentPassword"]
+    newPassword = data["newPassword"]
+
+    user = authenticate(request, username=username, password=currentPassword)
+    if user.is_authenticated:
+        user.password = newPassword
+        return JsonResponse({'detail': 'Successfully changed password'}, status=200)
+    else:
+        return JsonResponse({'detail': 'User not authenticated'}, status=400)
+
+
+@require_http_methods(["GET", "POST"])
 def get_all_athletes(request):
+
+    if request.method == 'POST':
+        return JsonResponse({'detail': 'Athlete created.'})
+
     athletes = [
         {
             "id": "1",
@@ -101,33 +120,23 @@ def get_all_athletes(request):
     return JsonResponse({'athletes': athletes})
 
 
-@require_http_methods(["PUT"])
-def update_user_view(request):
-    data = json.loads(request.body)
-    username = data["email"]
-    currentPassword = data["currentPassword"]
-    newPassword = data["newPassword"]
-
-    user = authenticate(request, username=username, password=currentPassword)
-    if user.is_authenticated:
-        user.password = newPassword
-        return JsonResponse({'detail': 'Successfully changed password'}, status=200)
+def athlete_view(request, athlete_id):
+    if request.method == 'PUT':
+        return JsonResponse({'detail': 'Athlete updated.'})
+    elif request.method == 'GET':
+        return JsonResponse({
+            "id": 2,
+            "fullName": "Ted Ijnkij",
+            "riderMass": 78,
+            "bikeMass": 3,
+            "otherMass": 2,
+            "totalMass": 83,
+            "cp": 2030,
+            "wPrime": 450,
+        })
     else:
-        return JsonResponse({'detail': 'User not authenticated'}, status=400)
+        return JsonResponse(status=405)
 
-
-""" @require_http_methods(["GET"])
-def get_user_view(request):
-    data = json.loads(request.body)
-    username = data["email"]
-    #password = data["password"]
-    user = User.objects.get(username=username)
-
-    if user.is_authenticated:
-        id = request.user.id
-        return JsonResponse({'id': '2'}, status=200)
-    else: 
-        return JsonResponse({'detail': 'Unauthorized'}, status=401) """
 
 """ def registerPage(request):
     form = UserCreationForm()

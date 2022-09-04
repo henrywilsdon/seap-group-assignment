@@ -11,7 +11,7 @@ import TableRow from '@mui/material/TableRow';
 import React from 'react';
 import useOnLoad from '../common/useOnLoad';
 import AthleteFormDialog from './AthleteFormDialog';
-import { AthleteData, getAthletes } from './athletesAPI';
+import { AthleteData, getAthletes, updateAthlete } from './athletesAPI';
 
 const createEmptyAthlete = (): AthleteData => ({
     fullName: '',
@@ -44,6 +44,7 @@ export default function ManageAthletesPage({}: Props) {
     // editingAthlete: data of the athlete chosen from the athlete table
     const [editingAthlete, setEditingAthlete] =
         React.useState<AthleteData>(createEmptyAthlete);
+    const [editingAthleteError, setEditingAthleteError] = React.useState('');
 
     useOnLoad(() => {
         refreshAthletes();
@@ -77,20 +78,30 @@ export default function ManageAthletesPage({}: Props) {
     // Callback for "Save" button on the athlete dialog to perform
     // the corresponding
     const onEditSave = (athleteData: AthleteData) => {
+        setEditingAthleteError('');
         if (removal) {
             // For removal: remove the athlete from the athlete list
             console.log(`Remove athlete ${editingAthlete.id}`);
             setData(data.filter((row) => row.id !== editingAthlete.id));
+            setOpen(false); // Hide the athlete dialog
         } else if (editingAthlete.id) {
             // For editing: update the corresponding athlete in the athlete list
             console.log(`Edit athlete ${editingAthlete.id}`, athleteData);
-            setData(
-                data.map((row) =>
-                    row.id === editingAthlete.id
-                        ? { ...row, ...athleteData }
-                        : row,
-                ),
-            );
+
+            updateAthlete(editingAthlete.id, editingAthlete)
+                .then(() => {
+                    setData(
+                        data.map((row) =>
+                            row.id === editingAthlete.id
+                                ? { ...row, ...athleteData }
+                                : row,
+                        ),
+                    );
+                    setOpen(false); // Hide the athlete dialog
+                })
+                .catch((error) => {
+                    setEditingAthleteError(error?.message);
+                });
         } else {
             // For adding: create new athlete and add to the athlete list
             console.log(`New athlete`, athleteData);
@@ -100,8 +111,8 @@ export default function ManageAthletesPage({}: Props) {
                 id: Math.max(...data.map((athlete) => athlete.id || 0)) + 1,
             };
             setData([...data, newAthlete]);
+            setOpen(false); // Hide the athlete dialog
         }
-        setOpen(false); // Hide the athlete dialog
     };
 
     // Composing the Manage Athletes page:
@@ -118,6 +129,7 @@ export default function ManageAthletesPage({}: Props) {
                 removal={removal}
                 onSave={onEditSave}
                 onCancel={onCancel}
+                error={editingAthleteError}
             />
 
             <Box sx={{ mb: 2 }}>

@@ -19,10 +19,45 @@ export type AthleteData = {
 };
 
 export function getAthletes(): Promise<AthleteData[]> {
-    return fetch('http://localhost:8000/server_functions/athlete', {
+    return fetch('http://localhost:8000/server_functions/athlete/', {
         method: 'GET',
         credentials: 'include',
     }).then(async (response) => {
+        if (response.ok) {
+            return (await response.json()).athletes;
+        } else {
+            if (response.headers.get('Content-Type') === 'application/json') {
+                const data = await response.json();
+                throw new Error(data?.detail);
+            } else {
+                throw new Error(response.statusText + response.status);
+            }
+        }
+    });
+}
+
+export function updateAthlete(
+    athleteId: number,
+    athleteData: Omit<AthleteData, 'id'>,
+): Promise<any> {
+    return fetch(
+        'http://localhost:8000/server_functions/athlete/' + athleteId,
+        {
+            method: 'PUT',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                fullName: athleteData.fullName,
+                riderMass: athleteData.riderMass,
+                bikeMass: athleteData.bikeMass,
+                otherMass: athleteData.otherMass,
+                cp: athleteData.cp,
+                wPrime: athleteData.wPrime,
+            }),
+        },
+    ).then(async (response) => {
         if (response.ok) {
             return (await response.json()).athletes;
         } else {

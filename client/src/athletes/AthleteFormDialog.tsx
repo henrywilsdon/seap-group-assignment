@@ -5,7 +5,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import { DialogContentText, Grid, InputAdornment } from '@mui/material';
+import { Alert, DialogContentText, Grid, InputAdornment } from '@mui/material';
 import { AthleteData } from './athletesAPI';
 
 type Props = {
@@ -14,6 +14,8 @@ type Props = {
     athleteData?: AthleteData;
     onCancel: () => void;
     onSave: (athleteData: AthleteData) => void;
+    // Error message to display
+    error?: string;
 };
 
 /**
@@ -30,6 +32,7 @@ export default function AthleteFormDialog({
     athleteData,
     onCancel,
     onSave,
+    error,
 }: Props) {
     // Update the form to show the given athlete data
     React.useEffect(() => {
@@ -188,6 +191,7 @@ export default function AthleteFormDialog({
                         </Grid>
                     </Grid>
                 )}
+                {error && <Alert severity="error">{error}</Alert>}
             </DialogContent>
             <DialogActions>
                 <Button onClick={onCancel}>Cancel</Button>
