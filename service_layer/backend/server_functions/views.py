@@ -1,5 +1,6 @@
 import json
 from contextlib import redirect_stderr
+from random import randint, random
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
@@ -93,7 +94,10 @@ def update_user_view(request):
 def get_all_athletes(request):
 
     if request.method == 'POST':
-        return JsonResponse({'detail': 'Athlete created.'})
+        return JsonResponse({
+            'detail': 'Athlete created.',
+            'athlete_id': randint(10, 999999999)
+        })
 
     athletes = [
         {
