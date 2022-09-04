@@ -89,6 +89,28 @@ def update_user_view(request):
     else:
         return JsonResponse({'detail': 'User not authenticated'}, status=400)
 
+@require_GET
+def get_athlete_detail(request, athlete_id):
+    athlete = Athlete.objects.filter(id=athlete_id).values()
+    HttpResponse(f'athlete: {athlete_id}')
+    return JsonResponse({'athlete': list(athlete)})
+
+@require_POST
+def add_athlete(request):
+    athlete_data = json.loads(request.body)
+    name = athlete_data["name"]
+    bike_mass = athlete_data["bike_mass"]
+    rider_other = athlete_data["rider_other"]
+    total_mass = athlete_data["total_mass"]
+    CP_FTP = athlete_data["CP_FTP"]
+    W_prime = athlete_data["W_prime"]
+
+
+    athlete = Athlete.objects.create_user(name, bike_mass, rider_other, total_mass, CP_FTP, W_prime)
+    if athlete.name == name:
+        return JsonResponse({'detail': 'Successfully added new athlete.'}, status=200)
+    else:
+        return JsonResponse({'detail': 'Could not add athlete'}, status=400)    
 
 """ @require_http_methods(["GET"])
 def get_user_view(request):
