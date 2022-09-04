@@ -68,12 +68,12 @@ def logout_view(request):
     return JsonResponse({'detail': 'Successfully logged out.'}, status=200)
 
 
-
 @require_GET
 def current_user(request):
     if request.user.is_authenticated:
         return JsonResponse({'username': 'test'})
     return JsonResponse({'detail': 'You\'re not logged in.'}, status=401)
+
 
 @require_http_methods(["PUT"])
 def update_user_view(request):
