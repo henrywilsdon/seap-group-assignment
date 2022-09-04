@@ -11,7 +11,12 @@ import TableRow from '@mui/material/TableRow';
 import React from 'react';
 import useOnLoad from '../common/useOnLoad';
 import AthleteFormDialog from './AthleteFormDialog';
-import { AthleteData, getAthletes, updateAthlete } from './athletesAPI';
+import {
+    AthleteData,
+    createAthlete,
+    getAthletes,
+    updateAthlete,
+} from './athletesAPI';
 
 const createEmptyAthlete = (): AthleteData => ({
     fullName: '',
@@ -105,13 +110,21 @@ export default function ManageAthletesPage({}: Props) {
         } else {
             // For adding: create new athlete and add to the athlete list
             console.log(`New athlete`, athleteData);
-            const newAthlete = {
-                // Generate ID in sequence (max id + 1)
-                ...athleteData,
-                id: Math.max(...data.map((athlete) => athlete.id || 0)) + 1,
-            };
-            setData([...data, newAthlete]);
-            setOpen(false); // Hide the athlete dialog
+
+            createAthlete(editingAthlete)
+                .then((newId) => {
+                    setData([
+                        ...data,
+                        {
+                            ...athleteData,
+                            id: newId,
+                        },
+                    ]);
+                    setOpen(false); // Hide the athlete dialog
+                })
+                .catch((error) => {
+                    setEditingAthleteError(error?.message);
+                });
         }
     };
 
