@@ -9,6 +9,7 @@ from django.views.decorators.http import require_POST, require_GET
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.middleware.csrf import get_token
+from server_functions.models import Athlete
 
 # Create your views here.
 
@@ -92,7 +93,6 @@ def update_user_view(request):
 @require_GET
 def get_athlete_detail(request, athlete_id):
     athlete = Athlete.objects.filter(id=athlete_id).values()
-    HttpResponse(f'athlete: {athlete_id}')
     return JsonResponse({'athlete': list(athlete)})
 
 @require_POST
@@ -100,17 +100,32 @@ def add_athlete(request):
     athlete_data = json.loads(request.body)
     name = athlete_data["name"]
     bike_mass = athlete_data["bike_mass"]
-    rider_other = athlete_data["rider_other"]
+    rider_mass = athlete_data["rider_mass"]
+    other_mass = athlete_data["other_mass"]
     total_mass = athlete_data["total_mass"]
     CP_FTP = athlete_data["CP_FTP"]
     W_prime = athlete_data["W_prime"]
 
 
-    athlete = Athlete.objects.create_user(name, bike_mass, rider_other, total_mass, CP_FTP, W_prime)
+    athlete = Athlete.objects.create(
+        name=name, 
+        bike_mass=bike_mass, 
+        rider_mass=rider_mass, 
+        other_mass=other_mass, 
+        total_mass=total_mass, 
+        CP_FTP=CP_FTP,
+        W_prime=W_prime
+        )
+    
     if athlete.name == name:
         return JsonResponse({'detail': 'Successfully added new athlete.'}, status=200)
     else:
-        return JsonResponse({'detail': 'Could not add athlete'}, status=400)    
+        return JsonResponse({'detail': 'Could not add athlete'}, status=400)
+
+@require_GET
+def get_all_athletes(request):
+    athletes = Athlete.objects.all().values()
+    return JsonResponse({'athletes': list(athletes)})
 
 """ @require_http_methods(["GET"])
 def get_user_view(request):
