@@ -234,6 +234,7 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
         return promise.then(async (response) => {
             if (response.ok) {
                 setPass(newPassword);
+                alert('Password successfully updated.');
             } else {
                 if (
                     response.headers.get('Content-Type') === 'application/json'
