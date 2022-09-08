@@ -13,19 +13,20 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: public
 
-#  web:
-#    build: .
-#    command: python3 manage.py runserver 0.0.0.0:8000
-#    volumes:
-#      - ./backend/:/code
-#    ports:
-#      - "8000:8000"
-#    environment:
-#      - POSTGRES_NAME=ttmodel-db
-#      - POSTGRES_USER=adelaide
-#      - POSTGRES_PASSWORD=password
-#    depends_on:
-#      - ttmodel-db
+  # web:
+  #   build: 
+  #     context: .
+  #   command: python3 manage.py runserver
+  #   volumes:
+  #     - ./backend:/backend
+  #   ports:
+  #     - "8000:8000"
+  #   environment:
+  #     - POSTGRES_NAME=public
+  #     - POSTGRES_USER=adelaide
+  #     - POSTGRES_PASSWORD=password
+  #   depends_on:
+  #     - ttmodel-db
 
   ttmodel-adminer:
     image: adminer

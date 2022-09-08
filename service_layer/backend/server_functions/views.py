@@ -9,6 +9,7 @@ from django.views.decorators.http import require_POST, require_GET
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.middleware.csrf import get_token
+from server_functions.models import Athlete
 
 # Create your views here.
 
@@ -88,6 +89,71 @@ def update_user_view(request):
         return JsonResponse({'detail': 'Successfully changed password'}, status=200)
     else:
         return JsonResponse({'detail': 'User not authenticated'}, status=400)
+
+
+def athlete_view(request, athlete_id):
+    if request.method == "GET":
+        athlete = Athlete.objects.filter(id=athlete_id).values()
+        return JsonResponse({'athlete': list(athlete)})
+
+    elif request.method == "PUT":
+        athlete_data = json.loads(request.body)
+        name = athlete_data["name"]
+        bike_mass = athlete_data["bike_mass"]
+        rider_mass = athlete_data["rider_mass"]
+        other_mass = athlete_data["other_mass"]
+        total_mass = athlete_data["total_mass"]
+        CP_FTP = athlete_data["CP_FTP"]
+        W_prime = athlete_data["W_prime"]
+
+        athlete = Athlete.objects.get(id=athlete_id)
+
+        athlete.name = name
+        athlete.bike_mass = bike_mass
+        athlete.rider_mass = rider_mass
+        athlete.other_mass = other_mass
+        athlete.total_mass = total_mass
+        athlete.CP_FTP = CP_FTP
+        athlete.W_prime = W_prime
+
+        athlete.save()
+
+        if athlete.name == name:
+            return JsonResponse({'detail': 'Successfully updated athlete'}, status=200)
+        else:
+            return JsonResponse({'detail': 'Could not update athlete'}, status=400)
+
+
+def all_athletes_view(request):
+    if request.method == "GET":
+        athletes = Athlete.objects.all().values()
+        return JsonResponse({'athletes': list(athletes)})
+
+    elif request.method == "POST":
+        athlete_data = json.loads(request.body)
+        name = athlete_data["name"]
+        bike_mass = athlete_data["bike_mass"]
+        rider_mass = athlete_data["rider_mass"]
+        other_mass = athlete_data["other_mass"]
+        total_mass = athlete_data["total_mass"]
+        CP_FTP = athlete_data["CP_FTP"]
+        W_prime = athlete_data["W_prime"]
+
+        athlete = Athlete.objects.create(
+            name=name,
+            bike_mass=bike_mass,
+            rider_mass=rider_mass,
+            other_mass=other_mass,
+            total_mass=total_mass,
+            CP_FTP=CP_FTP,
+            W_prime=W_prime
+        )
+        athlete.save()
+
+        if athlete.name == name:
+            return JsonResponse({'detail': 'Successfully added new athlete.'}, status=200)
+        else:
+            return JsonResponse({'detail': 'Could not add athlete'}, status=400)
 
 
 """ @require_http_methods(["GET"])
