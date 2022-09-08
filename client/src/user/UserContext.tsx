@@ -1,4 +1,3 @@
-import { type } from '@testing-library/user-event/dist/type';
 import React, {
     createContext,
     useCallback,
@@ -18,8 +17,11 @@ interface UserContextState {
     login: (username: string, password: string) => Promise<any>;
     register: (username: string, email: string, password: string) => void;
     logout: () => void;
-    changeUserInfo: (username: string, email: string) => void;
-    changePassword: (newPassword: string, currentPassword: string) => void;
+    changeUserInfo: (username: string, email: string) => Promise<any>;
+    changePassword: (
+        newPassword: string,
+        currentPassword: string,
+    ) => Promise<any>;
 }
 
 interface User {
@@ -32,8 +34,9 @@ const UserContext = createContext<UserContextState>({
     login: () => Promise.resolve(),
     register: () => null,
     logout: () => null,
-    changeUserInfo: (username: string, email: string) => null,
-    changePassword: (newPassword: string, currentPassword: string) => null,
+    changeUserInfo: (username: string, email: string) => Promise.resolve(),
+    changePassword: (newPassword: string, currentPassword: string) =>
+        Promise.resolve(),
 });
 
 export const UserConsumer = UserContext.Consumer;
@@ -78,9 +81,9 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
             });
     }, [navigate]);
 
-    // useOnLoad(() => {
-    //     getUser();
-    // });
+    useOnLoad(() => {
+        getUser();
+    });
 
     const logout = useCallback(() => {
         return fetch('http://localhost:8000/server_functions/logout/', {
@@ -186,25 +189,21 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
 
         promise.finally(() => (updatePending.current = false));
 
-        return promise
-            .then(async (response) => {
-                if (response.ok) {
-                    setUser({ username, email });
+        return promise.then(async (response) => {
+            if (response.ok) {
+                setUser({ username, email });
+                alert('Profile successfully updated.');
+            } else {
+                if (
+                    response.headers.get('Content-Type') === 'application/json'
+                ) {
+                    const data = await response.json();
+                    throw new Error(data?.detail);
                 } else {
-                    if (
-                        response.headers.get('Content-Type') ===
-                        'application/json'
-                    ) {
-                        const data = await response.json();
-                        throw new Error(data?.detail);
-                    } else {
-                        throw new Error(response.statusText + response.status);
-                    }
+                    throw new Error(response.statusText + response.status);
                 }
-            })
-            .catch((error) => {
-                console.error(error);
-            });
+            }
+        });
     };
 
     const changePassword = (
@@ -232,25 +231,20 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
 
         promise.finally(() => (updatePending.current = false));
 
-        return promise
-            .then(async (response) => {
-                if (response.ok) {
-                    setPass(newPassword);
+        return promise.then(async (response) => {
+            if (response.ok) {
+                setPass(newPassword);
+            } else {
+                if (
+                    response.headers.get('Content-Type') === 'application/json'
+                ) {
+                    const data = await response.json();
+                    throw new Error(data?.detail);
                 } else {
-                    if (
-                        response.headers.get('Content-Type') ===
-                        'application/json'
-                    ) {
-                        const data = await response.json();
-                        throw new Error(data?.detail);
-                    } else {
-                        throw new Error(response.statusText + response.status);
-                    }
+                    throw new Error(response.statusText + response.status);
                 }
-            })
-            .catch((error) => {
-                console.error(error);
-            });
+            }
+        });
     };
 
     return (

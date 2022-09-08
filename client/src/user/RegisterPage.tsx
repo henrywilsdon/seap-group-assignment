@@ -54,6 +54,7 @@ export default function RegisterPage({}: Props) {
                 color="primary"
                 variant="standard"
                 label="Password"
+                type="password"
                 value={password}
                 onChange={handlePassword}
                 sx={{ marginBottom: 2 }}
