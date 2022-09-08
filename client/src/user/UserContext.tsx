@@ -1,3 +1,4 @@
+
 import React, {
     createContext,
     useCallback,
@@ -15,14 +16,12 @@ interface ProviderProps {
 
 interface UserContextState {
     user: User | null;
-
     login: (username: string, password: string) => Promise<any>;
     register: (
         username: string,
         email: string,
         password: string,
     ) => Promise<any>;
-
     logout: () => void;
     changeUserInfo: (username: string, email: string) => Promise<any>;
     changePassword: (
@@ -57,6 +56,7 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
     const registerPending = useRef(false);
     const loginPending = useRef(false);
     const updatePending = useRef(false);
+
 
     useEffect(() => {
         if (!user && !['/login', '/register'].includes(location.pathname)) {
