@@ -106,18 +106,18 @@ def athlete_view(request, athlete_id):
         CP_FTP = athlete_data["CP_FTP"]
         W_prime = athlete_data["W_prime"]
 
+        athlete = Athlete.objects.get(id=athlete_id)
 
-        athlete = Athlete.objects.create(
-            name=name, 
-            bike_mass=bike_mass, 
-            rider_mass=rider_mass, 
-            other_mass=other_mass, 
-            total_mass=total_mass, 
-            CP_FTP=CP_FTP,
-            W_prime=W_prime
-            )
+        athlete.name = name
+        athlete.bike_mass = bike_mass
+        athlete.rider_mass = rider_mass
+        athlete.other_mass = other_mass
+        athlete.total_mass = total_mass
+        athlete.CP_FTP = CP_FTP
+        athlete.W_prime = W_prime
+
         athlete.save()
-        
+
         if athlete.name == name:
             return JsonResponse({'detail': 'Successfully updated athlete'}, status=200)
         else:
@@ -139,22 +139,22 @@ def all_athletes_view(request):
         CP_FTP = athlete_data["CP_FTP"]
         W_prime = athlete_data["W_prime"]
 
-        athlete = Athlete.object.filter(id=athlete_id)
-        
-        athlete.name = name
-        athlete.bike_mass = bike_mass
-        athlete.rider_mass = rider_mass 
-        athlete.other_mass = other_mass 
-        athlete.total_mass = total_mass 
-        athlete.CP_FTP = CP_FTP
-        athlete.W_prime = W_prime
-
+        athlete = Athlete.objects.create(
+            name=name,
+            bike_mass=bike_mass,
+            rider_mass=rider_mass,
+            other_mass=other_mass,
+            total_mass=total_mass,
+            CP_FTP=CP_FTP,
+            W_prime=W_prime
+        )
         athlete.save()
-        
+
         if athlete.name == name:
             return JsonResponse({'detail': 'Successfully added new athlete.'}, status=200)
         else:
             return JsonResponse({'detail': 'Could not add athlete'}, status=400)
+
 
 """ @require_http_methods(["GET"])
 def get_user_view(request):
