@@ -124,7 +124,6 @@ def athlete_view(request, athlete_id):
             return JsonResponse({'detail': 'Could not update athlete'}, status=400)
 
 
-@require_GET
 def all_athletes_view(request):
     if request.method == "GET":
         athletes = Athlete.objects.all().values()
