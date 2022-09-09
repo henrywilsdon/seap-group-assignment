@@ -51,7 +51,7 @@ def login_view(request):
         return JsonResponse({'detail': 'Please provide email and password.'}, status=400)
 
     user = authenticate(request, username=username, password=password)
-    if username_exists(username):
+    if user != None:
         login(request, user)
         return JsonResponse({
             'detail': 'Successfully logged in.',
