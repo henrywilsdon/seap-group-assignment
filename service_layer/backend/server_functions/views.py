@@ -107,6 +107,9 @@ def user_password_view(request):
 
 
 def athlete_view(request, athlete_id):
+    if not request.user.is_authenticated:
+        return JsonResponse({'detail': 'User not authenticated'}, status=401)
+
     if request.method == "GET":
         athlete = Athlete.objects.filter(id=athlete_id).values()
         return JsonResponse({'athlete': list(athlete)})
@@ -140,6 +143,9 @@ def athlete_view(request, athlete_id):
 
 
 def all_athletes_view(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'detail': 'User not authenticated'}, status=401)
+
     if request.method == "GET":
         athletes = Athlete.objects.all().values()
         return JsonResponse({'athletes': list(athletes)})
