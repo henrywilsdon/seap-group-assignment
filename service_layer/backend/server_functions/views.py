@@ -44,7 +44,7 @@ def register_view(request):
 @require_POST
 def login_view(request):
     data = json.loads(request.body)
-    username = data["email"]
+    username = data["username"]
     password = data["password"]
 
     if username is None or password is None:
@@ -69,26 +69,23 @@ def logout_view(request):
     return JsonResponse({'detail': 'Successfully logged out.'}, status=200)
 
 
-@require_GET
-def current_user(request):
-    if request.user.is_authenticated:
-        return JsonResponse({'username': 'test'})
-    return JsonResponse({'detail': 'You\'re not logged in.'}, status=401)
+@require_http_methods(["PUT", "GET"])
+def user_view(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'detail': 'User not authenticated'}, status=401)
 
+    if request.method == "GET":
+        return JsonResponse({
+            'username': request.user.username,
+            'email': request.user.email
+        })
+    elif request.method == "PUT":
+        data = json.loads(request.body)
 
-@require_http_methods(["PUT"])
-def update_user_view(request):
-    data = json.loads(request.body)
-    username = data["email"]
-    currentPassword = data["currentPassword"]
-    newPassword = data["newPassword"]
-
-    user = authenticate(request, username=username, password=currentPassword)
-    if user.is_authenticated:
-        user.password = newPassword
+        request.user.username = data['username']
+        request.user.email = data['email']
+        request.user.save()
         return JsonResponse({'detail': 'Successfully changed password'}, status=200)
-    else:
-        return JsonResponse({'detail': 'User not authenticated'}, status=400)
 
 
 def athlete_view(request, athlete_id):
