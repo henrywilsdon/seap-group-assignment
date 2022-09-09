@@ -48,6 +48,21 @@ class UserTestCase(TestCase):
                               data, content_type='application/json')
         self.assertEqual(response.status_code, 200)
 
+    def test_user_password_update(self):
+        client = Client()
+
+        # Login so appropriate cookies are set
+        client.login(username="blake", password="BlakeMan")
+
+        data = {
+            'currentPassword': 'BlakeMan',
+            'newPassword': 'password3'
+        }
+
+        response = client.put('/server_functions/user/me/password/',
+                              data, content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+
     def test_logout(self):
         client = Client()
 

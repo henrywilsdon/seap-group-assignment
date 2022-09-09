@@ -85,7 +85,25 @@ def user_view(request):
         request.user.username = data['username']
         request.user.email = data['email']
         request.user.save()
-        return JsonResponse({'detail': 'Successfully changed password'}, status=200)
+        return JsonResponse({'detail': 'Successfully updated user'}, status=200)
+
+
+@require_http_methods(["PUT"])
+def user_password_view(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'detail': 'User not authenticated'}, status=401)
+
+    data = json.loads(request.body)
+    currentPassword = data['currentPassword']
+    newPassword = data['newPassword']
+
+    user = authenticate(
+        request, username=request.user.username, password=currentPassword)
+    if user == None:
+        return JsonResponse({'detail': 'Incorrect password'}, status=401)
+
+    user.set_password(newPassword)
+    return JsonResponse({'detail': 'Successfully changed password'}, status=200)
 
 
 def athlete_view(request, athlete_id):
