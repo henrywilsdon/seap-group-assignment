@@ -27,7 +27,7 @@ urlpatterns = [
     path('server_functions/logout/', views.logout_view, name='logout'),
     path('server_functions/user/me/', views.update_user_view, name='update_user'),
     path('server_functions/athlete/', views.all_athletes_view, name='athlete'),
-    path('server_functions/athlete/<int:athlete_id>',
+    path('server_functions/athlete/<int:athlete_id>/',
          views.athlete_view, name='athlete'),
     #path('server_functions/user/get/', views.get_user_view, name='get_user'),
     #path('server_functions/user/me', views.current_user,name='current_user'),
