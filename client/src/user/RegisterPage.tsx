@@ -77,7 +77,6 @@ export default function RegisterPage({}: Props) {
                 label="Password"
                 type="password"
                 value={password}
-                type="password"
                 required
                 onChange={handlePassword}
                 sx={{ marginBottom: 4 }}

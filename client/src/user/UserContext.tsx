@@ -54,7 +54,7 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
     const navigate = useNavigate();
     const [password, setPass] = useState('');
     const [user, setUser] = useState<User | null>(null);
-    const [newPassword, setPass] = useState('');
+    const [newPassword] = useState('');
     const registerPending = useRef(false);
     const loginPending = useRef(false);
     const updatePending = useRef(false);
