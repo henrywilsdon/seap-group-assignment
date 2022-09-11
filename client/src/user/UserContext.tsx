@@ -137,7 +137,7 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                email: username,
+                username,
                 password,
             }),
             credentials: 'include',
