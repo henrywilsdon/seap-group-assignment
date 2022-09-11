@@ -1,4 +1,3 @@
-
 import React, {
     createContext,
     useCallback,
@@ -16,19 +15,23 @@ interface ProviderProps {
 
 interface UserContextState {
     user: User | null;
-
     login: (username: string, password: string) => Promise<any>;
-    register: (username: string, email: string, password: string) => Promise<any>;
-
+    register: (
+        username: string,
+        email: string,
+        password: string,
+    ) => Promise<any>;
     logout: () => void;
-    changeName: (username: string) => void;
-    changePassword: (password: string) => void;
-    changeEmail: (email: string) => void;
+    changeUserInfo: (username: string, email: string) => Promise<any>;
+    changePassword: (
+        newPassword: string,
+        currentPassword: string,
+    ) => Promise<any>;
 }
 
 interface User {
-    email?: string;
     username?: string;
+    email?: string;
 }
 
 const UserContext = createContext<UserContextState>({
@@ -38,9 +41,9 @@ const UserContext = createContext<UserContextState>({
     register: () => Promise.resolve(),
 
     logout: () => null,
-    changeName: (username: string) => null,
-    changePassword: (password: string) => null,
-    changeEmail: (email: string) => null,
+    changeUserInfo: (username: string, email: string) => Promise.resolve(),
+    changePassword: (newPassword: string, currentPassword: string) =>
+        Promise.resolve(),
 });
 
 export const UserConsumer = UserContext.Consumer;
@@ -49,9 +52,10 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
     const navigate = useNavigate();
     const [password, setPass] = useState('');
     const [user, setUser] = useState<User | null>(null);
+    const [newPassword] = useState('');
     const registerPending = useRef(false);
     const loginPending = useRef(false);
-
+    const updatePending = useRef(false);
 
     useEffect(() => {
         if (!user && !['/login', '/register'].includes(location.pathname)) {
@@ -67,7 +71,7 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
             .then(async (response) => {
                 if (response.ok) {
                     const _user = await response.json();
-                    setUser({ username: _user.username });
+                    setUser({ username: _user.username, email: _user.email });
                     navigate('athletes');
                 } else {
                     if (
@@ -86,9 +90,9 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
             });
     }, [navigate]);
 
-    // useOnLoad(() => {
-    //     getUser();
-    // });
+    useOnLoad(() => {
+        getUser();
+    });
 
     const logout = useCallback(() => {
         return fetch('http://localhost:8000/server_functions/logout/', {
@@ -134,7 +138,7 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                email: username,
+                username,
                 password,
             }),
             credentials: 'include',
@@ -207,7 +211,7 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
                 navigate('/login');
             } else {
                 if (response.status === 400) {
-                    throw new Error('Email already in use');
+                    throw new Error('Username or email already in use');
                 } else if (
                     response.headers.get('Content-Type') === 'application/json'
                 ) {
@@ -220,16 +224,87 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
         });
     };
 
-    const changeName = (username: string) => {
-        setUser({ ...user, username });
+    const changeUserInfo = (username: string, email: string): Promise<any> => {
+        if (updatePending.current) {
+            return Promise.resolve();
+        }
+        updatePending.current = true;
+
+        const promise = fetch(
+            'http://localhost:8000/server_functions/user/me/',
+            {
+                method: 'PUT',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username,
+                    email,
+                }),
+            },
+        );
+
+        promise.finally(() => (updatePending.current = false));
+
+        return promise.then(async (response) => {
+            if (response.ok) {
+                setUser({ username, email });
+                alert('Profile successfully updated.');
+            } else {
+                if (
+                    response.headers.get('Content-Type') === 'application/json'
+                ) {
+                    const data = await response.json();
+                    throw new Error(data?.detail);
+                } else {
+                    throw new Error(response.statusText + response.status);
+                }
+            }
+        });
     };
 
-    const changePassword = (password: string) => {
-        //setPass({ password });
-    };
+    const changePassword = (
+        newPassword: string,
+        currentPassword: string,
+    ): Promise<any> => {
+        if (updatePending.current) {
+            return Promise.resolve();
+        }
+        updatePending.current = true;
 
-    const changeEmail = (email: string) => {
-        setUser({ ...user, email });
+        const promise = fetch(
+            'http://localhost:8000/server_functions/user/me/password/',
+            {
+                method: 'PUT',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    newPassword,
+                    currentPassword,
+                }),
+            },
+        );
+
+        promise.finally(() => (updatePending.current = false));
+
+        return promise.then(async (response) => {
+            if (response.ok) {
+                setPass(newPassword);
+                alert('Password successfully updated.');
+            } else {
+                if (
+                    response.headers.get('Content-Type') === 'application/json'
+                ) {
+                    const data = await response.json();
+                    throw new Error(data?.detail);
+                } else {
+                    throw new Error(response.statusText + response.status);
+                }
+            }
+        });
     };
 
     return (
@@ -239,9 +314,8 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
                 login,
                 register,
                 logout,
-                changeName,
+                changeUserInfo,
                 changePassword,
-                changeEmail,
             }}
         >
             {children}
