@@ -233,6 +233,7 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
             'http://localhost:8000/server_functions/user/me/',
             {
                 method: 'PUT',
+                credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -275,6 +276,7 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
             'http://localhost:8000/server_functions/user/me/password/',
             {
                 method: 'PUT',
+                credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json',
                 },
