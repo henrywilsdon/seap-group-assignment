@@ -52,6 +52,7 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
     const navigate = useNavigate();
     const [password, setPass] = useState('');
     const [user, setUser] = useState<User | null>(null);
+    const [newPassword] = useState('');
     const registerPending = useRef(false);
     const loginPending = useRef(false);
     const updatePending = useRef(false);
@@ -210,7 +211,7 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
                 navigate('/login');
             } else {
                 if (response.status === 400) {
-                    throw new Error('Email already in use');
+                    throw new Error('Username or email already in use');
                 } else if (
                     response.headers.get('Content-Type') === 'application/json'
                 ) {
