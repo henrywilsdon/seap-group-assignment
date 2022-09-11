@@ -71,7 +71,7 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
             .then(async (response) => {
                 if (response.ok) {
                     const _user = await response.json();
-                    setUser({ username: _user.username });
+                    setUser({ username: _user.username, email: _user.email });
                     navigate('athletes');
                 } else {
                     if (
