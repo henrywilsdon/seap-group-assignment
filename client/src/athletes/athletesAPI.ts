@@ -134,7 +134,7 @@ export function createAthlete(
 }
 
 /**
- * Convert frontend model to backend model
+ * Convert frontend model to the backend model
  */
 function frontendAthleteToBackend(
     frontendAthlete: AthleteData,
