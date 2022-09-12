@@ -31,10 +31,3 @@ services:
       - POSTGRES_PASSWORD=postgres
     depends_on:
       - db
-
-  db-adminer:
-    image: adminer
-    container_name: db-adminer
-    restart: always
-    ports:
-      - 8080:8080
