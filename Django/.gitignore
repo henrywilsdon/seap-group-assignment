@@ -1,0 +1,10 @@
+data/
+data/db/base
+data/db/global
+data/db/pg_logical
+data/db/pg_multixact
+data/db/pg_stat_tmp
+data/db/pg_subtrans
+data/db/pg_twophase
+data/db/pg_wal
+data/db/pg_xact
