@@ -32,7 +32,7 @@ urlpatterns = [
     path('server_functions/athlete/<int:athlete_id>',
          views.athlete_view, name='athlete'),
     #path('server_functions/user/get/', views.get_user_view, name='get_user'),
-    #path('server_functions/user/me', views.current_user,name='current_user'),
+    #path('server_functions/user/me/dummy', views.current_user,name='current_user'),
     #path('server_functions/csrf', views.csrf,name='csrf'),
     #path('server_functions/login', views.empty_login,name='login'),
 ]
