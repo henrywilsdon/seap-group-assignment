@@ -103,6 +103,7 @@ def user_password_view(request):
         return JsonResponse({'detail': 'Incorrect password'}, status=401)
 
     user.set_password(newPassword)
+    user.save()
     return JsonResponse({'detail': 'Successfully changed password'}, status=200)
 
 
