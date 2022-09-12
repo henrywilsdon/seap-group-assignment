@@ -140,7 +140,10 @@ def athlete_view(request, athlete_id):
             return JsonResponse({'detail': 'Successfully updated athlete'}, status=200)
         else:
             return JsonResponse({'detail': 'Could not update athlete'}, status=400)
-
+   
+    elif request.method == "DELETE":
+        athlete = Athlete.objects.get(id=athlete_id)
+        athlete.delete()
 
 def all_athletes_view(request):
     if not request.user.is_authenticated:
