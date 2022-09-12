@@ -30,15 +30,35 @@ Run once: `docker-compose build`
 
 Run to start backend: `docker-compose up -d`
 
+### Initialise database
+
+Once you successfully run the docker-compose file for the first time you
+must execute the command:
+ `docker-compose run web python3 manage.py migrate`
+
 ### Shutdown
 
 `docker-compose down`
 
 ### Make Migrations
 
+Checks the model.py file for new data structures
+`docker-compose run web python3 manage.py makemigrations`
+
+Shows which migrations are applied and unapplied.
+`docker-compose run web python3 manage.py showmigrations`
+[ ] means migrations are not applied to the database
+[X] means migration is applied
+
+Applies unapplied migrations
 `docker-compose run web python3 manage.py migrate`
 
 `docker exec -it container_id python manage.py migrate`
+
+### Create Super User
+
+`docker-compose run web python3 manage.py createsuperuser`
+Go to http://localhost:8000/admin/ and log in to checkout database
 
 ### Enter container
 

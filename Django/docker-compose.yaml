@@ -1,5 +1,5 @@
 version: "3.9"
-   
+
 volumes:
   web_data:
     name: my_volume_001
@@ -9,6 +9,8 @@ services:
     image: postgres
     volumes:
       - web_data:/var/lib/postgresql/data
+#    volumes:
+#      - ./data/db:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
