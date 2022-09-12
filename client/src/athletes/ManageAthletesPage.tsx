@@ -14,6 +14,7 @@ import AthleteFormDialog from './AthleteFormDialog';
 import {
     AthleteData,
     createAthlete,
+    deleteAthlete,
     getAthletes,
     updateAthlete,
 } from './athletesAPI';
@@ -85,23 +86,26 @@ export default function ManageAthletesPage({}: Props) {
     const onEditSave = (athleteData: AthleteData) => {
         setEditingAthleteError('');
         if (removal) {
+            if (typeof editingAthlete.id !== 'number') {
+                return;
+            }
             // For removal: remove the athlete from the athlete list
             console.log(`Remove athlete ${editingAthlete.id}`);
-            setData(data.filter((row) => row.id !== editingAthlete.id));
-            setOpen(false); // Hide the athlete dialog
+            deleteAthlete(editingAthlete?.id)
+                .then(() => {
+                    refreshAthletes();
+                    setOpen(false); // Hide the athlete dialog
+                })
+                .catch((error) => {
+                    setEditingAthleteError(error?.message);
+                });
         } else if (editingAthlete.id) {
             // For editing: update the corresponding athlete in the athlete list
             console.log(`Edit athlete ${editingAthlete.id}`, athleteData);
 
-            updateAthlete(editingAthlete.id, editingAthlete)
+            updateAthlete(editingAthlete.id, athleteData)
                 .then(() => {
-                    setData(
-                        data.map((row) =>
-                            row.id === editingAthlete.id
-                                ? { ...row, ...athleteData }
-                                : row,
-                        ),
-                    );
+                    refreshAthletes();
                     setOpen(false); // Hide the athlete dialog
                 })
                 .catch((error) => {
@@ -111,15 +115,9 @@ export default function ManageAthletesPage({}: Props) {
             // For adding: create new athlete and add to the athlete list
             console.log(`New athlete`, athleteData);
 
-            createAthlete(editingAthlete)
+            createAthlete(athleteData)
                 .then((newId) => {
-                    setData([
-                        ...data,
-                        {
-                            ...athleteData,
-                            id: newId,
-                        },
-                    ]);
+                    refreshAthletes();
                     setOpen(false); // Hide the athlete dialog
                 })
                 .catch((error) => {

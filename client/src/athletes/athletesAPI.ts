@@ -32,8 +32,12 @@ type BackendAthlete = {
     W_prime: number;
 };
 
+/**
+ * Get all athletes
+ * @returns All athletes
+ */
 export function getAthletes(): Promise<AthleteData[]> {
-    return fetch('http://localhost:8000/server_functions/athlete/', {
+    return fetch('http://localhost:8000/api/athlete/', {
         method: 'GET',
         credentials: 'include',
     }).then(async (response) => {
@@ -51,22 +55,44 @@ export function getAthletes(): Promise<AthleteData[]> {
     });
 }
 
+/**
+ * Update an athlete
+ */
 export function updateAthlete(
     athleteId: number,
     athleteData: Omit<AthleteData, 'id'>,
 ): Promise<any> {
     const backendAthlete = frontendAthleteToBackend(athleteData);
-    return fetch(
-        'http://localhost:8000/server_functions/athlete/' + athleteId + '/',
-        {
-            method: 'PUT',
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(backendAthlete),
+    return fetch('http://localhost:8000/api/athlete/' + athleteId + '/', {
+        method: 'PUT',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json',
         },
-    ).then(async (response) => {
+        body: JSON.stringify(backendAthlete),
+    }).then(async (response) => {
+        if (!response.ok) {
+            if (response.headers.get('Content-Type') === 'application/json') {
+                const data = await response.json();
+                throw new Error(data?.detail);
+            } else {
+                throw new Error(response.statusText + response.status);
+            }
+        }
+    });
+}
+
+/**
+ * Delete an athlete
+ */
+export function deleteAthlete(athleteId: number): Promise<any> {
+    return fetch('http://localhost:8000/api/athlete/' + athleteId + '/', {
+        method: 'DELETE',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    }).then(async (response) => {
         if (!response.ok) {
             if (response.headers.get('Content-Type') === 'application/json') {
                 const data = await response.json();
@@ -80,14 +106,13 @@ export function updateAthlete(
 
 /**
  * Create a new athlete
- * @param athleteData
- * @returns ID for the athlete
+ * @returns ID of new athlete
  */
 export function createAthlete(
     athleteData: Omit<AthleteData, 'id'>,
 ): Promise<number> {
     const backendAthlete = frontendAthleteToBackend(athleteData);
-    return fetch('http://localhost:8000/server_functions/athlete/', {
+    return fetch('http://localhost:8000/api/athlete/', {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -108,6 +133,9 @@ export function createAthlete(
     });
 }
 
+/**
+ * Convert frontend model to backend model
+ */
 function frontendAthleteToBackend(
     frontendAthlete: AthleteData,
 ): BackendAthlete {
@@ -126,6 +154,9 @@ function frontendAthleteToBackend(
     };
 }
 
+/**
+ * Convert backend model to frontend model
+ */
 function backendAthleteToFrontend(backendAthlete: BackendAthlete): AthleteData {
     return {
         id: backendAthlete.id,

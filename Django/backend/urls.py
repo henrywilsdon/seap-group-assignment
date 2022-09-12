@@ -29,7 +29,7 @@ urlpatterns = [
     path('api/user/me/password/',
          views.user_password_view, name='update_user_password'),
     path('api/athlete/', views.all_athletes_view, name='athlete'),
-    path('api/athlete/<int:athlete_id>',
+    path('api/athlete/<int:athlete_id>/',
          views.athlete_view, name='athlete'),
     #path('api/user/get/', views.get_user_view, name='get_user'),
     #path('api/user/me/dummy', views.current_user,name='current_user'),
