@@ -1,21 +1,23 @@
-import json
 from contextlib import redirect_stderr
-from random import randint, random
+import json
+from django.shortcuts import render, redirect
+from django.http import HttpResponse, JsonResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from django.http import HttpResponse, JsonResponse
-from django.views.decorators.http import require_POST, require_GET, require_http_methods
-from django.middleware.csrf import get_token
-from server_functions.models import Athlete
+from django.views.decorators.http import require_POST, require_GET
+from django.views.decorators.http import require_http_methods
+""" from django.views.decorators.csrf import ensure_csrf_cookie
+from django.middleware.csrf import get_token """
+from api.models import Athlete
 
 # Create your views here.
 
 
-def get_csrf(request):
+""" def get_csrf(request):
     response = JsonResponse({'detail': 'CSRF cookie set'})
     response['X-CSRFToken'] = get_token(request)
-    return response
+    return response """
 
 
 def home(request):
@@ -180,14 +182,17 @@ def get_user_view(request):
     data = json.loads(request.body)
     username = data["email"]
     #password = data["password"]
-    user = User.objects.get(username=username)"""
-
+    user = User.objects.get(username=username)
+    if user.is_authenticated:
+        id = request.user.id
+        return JsonResponse({'id': '2'}, status=200)
+    else: 
+        return JsonResponse({'detail': 'Unauthorized'}, status=401) """
 
 """ def registerPage(request):
     form = UserCreationForm()
     context = {'form':form}
     return render(request, 'register.html', context)
-
 def csrf(request):
     return HttpResponse('check out this cookie') """
 

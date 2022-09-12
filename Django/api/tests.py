@@ -22,14 +22,14 @@ class UserTestCase(TestCase):
     def test_register(self):
         client = Client()
         data = {'username': 'john', 'email': 'john@email', 'password': 'smith'}
-        response = client.post('/server_functions/register/',
+        response = client.post('/api/register/',
                                data, content_type='application/json')
         self.assertEqual(response.status_code, 200)
 
     def test_login(self):
         client = Client()
         data = {'username': 'blake', 'password': 'BlakeMan'}
-        response = client.post('/server_functions/login/',
+        response = client.post('/api/login/',
                                data, content_type='application/json')
         self.assertEqual(response.status_code, 200)
 
@@ -44,7 +44,7 @@ class UserTestCase(TestCase):
             'username': 'jack'
         }
 
-        response = client.put('/server_functions/user/me/',
+        response = client.put('/api/user/me/',
                               data, content_type='application/json')
         self.assertEqual(response.status_code, 200)
 
@@ -59,7 +59,7 @@ class UserTestCase(TestCase):
             'newPassword': 'password3'
         }
 
-        response = client.put('/server_functions/user/me/password/',
+        response = client.put('/api/user/me/password/',
                               data, content_type='application/json')
         self.assertEqual(response.status_code, 200)
 
@@ -69,15 +69,14 @@ class UserTestCase(TestCase):
         # Login so appropriate cookies are set
         client.login(username="blake", password="BlakeMan")
 
-        response = client.post('/server_functions/logout/',
+        response = client.post('/api/logout/',
                                content_type='application/json')
         self.assertEqual(response.status_code, 200)
 
     """ def test_get_user(self):
         client = Client()
         data = {'email': 'tim@gmail.com'}
-
-        response = client.get('/server_functions/user/get/',data,content_type='application/json')
+        response = client.get('/api/user/get/',data,content_type='application/json')
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.body)
         id = data["id"]
