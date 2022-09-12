@@ -20,3 +20,8 @@ class Athlete(models.Model):
     CP_FTP = models.FloatField()
     W_prime = models.FloatField()
 
+class Course(models.Model):
+    name = models.CharField(max_length=30)
+    location = models.JSONField()
+    last_updated = models.DateTimeField()
+    gps_data = models.JSONField()
