@@ -21,7 +21,7 @@ powerAero = 0.5 * Density * relative wind speed^3 * CDA
            
            [[PREV]] acceleration 
       
-    CDA = delta_CDA + vlookup thingy A + vlookup thingy B   (My guess is that CDA is how much energy the rider has 'in their bucket' currently)
+    CDA = delta_CDA + vlookup thingy A + vlookup thingy B (function that outputs useful data for wind drag)
     
         delta_CDA = input that's same for entire course, by default 0
         
@@ -53,7 +53,7 @@ Power_roll = Mass_total * Crr * 9.81 * Speed
     
     Mass_total = an input value that's the same for the entire course (mass of rider + mass of bike + mass of "other"), at 'Input-Output'!$B$6
     
-    Crr = an input value that's the same for the entire course, at 'Input-Output'!$B$12. Doesn't say what "crr" stands for, but based on what's nearby it seems to be related to the design of the bike itself.
+    Crr = an input value that's the same for the entire course, at 'Input-Output'!$B$12. Coefficient for "tyre rolling resistance properties".
     
     Speed = defined above (different per point)
 
