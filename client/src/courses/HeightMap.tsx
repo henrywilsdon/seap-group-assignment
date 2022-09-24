@@ -4,6 +4,7 @@ import { AxisOptions, Chart } from 'react-charts';
 import mapJSON from './tokyo.json';
 
 type Props = {
+    hoverPoint: google.maps.LatLngLiteral | null;
     onHoverPointChange: (point: google.maps.LatLngLiteral | null) => void;
 };
 
@@ -38,13 +39,25 @@ const data: Series[] = [
     },
 ];
 
-export default function HeightMap({ onHoverPointChange }: Props) {
+export default function HeightMap({ hoverPoint, onHoverPointChange }: Props) {
     const [primaryCursor, setPrimaryCursor] = useState(null);
 
     useEffect(() => {
-        const hoverPoint = primaryCursor ? allPoints[primaryCursor] : null;
+        if (!hoverPoint) {
+            setPrimaryCursor(null);
+            return;
+        }
+        const newPrimaryCursor = points.findIndex((p) => {
+            console.log();
+            return p.lat === hoverPoint.lat && p.long === hoverPoint.lng;
+        });
+        console.log(newPrimaryCursor);
+    }, [hoverPoint]);
+
+    useEffect(() => {
+        const newHoverPoint = primaryCursor ? allPoints[primaryCursor] : null;
         onHoverPointChange(
-            hoverPoint && { lat: hoverPoint[1], lng: hoverPoint[0] },
+            newHoverPoint && { lat: newHoverPoint[1], lng: newHoverPoint[0] },
         );
     }, [primaryCursor]);
 
@@ -74,6 +87,7 @@ export default function HeightMap({ onHoverPointChange }: Props) {
                     value: primaryCursor,
                     onChange: setPrimaryCursor,
                 },
+                onClickDatum: console.log,
             }}
         />
     );

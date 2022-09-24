@@ -1,7 +1,9 @@
 import { isLatLngLiteral } from '@googlemaps/typescript-guards';
-import { MarkEmailReadTwoTone } from '@mui/icons-material';
+import { MarkEmailReadTwoTone, ThirtyFpsSharp } from '@mui/icons-material';
 import { createCustomEqual } from 'fast-equals';
-import React, { useEffect, useState } from 'react';
+import React, { createContext, useEffect, useState } from 'react';
+import PointWithIndex from './PointWithIndex';
+import tokyoJson from './tokyo.json';
 
 interface MapProps extends google.maps.MapOptions {
     style: { [key: string]: string };
@@ -9,15 +11,21 @@ interface MapProps extends google.maps.MapOptions {
     onIdle?: (map: google.maps.Map) => void;
 }
 
+export const MapContext = createContext<{ map: google.maps.Map | undefined }>({
+    map: undefined,
+});
+
 export default function Map({
     onClick,
     onIdle,
     children,
     style,
     hoverPos,
+    onHoverPosChange,
     ...options
 }: React.PropsWithChildren<MapProps> & {
-    hoverPos?: google.maps.LatLng | null;
+    hoverPos?: google.maps.LatLngLiteral | null;
+    onHoverPosChange?: (latLng: google.maps.LatLngLiteral | null) => void;
 }) {
     const ref = React.useRef<HTMLDivElement>(null);
     const [map, setMap] = React.useState<google.maps.Map>();
@@ -29,10 +37,43 @@ export default function Map({
                 center: new window.google.maps.LatLng(35.36558, 138.92561),
                 ...options,
             });
-            map.data.loadGeoJson('tokyo.json');
+            // const features = map.data.addGeoJson(tokyoJson);
+            // console.log(features[0].getGeometry()?.getType());
+
+            // const feature = createMapFeature();
+            // map.data.add(feature);
+            // map.data.addListener('mouseover', function (event: { latLng: google.maps.LatLng }) {
+            //     onHoverPosChange && onHoverPosChange({ lat: event.latLng.lat(), lng: event.latLng.lng() });
+            //     console.log(event)
+            // });
             setLoaded(true);
         }
     }, [map, options, loaded]);
+
+    const createMapFeature = () => {
+        class PointWithIdx extends google.maps.Data.Point {
+            pointIdx: number;
+
+            constructor(
+                latLng: google.maps.LatLng | google.maps.LatLngLiteral,
+                pointIdx: number,
+            ) {
+                super(latLng);
+                this.pointIdx = pointIdx;
+            }
+        }
+
+        const points: PointWithIdx[] = [];
+        const allPoints = tokyoJson.features[0].geometry.coordinates[0];
+        for (let i = 0; i < allPoints.length; i += 8) {
+            const d = allPoints[i];
+            points.push(new PointWithIdx({ lat: d[0], lng: d[1] }, i));
+        }
+
+        return new google.maps.Data.Feature({
+            geometry: new google.maps.Data.GeometryCollection(points),
+        });
+    };
 
     useEffect(() => {
         if (map) {
@@ -57,7 +98,7 @@ export default function Map({
     }, [ref, map]);
 
     return (
-        <>
+        <MapContext.Provider value={{ map }}>
             <div ref={ref} style={style} />
             {React.Children.map(children, (child) => {
                 if (React.isValidElement(child)) {
@@ -65,6 +106,6 @@ export default function Map({
                     return React.cloneElement(child, { map });
                 }
             })}
-        </>
+        </MapContext.Provider>
     );
 }
