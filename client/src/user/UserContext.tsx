@@ -284,6 +284,7 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
         return promise.then(async (response) => {
             if (response.ok) {
                 setPass(newPassword);
+                setUser(null);
                 alert('Password successfully updated.');
             } else {
                 if (

@@ -103,6 +103,7 @@ def user_password_view(request):
         return JsonResponse({'detail': 'Incorrect password'}, status=401)
 
     user.set_password(newPassword)
+    user.save()
     return JsonResponse({'detail': 'Successfully changed password'}, status=200)
 
 
@@ -140,6 +141,11 @@ def athlete_view(request, athlete_id):
             return JsonResponse({'detail': 'Successfully updated athlete'}, status=200)
         else:
             return JsonResponse({'detail': 'Could not update athlete'}, status=400)
+
+    elif request.method == "DELETE":
+        athlete = Athlete.objects.get(id=athlete_id)
+        athlete.delete()
+        return HttpResponse(status=200)
 
 
 def all_athletes_view(request):
