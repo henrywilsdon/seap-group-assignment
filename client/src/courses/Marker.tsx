@@ -8,7 +8,7 @@ const Marker: React.FC<google.maps.MarkerOptions> = (options) => {
             setMarker(new google.maps.Marker());
         }
 
-        // remove marker from map on unmount
+        // Remove marker from map on unmount
         return () => {
             if (marker) {
                 marker.setMap(null);

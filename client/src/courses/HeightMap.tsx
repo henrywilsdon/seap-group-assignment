@@ -1,75 +1,77 @@
 import { Box } from '@mui/system';
 import React, { useEffect, useState } from 'react';
-import { AxisOptions, Chart } from 'react-charts';
+import { AxisOptions, Chart, Datum } from 'react-charts';
+import { LatLngElev } from './ManageCoursesPage';
 import mapJSON from './tokyo.json';
 
 type Props = {
-    hoverPoint: google.maps.LatLngLiteral | null;
-    onHoverPointChange: (point: google.maps.LatLngLiteral | null) => void;
-};
-
-type Point = {
-    i: number;
-    lat: number;
-    long: number;
-    elev: number;
+    // splitPoints: LatLngElev[][];
+    points: LatLngElev[];
+    splits: number[];
+    // hoverPoint: LatLngElev | null;
+    onHoverPointChange: (point: LatLngElev | null) => void;
+    onClick:
+        | ((
+              datum: Datum<LatLngElev> | null,
+              event: React.MouseEvent<SVGSVGElement, MouseEvent>,
+          ) => void)
+        | undefined;
 };
 
 type Series = {
     label: string;
-    data: Point[];
+    data: LatLngElev[];
 };
 
-const allPoints = mapJSON.features[0].geometry.coordinates[0];
-const points: Point[] = [];
-for (let i = 0; i < allPoints.length; i += 8) {
-    const d = allPoints[i];
-    points.push({
-        i,
-        lat: d[0],
-        long: d[1],
-        elev: d[2],
-    });
-}
-console.log(points);
-const data: Series[] = [
-    {
-        label: 'Height',
-        data: points,
-    },
-];
-
-export default function HeightMap({ hoverPoint, onHoverPointChange }: Props) {
+export default function HeightMap({
+    points,
+    splits,
+    onHoverPointChange,
+    onClick,
+}: Props) {
     const [primaryCursor, setPrimaryCursor] = useState(null);
+    const [data, setData] = useState<Series[]>([]);
 
     useEffect(() => {
-        if (!hoverPoint) {
-            setPrimaryCursor(null);
+        console.log('create height map data');
+
+        if (points.length === 0) {
+            setData([]);
             return;
         }
-        const newPrimaryCursor = points.findIndex((p) => {
-            console.log();
-            return p.lat === hoverPoint.lat && p.long === hoverPoint.lng;
-        });
-        console.log(newPrimaryCursor);
-    }, [hoverPoint]);
+
+        setData(
+            [...splits, points.length].map((split, splitIdx) => {
+                const _points: LatLngElev[] = [];
+                for (
+                    let i = splitIdx > 0 ? splits[splitIdx - 1] : 0;
+                    i < split;
+                    i += 4
+                ) {
+                    _points.push(points[i]);
+                }
+                return {
+                    data: _points,
+                    label: `Segment ${splitIdx + 1} elev.`,
+                };
+            }),
+        );
+    }, [points, splits]);
 
     useEffect(() => {
-        const newHoverPoint = primaryCursor ? allPoints[primaryCursor] : null;
-        onHoverPointChange(
-            newHoverPoint && { lat: newHoverPoint[1], lng: newHoverPoint[0] },
-        );
+        const newHoverPoint = primaryCursor ? points[primaryCursor] : null;
+        onHoverPointChange(newHoverPoint);
     }, [primaryCursor]);
 
     const primaryAxis = React.useMemo(
-        (): AxisOptions<Point> => ({
-            getValue: (datum) => datum.i,
+        (): AxisOptions<LatLngElev> => ({
+            getValue: (datum) => datum.idx,
         }),
         [],
     );
 
     const secondaryAxes = React.useMemo(
-        (): AxisOptions<Point>[] => [
+        (): AxisOptions<LatLngElev>[] => [
             {
                 getValue: (datum) => datum.elev,
             },
@@ -77,18 +79,22 @@ export default function HeightMap({ hoverPoint, onHoverPointChange }: Props) {
         [],
     );
 
-    return (
-        <Chart
-            options={{
-                data,
-                primaryAxis,
-                secondaryAxes,
-                primaryCursor: {
-                    value: primaryCursor,
-                    onChange: setPrimaryCursor,
-                },
-                onClickDatum: console.log,
-            }}
-        />
-    );
+    if (data.length > 0) {
+        return (
+            <Chart
+                options={{
+                    data,
+                    primaryAxis,
+                    secondaryAxes,
+                    primaryCursor: {
+                        value: primaryCursor,
+                        onChange: setPrimaryCursor,
+                    },
+                    onClickDatum: onClick,
+                }}
+            />
+        );
+    } else {
+        return null;
+    }
 }
