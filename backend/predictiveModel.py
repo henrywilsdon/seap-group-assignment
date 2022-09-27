@@ -93,48 +93,67 @@ from temporaryModels import *
 import math
 
 def predict_power_aero(course: CourseModel) -> float:
-    # can modify the arguments to add whatever is necessary
-    return 1
-def predict_power_roll(course: CourseModel) -> float:
-    # can modify the arguments to add whatever is necessary
-    return 1
-def predict_power_gravity(course: CourseModel) -> float:
-    # can modify the arguments to add whatever is necessary
-    return 1
-def predict_power_in(course: CourseModel) -> float:
+    # TODO: this function
     # can modify the arguments to add whatever is necessary
     return 1
 
-def predict_single_timestep(course: CourseModel,
-                   time: float, # total time so far, starts at 0
+def predict_power_roll(course: CourseModel) -> float:
+    # TODO: this function
+    # can modify the arguments to add whatever is necessary
+    return 1
+
+def predict_power_gravity(course: CourseModel) -> float:
+    # TODO: this function
+    # can modify the arguments to add whatever is necessary
+    return 1
+
+def predict_power_in(course: CourseModel) -> float:
+    # TODO: this function
+    # can modify the arguments to add whatever is necessary
+    return 1
+
+def predict_w_prime_balance(course: CourseModel, prev_w_prime_balance, power_in) -> float:
+    # TODO: this function
+    # these arguments are correct
+    return 1
+
+def predict_single_timestep(course: CourseModel, # time doesn't need to be an argument here
                    w_prime_balance: float,
                    distance: float,
                    speed: float,
                    acceleration: float) \
                    -> SingleTimestepOutput:
 
+    # for brevity
+    # I think we should get rid of categories altogether (other than static and dynamic), because it's getting unweildy otherwise
     cs = course.static
     cd = course.dynamic
+    cs.bpr = cs.bike_plus_rider_m
+    cs.t = cs.technical_m
 
-    speed = speed + acceleration
+    speed += acceleration * cs.t.timestep_size
+    distance += speed * cs.t.timestep_size
+    # yes, that's correct: speed uses the PRIOR acceleration, but distance uses the CURRENT speed.
 
+    # the bulk of the 'predict' stuff (where it calls other functions)
     power_aero = predict_power_aero(course)
     power_roll = predict_power_roll(course)
     power_gravity = predict_power_gravity(course)
     power_in = predict_power_in(course)
+    w_prime_balance = predict_w_prime_balance(course, w_prime_balance, power_in)
 
     power_net = power_in - power_aero - power_roll - power_gravity
     propulsive_force = power_net / speed
+    mass_total = cs.bpr.mass_rider + \
+                 cs.bpr.mass_bike + \
+                 cs.bpr.mass_other
+    acceleration = propulsive_force / (mass_total + ( (cs.bpr.moi_whl_front + cs.bpr.moi_whl_rear) / cs.bpr.wheel_radius**2))
 
-    mass_total = cs.bike_plus_rider_m.mass_rider + \
-                 cs.bike_plus_rider_m.mass_bike + \
-                 cs.bike_plus_rider_m.mass_other
-    acceleration = propulsive_force / (mass_total + ( (cs.bike_plus_rider_m.moi_whl_front + cs.bike_plus_rider_m.moi_whl_rear) / cs.bike_plus_rider_m.wheel_radius**2))
 
     return SingleTimestepOutput(distance=distance+1, # TODO: make distance the correct value
                                 speed=speed, # current speed is based on the previous speed and acceleration
                                 acceleration=acceleration,
-                                w_prime_balance=1  # TODO: make w_prime_balance the correct value
+                                w_prime_balance=w_prime_balance
                                 )
 
 def predict_entire_course(course) -> PredictEntireCourseOutput:
@@ -142,7 +161,7 @@ def predict_entire_course(course) -> PredictEntireCourseOutput:
     max_distance = course.dynamic.distance[-1] # last distance in list
     current_distance = course.static.technical_m.starting_distance
     current_speed = course.static.technical_m.starting_speed
-    current_acceleration = 0 # in meters per second per timestep
+    current_acceleration = 0
     current_time = 0
     current_w_prime_balance = course.static.cp_m.w_prime
     min_w_prime_balance = float('inf')
@@ -150,7 +169,6 @@ def predict_entire_course(course) -> PredictEntireCourseOutput:
     while current_distance < max_distance:
 
         single_out = predict_single_timestep(course=course,
-                                             time=current_time,
                                              w_prime_balance=current_w_prime_balance,
                                              distance=current_distance,
                                              speed=current_speed,
