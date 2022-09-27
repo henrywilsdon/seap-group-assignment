@@ -118,11 +118,11 @@ def predict_w_prime_balance(course: CourseModel, prev_w_prime_balance, power_in)
     return 1
 
 def predict_single_timestep(course: CourseModel, # time doesn't need to be an argument here
-                   w_prime_balance: float,
-                   distance: float,
-                   speed: float,
-                   acceleration: float) \
-                   -> SingleTimestepOutput:
+                            w_prime_balance: float,
+                            distance: float,
+                            speed: float,
+                            acceleration: float) \
+                            -> SingleTimestepOutput:
 
     # for brevity
     # I think we should get rid of categories altogether (other than static and dynamic), because it's getting unweildy otherwise
@@ -133,7 +133,7 @@ def predict_single_timestep(course: CourseModel, # time doesn't need to be an ar
 
     speed += acceleration * cs.t.timestep_size
     distance += speed * cs.t.timestep_size
-    # yes, that's correct: speed uses the PRIOR acceleration, but distance uses the CURRENT speed.
+    # yes, that's correct: speed uses the PRIOR acceleration, but distance uses the CURRENT speed
 
     # the bulk of the 'predict' stuff (where it calls other functions)
     power_aero = predict_power_aero(course)
@@ -144,11 +144,8 @@ def predict_single_timestep(course: CourseModel, # time doesn't need to be an ar
 
     power_net = power_in - power_aero - power_roll - power_gravity
     propulsive_force = power_net / speed
-    mass_total = cs.bpr.mass_rider + \
-                 cs.bpr.mass_bike + \
-                 cs.bpr.mass_other
+    mass_total = cs.bpr.mass_rider + cs.bpr.mass_bike + cs.bpr.mass_other
     acceleration = propulsive_force / (mass_total + ( (cs.bpr.moi_whl_front + cs.bpr.moi_whl_rear) / cs.bpr.wheel_radius**2))
-
 
     return SingleTimestepOutput(distance=distance+1, # TODO: make distance the correct value
                                 speed=speed, # current speed is based on the previous speed and acceleration
