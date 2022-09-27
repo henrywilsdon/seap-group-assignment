@@ -92,6 +92,18 @@ Amount left in the bucket is in the column Calcs!AA
 from temporaryModels import *
 import math
 
+def predict_power_aero(course: CourseModel) -> float:
+    # can modify the arguments to add whatever is necessary
+    return 1
+def predict_power_roll(course: CourseModel) -> float:
+    # can modify the arguments to add whatever is necessary
+    return 1
+def predict_power_gravity(course: CourseModel) -> float:
+    # can modify the arguments to add whatever is necessary
+    return 1
+def predict_power_in(course: CourseModel) -> float:
+    # can modify the arguments to add whatever is necessary
+    return 1
 
 def predict_single_timestep(course: CourseModel,
                    time: float, # total time so far, starts at 0
@@ -101,11 +113,29 @@ def predict_single_timestep(course: CourseModel,
                    acceleration: float) \
                    -> SingleTimestepOutput:
 
+    cs = course.static
+    cd = course.dynamic
 
-    return SingleTimestepOutput(distance=distance+1,
-                                speed=1, # current speed is based on the previous speed and acceleration
-                                acceleration=1,
-                                w_prime_balance=1) #temp values
+    speed = speed + acceleration
+
+    power_aero = predict_power_aero(course)
+    power_roll = predict_power_roll(course)
+    power_gravity = predict_power_gravity(course)
+    power_in = predict_power_in(course)
+
+    power_net = power_in - power_aero - power_roll - power_gravity
+    propulsive_force = power_net / speed
+
+    mass_total = cs.bike_plus_rider_m.mass_rider + \
+                 cs.bike_plus_rider_m.mass_bike + \
+                 cs.bike_plus_rider_m.mass_other
+    acceleration = propulsive_force / (mass_total + ( (cs.bike_plus_rider_m.moi_whl_front + cs.bike_plus_rider_m.moi_whl_rear) / cs.bike_plus_rider_m.wheel_radius**2))
+
+    return SingleTimestepOutput(distance=distance+1, # TODO: make distance the correct value
+                                speed=speed, # current speed is based on the previous speed and acceleration
+                                acceleration=acceleration,
+                                w_prime_balance=1  # TODO: make w_prime_balance the correct value
+                                )
 
 def predict_entire_course(course) -> PredictEntireCourseOutput:
 
@@ -135,7 +165,8 @@ def predict_entire_course(course) -> PredictEntireCourseOutput:
 
     return PredictEntireCourseOutput(duration=current_time, min_w_prime_balance=min_w_prime_balance)
 
-predict_entire_course(CourseModel())
+toprint = predict_entire_course(CourseModel())
+print(toprint.duration)
 
 
 

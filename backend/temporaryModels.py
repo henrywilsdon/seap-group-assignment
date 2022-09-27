@@ -16,11 +16,11 @@
 class BikePlusRiderModel():
     mass_rider = 71
     mass_bike = 7
-    mass_other = 1
+    mass_other = 1 # for certain, only the sum of the masses are ever used
     crr = 0.0025
     mechanical_efficiency = 0.98
-    mol_whl_front = 0.08
-    mol_whl_rear = 0.08
+    moi_whl_front = 0.08 # in the spreadsheet, written as MoI (cap i, not lowercase l)
+    moi_whl_rear = 0.08
     wheel_radius = 0.335
 
 class CPModel():
@@ -73,9 +73,10 @@ class CourseModel():
 
 class SingleTimestepOutput():
     def __init__(self,
-                 next_distance,
-                 next_speed,
-                 next_w_prime_balance # the amount 'left in the bucket'
+                 distance,
+                 speed,
+                 acceleration,
+                 w_prime_balance # the amount 'left in the bucket'
                  ):
         self.distance = distance
         self.speed = speed
