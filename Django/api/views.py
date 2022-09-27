@@ -7,17 +7,17 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.views.decorators.http import require_POST, require_GET
 from django.views.decorators.http import require_http_methods
-from django.views.decorators.csrf import ensure_csrf_cookie
-from django.middleware.csrf import get_token
-from server_functions.models import Athlete
+""" from django.views.decorators.csrf import ensure_csrf_cookie
+from django.middleware.csrf import get_token """
+from api.models import Athlete
 
 # Create your views here.
 
 
-def get_csrf(request):
+""" def get_csrf(request):
     response = JsonResponse({'detail': 'CSRF cookie set'})
     response['X-CSRFToken'] = get_token(request)
-    return response
+    return response """
 
 
 def home(request):
@@ -103,6 +103,7 @@ def user_password_view(request):
         return JsonResponse({'detail': 'Incorrect password'}, status=401)
 
     user.set_password(newPassword)
+    user.save()
     return JsonResponse({'detail': 'Successfully changed password'}, status=200)
 
 
@@ -140,11 +141,12 @@ def athlete_view(request, athlete_id):
             return JsonResponse({'detail': 'Successfully updated athlete'}, status=200)
         else:
             return JsonResponse({'detail': 'Could not update athlete'}, status=400)
-   
+
     elif request.method == "DELETE":
         athlete = Athlete.objects.get(id=athlete_id)
         athlete.delete()
         return HttpResponse(status=200)
+
 
 def all_athletes_view(request):
     if not request.user.is_authenticated:
@@ -187,7 +189,6 @@ def get_user_view(request):
     username = data["email"]
     #password = data["password"]
     user = User.objects.get(username=username)
-
     if user.is_authenticated:
         id = request.user.id
         return JsonResponse({'id': '2'}, status=200)
@@ -198,7 +199,6 @@ def get_user_view(request):
     form = UserCreationForm()
     context = {'form':form}
     return render(request, 'register.html', context)
-
 def csrf(request):
     return HttpResponse('check out this cookie') """
 

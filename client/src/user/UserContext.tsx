@@ -64,7 +64,7 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
     }, [location, user, navigate]);
 
     const getUser = useCallback(() => {
-        return fetch('http://localhost:8000/server_functions/user/me/', {
+        return fetch('http://localhost:8000/api/user/me/', {
             method: 'GET',
             credentials: 'include',
         })
@@ -95,7 +95,7 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
     });
 
     const logout = useCallback(() => {
-        return fetch('http://localhost:8000/server_functions/logout/', {
+        return fetch('http://localhost:8000/api/logout/', {
             method: 'POST',
             credentials: 'include',
         })
@@ -132,7 +132,7 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
         loginPending.current = true;
 
         // Create new request
-        const promise = fetch('http://localhost:8000/server_functions/login/', {
+        const promise = fetch('http://localhost:8000/api/login/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -183,21 +183,18 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
         registerPending.current = true;
 
         //new Request to register account
-        const promise = fetch(
-            'http://localhost:8000/server_functions/register/',
-            {
-                credentials: 'include',
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    username,
-                    email,
-                    password,
-                }),
+        const promise = fetch('http://localhost:8000/api/register/', {
+            credentials: 'include',
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
             },
-        );
+            body: JSON.stringify({
+                username,
+                email,
+                password,
+            }),
+        });
 
         promise.finally(() => (registerPending.current = false));
 
@@ -230,20 +227,17 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
         }
         updatePending.current = true;
 
-        const promise = fetch(
-            'http://localhost:8000/server_functions/user/me/',
-            {
-                method: 'PUT',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    username,
-                    email,
-                }),
+        const promise = fetch('http://localhost:8000/api/user/me/', {
+            method: 'PUT',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
             },
-        );
+            body: JSON.stringify({
+                username,
+                email,
+            }),
+        });
 
         promise.finally(() => (updatePending.current = false));
 
@@ -273,26 +267,24 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
         }
         updatePending.current = true;
 
-        const promise = fetch(
-            'http://localhost:8000/server_functions/user/me/password/',
-            {
-                method: 'PUT',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    newPassword,
-                    currentPassword,
-                }),
+        const promise = fetch('http://localhost:8000/api/user/me/password/', {
+            method: 'PUT',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
             },
-        );
+            body: JSON.stringify({
+                newPassword,
+                currentPassword,
+            }),
+        });
 
         promise.finally(() => (updatePending.current = false));
 
         return promise.then(async (response) => {
             if (response.ok) {
                 setPass(newPassword);
+                setUser(null);
                 alert('Password successfully updated.');
             } else {
                 if (
