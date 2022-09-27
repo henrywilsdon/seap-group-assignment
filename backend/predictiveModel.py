@@ -147,7 +147,7 @@ def predict_single_timestep(course: CourseModel, # time doesn't need to be an ar
     mass_total = cs.bpr.mass_rider + cs.bpr.mass_bike + cs.bpr.mass_other
     acceleration = propulsive_force / (mass_total + ( (cs.bpr.moi_whl_front + cs.bpr.moi_whl_rear) / cs.bpr.wheel_radius**2))
 
-    return SingleTimestepOutput(distance=distance+1, # TODO: make distance the correct value
+    return SingleTimestepOutput(distance=distance,
                                 speed=speed, # current speed is based on the previous speed and acceleration
                                 acceleration=acceleration,
                                 w_prime_balance=w_prime_balance
