@@ -1,4 +1,6 @@
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
+
 
 # Create your models here.
 class Athlete(models.Model):
@@ -54,7 +56,13 @@ class StaticModel(models.Model):
     environment_model = models.OneToOneField("EnvironmentModel", on_delete=models.CASCADE)
     technical_model = models.OneToOneField("TechnicalModel", on_delete=models.CASCADE)
 
-
+class DynamicModel(models.Model):
+    lat = ArrayField(models.FloatField())
+    long = ArrayField(models.FloatField())
+    ele = ArrayField(models.FloatField())
+    distance = ArrayField(models.FloatField())
+    bearing = ArrayField(models.FloatField())
+    slope = ArrayField(models.FloatField())
 
 
 

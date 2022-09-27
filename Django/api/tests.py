@@ -5,6 +5,8 @@ from django.contrib.auth.models import User
 from django.test import Client
 from django.http import JsonResponse
 
+from .models import DynamicModel
+
 
 class UserTestCase(TestCase):
     def setUp(self):
@@ -12,12 +14,31 @@ class UserTestCase(TestCase):
         User.objects.create_user("tim", "tim@gmail.com", "1234567")
         User.objects.create_user("password",
                                  "password@email.com", "badPassword")
+        DynamicModel.objects.create(lat = [1,2,3,4,5,6,7,8],
+                    long = [1,2,3,4,5,6,7,8],
+                    ele = [1,2,3,4,5,6,7,8],
+                    distance = [1,2,3,4,5,6,7,8],
+                    bearing = [1,2,3,4,5,6,7,8],
+                    slope = [1,2,3,4,5,6,7,8])
+        
+        DynamicModel.objects.create(lat = [2,2,3,4,5,6,7,8],
+                    long = [1,2,3,4,5,6,7,8],
+                    ele = [1,2,3,4,5,6,7,8],
+                    distance = [1,2,3,4,5,6,7,8],
+                    bearing = [1,2,3,4,5,6,7,8],
+                    slope = [1,2,3,4,5,6,7,8])
 
     def test_usernames(self):
         blake = User.objects.get(username="blake")
         tim = User.objects.get(username="tim")
         self.assertEqual(blake.email, 'Blake@blake.com')
         self.assertEqual(tim.email, 'tim@gmail.com')
+    
+    def test_dynamic_model(self):
+        gpxData = DynamicModel.objects.get(pk=1)
+        self.assertEqual(gpxData.lat, [1,2,3,4,5,6,7,8])
+        gpxData = DynamicModel.objects.get(pk=2)
+        self.assertEqual(gpxData.lat, [2,2,3,4,5,6,7,8])
 
     def test_register(self):
         client = Client()
