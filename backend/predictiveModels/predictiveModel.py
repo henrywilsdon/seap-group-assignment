@@ -91,31 +91,13 @@ Amount left in the bucket is in the column Calcs!AA
 
 from temporaryModels import *
 import math
+from predictPowerAero import *
+from predictPowerGravity import *
+from predictPowerIn import *
+from predictPowerRoll import *
+from predictWPrimeBalance import *
 
-def predict_power_aero(course: CourseModel) -> float:
-    # TODO: this function
-    # can modify the arguments to add whatever is necessary
-    return 1
 
-def predict_power_roll(course: CourseModel) -> float:
-    # TODO: this function
-    # can modify the arguments to add whatever is necessary
-    return 1
-
-def predict_power_gravity(course: CourseModel) -> float:
-    # TODO: this function
-    # can modify the arguments to add whatever is necessary
-    return 1
-
-def predict_power_in(course: CourseModel) -> float:
-    # TODO: this function
-    # can modify the arguments to add whatever is necessary
-    return 1
-
-def predict_w_prime_balance(course: CourseModel, prev_w_prime_balance, power_in) -> float:
-    # TODO: this function
-    # these arguments are correct
-    return 1
 
 def predict_single_timestep(course: CourseModel, # time doesn't need to be an argument here
                             w_prime_balance: float,
@@ -133,10 +115,11 @@ def predict_single_timestep(course: CourseModel, # time doesn't need to be an ar
     # yes, that's correct: speed uses the PRIOR acceleration, but distance uses the CURRENT speed
 
     # the bulk of the 'predict' stuff (where it calls other functions)
+
     power_aero = predict_power_aero(course)
-    power_roll = predict_power_roll(course)
     power_gravity = predict_power_gravity(course)
     power_in = predict_power_in(course)
+    power_roll = predict_power_roll(course)
     w_prime_balance = predict_w_prime_balance(course, w_prime_balance, power_in)
 
     power_net = power_in - power_aero - power_roll - power_gravity
@@ -181,7 +164,6 @@ toprint = predict_entire_course(CourseModel())
 print(toprint.duration)
 
 
-# TODO: Update existing code to move functions into separate files
 # TODO: Add additional arguments to functions (even if unnecessary)
 
 # TODO: Alexi starts working on power_aero
