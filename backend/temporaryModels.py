@@ -13,7 +13,9 @@
 
 
 
-class BikePlusRiderModel():
+class StaticModel():
+
+    # the bike and its rider
     mass_rider = 71
     mass_bike = 7
     mass_other = 1 # for certain, only the sum of the masses are ever used
@@ -23,7 +25,7 @@ class BikePlusRiderModel():
     moi_whl_rear = 0.08
     wheel_radius = 0.335
 
-class CPModel():
+    # the cp model
     cp = 430
     w_prime = 35000 # how much you start with in the bucket ('current bucket amount' is called balance and is not in this model).
     w_prime_recovery_function = 1
@@ -33,28 +35,21 @@ class CPModel():
     over_threshold_power_usage = 1.1
     steady_state_power_usage = 0.91
 
-class PositionModel():
+    # the position (pose/stance) of the rider
     climbing_cda_increment = 0.04
     climbing_min_slope = 0.3
     descending_cda_increment = -0.005
     descending_max_slope = -0.01
 
-class EnvironmentModel():
+    # the environment
     wind_direction = 30
     wind_speed_mps = 2
     wind_density = 1.13
 
-class TechnicalModel():
+    #technical details needed for the predictive model
     timestep_size = 0.5
     starting_distance = 0.1
     starting_speed = 0.3
-
-class StaticModel():
-    bike_plus_rider_m = BikePlusRiderModel()
-    cp_m = CPModel()
-    position_m = PositionModel()
-    environment_m = EnvironmentModel()
-    technical_m = TechnicalModel()
 
 class DynamicModel():
     lat = [35.37245, 35.37262, 35.37277, 35.37292, 35.37307, 35.37323, 35.37338, 35.37353, 35.37368, 35.37384, 35.37399, 35.37414, 35.37429, 35.37445, 35.37461, 35.37477, 35.37493, 35.37508, 35.37525, 35.37541, 35.37558, 35.37574, 35.37591, 35.37608, 35.37625, 35.37641, 35.37657, 35.3767, 35.37672, 35.37662, 35.37657, 35.37659, 35.37673, 35.3769]
