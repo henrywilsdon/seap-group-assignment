@@ -31,3 +31,6 @@ class TechnicalModelAdmin(admin.ModelAdmin):
 class StaticModelAdmin(admin.ModelAdmin):
     list_display = ['bike_plus_rider_model', 'cp_model', 'position_model', 'environment_model', 'technical_model']
 
+@admin.register(DynamicModel)
+class DynamicModel(admin.ModelAdmin):
+    list_display = ['lat', 'long', 'ele', 'distance', 'bearing', 'slope']
