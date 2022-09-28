@@ -11,9 +11,9 @@ class Athlete(models.Model):
     CP_FTP = models.FloatField()
     W_prime = models.FloatField()
 
+class StaticModel(models.Model):
 
-
-class BikePlusRiderModel(models.Model):
+    # the bike and its rider
     mass_rider = models.FloatField()
     mass_bike = models.FloatField()
     mass_other = models.FloatField()
@@ -23,7 +23,7 @@ class BikePlusRiderModel(models.Model):
     mol_whl_rear = models.FloatField()
     wheel_radius = models.FloatField()
 
-class CPModel(models.Model):
+    # the cp model
     cp = models.FloatField()
     w_prime = models.FloatField()
     w_prime_recovery_function = models.FloatField()
@@ -33,28 +33,21 @@ class CPModel(models.Model):
     over_threshold_power_usage = models.FloatField()
     steady_state_power_usage = models.FloatField()
 
-class PositionModel(models.Model):
+    # the position (pose/stance) of the rider
     climbing_cda_increment = models.FloatField()
     climbing_min_slope = models.FloatField()
     descending_cda_increment = models.FloatField()
     descending_max_slope = models.FloatField()
 
-class EnvironmentModel(models.Model):
+    # the environment
     wind_direction = models.FloatField()
     wind_speed_mps = models.FloatField()
     wind_density = models.FloatField()
 
-class TechnicalModel(models.Model):
+    # technical details needed for the predictive model
     timestep_size = models.FloatField()
     starting_distance = models.FloatField()
     starting_speed = models.FloatField()
-
-class StaticModel(models.Model):
-    bike_plus_rider_model = models.OneToOneField("BikePlusRiderModel", on_delete=models.CASCADE)
-    cp_model = models.OneToOneField("CPModel", on_delete=models.CASCADE)
-    position_model = models.OneToOneField("PositionModel", on_delete=models.CASCADE)
-    environment_model = models.OneToOneField("EnvironmentModel", on_delete=models.CASCADE)
-    technical_model = models.OneToOneField("TechnicalModel", on_delete=models.CASCADE)
 
 class DynamicModel(models.Model):
     lat = ArrayField(models.FloatField())
@@ -64,7 +57,9 @@ class DynamicModel(models.Model):
     bearing = ArrayField(models.FloatField())
     slope = ArrayField(models.FloatField())
 
-
+class CourseModel(models.Model):
+    static_model = models.OneToOneField("StaticModel", on_delete=models.CASCADE)
+    dynamic_model = models.OneToOneField("DynamicModel", on_delete=models.CASCADE)
 
 """
 course = {
