@@ -53,19 +53,6 @@ powerAero = 0.5 * Density * relative wind speed^3 * CDA
 
 
 --------------------------------------------------------------------------------------------------------
-POWER ROLL
---------------------------------------------------------------------------------------------------------
-
-Power_roll = Mass_total * Crr * 9.81 * Speed
-
-    Mass_total = an input value that's the same for the entire course (mass of rider + mass of bike + mass of "other"), at 'Input-Output'!$B$6
-
-    Crr = an input value that's the same for the entire course, at 'Input-Output'!$B$12. Coefficient for "tyre rolling resistance properties".
-
-    Speed = defined above (different per point)
-
-
---------------------------------------------------------------------------------------------------------
 POWER GRAVITY
 --------------------------------------------------------------------------------------------------------
 
@@ -89,6 +76,19 @@ Power_in = Mech_eff * vlookup thingy C + delta_Watts
     vlookup thingy C = converts the input (slope) to the output (power) based on a piecewise function. The table is at 'Input-Output'!$A$37:$C$42, which copies its values from 'Input-Output'!$B$31:$B$33. The slope determines whether you're descending/flattish/ascending, which determines how much power you're using (as a percentage of Critical Power aka CP aka FTP). Critical Power is an input, but the rest of the numbers (e.g. % of CP per slope) aren't.
 
     delta_Watts = an input value that's the same for the entire race, and doesn't have any explanation other than its name
+
+
+--------------------------------------------------------------------------------------------------------
+POWER ROLL
+--------------------------------------------------------------------------------------------------------
+
+Power_roll = Mass_total * Crr * 9.81 * Speed
+
+    Mass_total = an input value that's the same for the entire course (mass of rider + mass of bike + mass of "other"), at 'Input-Output'!$B$6
+
+    Crr = an input value that's the same for the entire course, at 'Input-Output'!$B$12. Coefficient for "tyre rolling resistance properties".
+
+    Speed = defined above (different per point)
 
 
 --------------------------------------------------------------------------------------------------------
