@@ -1,6 +1,6 @@
 from temporaryModels import *
 
-def predict_power_gravity(course: CourseModel) -> float:
+def predict_power_gravity(course: CourseModel, distance: float, speed: float, acceleration: float) -> float:
     # TODO: this function
-    # can modify the arguments to add whatever is necessary
+    # some arguments may not be necessary - once the code has been finished, we can get rid of whatever arguments we don't need
     return 1
