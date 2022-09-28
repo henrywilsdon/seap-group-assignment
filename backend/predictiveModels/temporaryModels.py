@@ -18,7 +18,8 @@ class StaticModel():
     # the bike and its rider
     mass_rider = 71
     mass_bike = 7
-    mass_other = 1 # for certain, only the sum of the masses are ever used
+    mass_other = 1
+    delta_kg = 0 # mass_total is mass_rider + mass_bike + mass_other + delta_kg
     crr = 0.0025
     mechanical_efficiency = 0.98
     moi_whl_front = 0.08 # in the spreadsheet, written as MoI (cap i, not lowercase l)
@@ -51,10 +52,9 @@ class StaticModel():
     starting_distance = 0.1
     starting_speed = 0.3
 
-    # uncategorised
-    delta_cda = 0 # unsure if useful
+    # uncategorised, but definitely used
+    delta_cda = 0
     delta_watts = -20
-    delta_kg = 0 # unsure if useful
 
 class DynamicModel():
     lat = [35.37245, 35.37262, 35.37277, 35.37292, 35.37307, 35.37323, 35.37338, 35.37353, 35.37368, 35.37384, 35.37399, 35.37414, 35.37429, 35.37445, 35.37461, 35.37477, 35.37493, 35.37508, 35.37525, 35.37541, 35.37558, 35.37574, 35.37591, 35.37608, 35.37625, 35.37641, 35.37657, 35.3767, 35.37672, 35.37662, 35.37657, 35.37659, 35.37673, 35.3769]
