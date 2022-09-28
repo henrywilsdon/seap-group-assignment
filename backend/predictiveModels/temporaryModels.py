@@ -1,4 +1,3 @@
-
 # WHY THIS FILE EXISTS:
 # In the final version of this program,
 # the predictiveModel will take the classes listed in Django/api/models.py
@@ -6,12 +5,6 @@
 # So in the meantime, this file duplicates the functions that are in that file,
 # with the only difference being that the fields like models.FloatField()
 # are replaced with plausible values for that field.
-# Also I removed "_model" as a suffix for some fields, for ease of reading/writing
-# (this can easily be fixed by automatic refactoring).
-
-
-
-
 
 class StaticModel():
 
@@ -28,7 +21,7 @@ class StaticModel():
 
     # the cp model
     cp = 430
-    w_prime = 35000 # how much you start with in the bucket ('current bucket amount' is called balance and is not in this model).
+    w_prime = 35000 # how much you start with in the bucket ('current amount in the bucket' is called balance and is not a static value).
     w_prime_recovery_function = 1
     below_steady_state_max_slope = -0.01
     below_steady_state_power_usage = 0.02
