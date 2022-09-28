@@ -58,24 +58,24 @@ POWER GRAVITY
 
 Power_gravity = Slope * 9.81 * Mass_total * Speed
 
-    Slope = standard rise/run percent (i.e. (change in elevation) divided by change in distance), defined above (different per point)
+    Slope = standard rise/run percent (i.e. (change in elevation) divided by change in distance)
 
-    Mass_total = defined above (input that's same for entire course)
+    Mass_total = add together mass_rider, mass_bike, mass_other
 
-    Speed = defined above (different per point)
+    Speed = calculated in predict_single_timestep (changes throughout the course)
 
 
 --------------------------------------------------------------------------------------------------------
 POWER IN
 --------------------------------------------------------------------------------------------------------
 
-Power_in = Mech_eff * vlookup thingy C + delta_Watts
+Power_in = Mech_eff * vlookup thingy C + delta_watts
 
-    Mech_eff = mechanical efficiency, input value that's same for entire course at 'Input-Output'!$B$6, next to "crr" (see above)
+    Mech_eff = mechanical_efficiency, which is in StaticModel()
 
     vlookup thingy C = converts the input (slope) to the output (power) based on a piecewise function. The table is at 'Input-Output'!$A$37:$C$42, which copies its values from 'Input-Output'!$B$31:$B$33. The slope determines whether you're descending/flattish/ascending, which determines how much power you're using (as a percentage of Critical Power aka CP aka FTP). Critical Power is an input, but the rest of the numbers (e.g. % of CP per slope) aren't.
 
-    delta_Watts = an input value that's the same for the entire race, and doesn't have any explanation other than its name
+    delta_watts = an input value that's the same for the entire race, and doesn't have any explanation other than its name
 
 
 --------------------------------------------------------------------------------------------------------
