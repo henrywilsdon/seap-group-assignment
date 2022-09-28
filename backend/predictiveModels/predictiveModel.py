@@ -71,8 +71,6 @@ toprint = predict_entire_course(CourseModel())
 print(toprint.duration)
 
 
-# TODO: Add additional arguments to functions (even if unnecessary)
-
 # TODO: Alexi starts working on power_aero
 # TODO: Mohammad starts working on power_roll
 # Once someone finishes a bit, just pick up the next one
