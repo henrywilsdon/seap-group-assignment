@@ -3,6 +3,7 @@ import { Route, Routes } from 'react-router-dom';
 import ManageAthletesPage from '../athletes/ManageAthletesPage';
 import ManageCoursesPage from '../courses/ManageCoursesPage';
 import SideMenu from '../navigation/SideMenu';
+import HandlePredictionsPage from '../predictions/HandlePredictionsPage';
 import LoginPage from '../user/LoginPage';
 import ManageProfilePage from '../user/ManageProfilePage';
 import RegisterPage from '../user/RegisterPage';
@@ -26,6 +27,10 @@ function App() {
                     <Route path="/athletes" element={<ManageAthletesPage />} />
                     <Route path="/courses" element={<ManageCoursesPage />} />
                     <Route path="/profile" element={<ManageProfilePage />} />
+                    <Route
+                        path="/predictions"
+                        element={<HandlePredictionsPage />}
+                    />
                 </Routes>
             </main>
         </div>

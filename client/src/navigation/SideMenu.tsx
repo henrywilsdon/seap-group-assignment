@@ -32,6 +32,11 @@ const items = [
         Icon: PersonIcon,
         path: '/profile',
     },
+    {
+        label: 'Predictions',
+        Icon: RouteIcon,
+        path: '/predictions',
+    },
 ];
 
 export default function SideMenu() {
