@@ -11,7 +11,7 @@ powerAero = 0.5 * Density * relative wind speed^3 * CDA
 
            wind angle = calculated via bearing and a fixed wind direction that's the same for the entire course
 
-           estimated wind speed ("windspeed at 1m") = wind speed in m/s * ln(1 / z0 length based on roughness class for point) / ln(10 / z0 length based on roughness class for point)
+           estimated wind speed ("windspeed at 1m") = based on a distance-input lookup of a table, whose values come from: wind speed in m/s * ln(1 / v_mpsec based on roughness class for point) / ln(10 / v_mpsec based on roughness class for point)
 
                wind speed in m/s = fixed wind speed that's same for entire course
 
