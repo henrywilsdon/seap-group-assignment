@@ -15,11 +15,6 @@ def predict_single_timestep(course: CourseModel, # time doesn't need to be an ar
 
     # for brevity
     cs = course.static
-    cd = course.dynamic
-
-    speed += acceleration * cs.timestep_size
-    distance += speed * cs.timestep_size
-    # yes, that's correct: speed uses the PRIOR acceleration, but distance uses the CURRENT speed
 
     # the bulk of the 'predict' stuff (where it calls other functions)
 
@@ -33,6 +28,11 @@ def predict_single_timestep(course: CourseModel, # time doesn't need to be an ar
     propulsive_force = power_net / speed
     mass_total = cs.mass_rider + cs.mass_bike + cs.mass_other
     acceleration = propulsive_force / (mass_total + ( (cs.moi_whl_front + cs.moi_whl_rear) / cs.wheel_radius**2))
+
+    speed += acceleration * cs.timestep_size
+    distance += speed * cs.timestep_size
+    # yes, that's correct: speed uses the PRIOR acceleration, but distance uses the CURRENT speed
+    # also these two lines are here rather than at the start of the function, because in the sheet, speed and distance don't increase in the first timestep (and placing these lines at the end of this function produces that same effect)
 
     return SingleTimestepOutput(distance=distance,
                                 speed=speed, # current speed is based on the previous speed and acceleration

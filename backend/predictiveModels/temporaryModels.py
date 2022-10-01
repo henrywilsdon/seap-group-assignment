@@ -20,7 +20,7 @@ class StaticModel():
     wheel_radius = 0.335
 
     # the cp model
-    cp = 430
+    cp = 430 # also called ftp
     w_prime = 35000 # how much you start with in the bucket ('current amount in the bucket' is called balance and is not a static value).
     w_prime_recovery_function = 1
     below_steady_state_max_slope = -0.01
@@ -41,7 +41,7 @@ class StaticModel():
     wind_density = 1.13
 
     # technical details needed for the predictive model
-    timestep_size = 0.5
+    timestep_size = 0.5 # also called dt
     starting_distance = 0.1
     starting_speed = 0.3
 
