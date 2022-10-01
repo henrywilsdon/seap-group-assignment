@@ -26,8 +26,9 @@ def predict_w_prime_balance(course: CourseModel, prev_w_prime_balance, power_in)
     elif cs.w_prime_recovery_function == 3:
         t_prime = 546 * (math.e ** (-0.01 * dcp)) + 316
     else:
-        # cs.w_prime_recovery_function should ALWAYS be 1, 2 or 3, and in an ideal world should throw an error if it's not - but the sheet supresses that error by setting t_prime to 0 instead
         t_prime = 0
+        # cs.w_prime_recovery_function should ALWAYS be 1, 2 or 3, and in an ideal world should throw an error if it's not - but the sheet supresses that error by setting t_prime to 0 instead
+
 
     if dcp == 0:
         w_prime_balance = prev_w_prime_balance - ot_energy

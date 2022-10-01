@@ -1,15 +1,15 @@
 from temporaryModels import *
 import math
 
-def predict_power_aero(course: CourseModel, distance: float, speed: float, acceleration: float) -> float:
-    # TODO: this function
-    # some arguments may not be necessary - once the code has been finished, we can get rid of whatever arguments we don't need
+def predict_power_aero(course: CourseModel, distance: float, speed: float) -> float:
 
     index = None
     for checkedIndex in reversed(range(len(course.dynamic.distance))):
         if course.dynamic.distance[checkedIndex] <= distance:
             index = checkedIndex
             break
+
+
 
     # ---------------------------------------------------------------
     # THE PART THAT FIGURES OUT THE RELATIVE WIND SPEED
@@ -42,6 +42,8 @@ def predict_power_aero(course: CourseModel, distance: float, speed: float, accel
     headwind = wind_speed_1m * math.cos(math.radians(relative_wind_angle_deg))
     sidewind = wind_speed_1m * math.sin(math.radians(relative_wind_angle_deg))
     relative_wind_speed = math.sqrt((speed + headwind)**2 + sidewind**2)
+
+
 
     # ---------------------------------------------------------------
     # THE PART THAT FIGURES OUT THE CDA
@@ -80,6 +82,8 @@ def predict_power_aero(course: CourseModel, distance: float, speed: float, accel
     vlookup_thingy_b = vlookup_thingy_b_table[math.floor(math.fabs(effective_yaw_angle))]
 
     cda = course.static.delta_cda + vlookup_thingy_a + vlookup_thingy_b
+
+
 
     # ---------------------------------------------------------------
     # FINAL CALCULATIONS
