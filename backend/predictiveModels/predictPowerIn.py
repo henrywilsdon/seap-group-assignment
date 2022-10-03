@@ -1,6 +1,6 @@
 from temporaryModels import *
 
-def predict_power_in(course: CourseModel, distance: float, speed: float, acceleration: float) -> float:
+def predict_power_in(course: CourseModel, distance: float) -> float:
     
     index = 0
     for checkedIndex in reversed(range(len(course.dynamic.distance))):

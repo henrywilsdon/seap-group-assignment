@@ -18,8 +18,8 @@ def predict_single_timestep(course: CourseModel, # time doesn't need to be an ar
 
     # the bulk of the 'predict' stuff (where it calls other functions)
     power_aero = predict_power_aero(course, distance, speed)
-    power_gravity = predict_power_gravity(course, distance, speed, acceleration)
-    power_in = predict_power_in(course, distance, speed, acceleration)
+    power_gravity = predict_power_gravity(course, distance, speed)
+    power_in = predict_power_in(course, distance)
     power_roll = predict_power_roll(course, speed)
     w_prime_balance = predict_w_prime_balance(course, w_prime_balance, power_in)
 
