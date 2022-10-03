@@ -73,7 +73,8 @@ def predict_entire_course(course) -> PredictEntireCourseOutput:
     return PredictEntireCourseOutput(duration=current_time, min_w_prime_balance=min_w_prime_balance)
 
 toprint = predict_entire_course(CourseModel())
-print(toprint.duration)
+print("Duration:  ", toprint.duration)
+print("Min W` bal:", toprint.min_w_prime_balance)
 
 
 
