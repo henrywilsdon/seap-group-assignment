@@ -13,10 +13,10 @@ def predict_power_gravity(course: CourseModel, distance: float, speed: float) ->
     mass_total = cs.mass_rider + cs.mass_bike + cs.mass_other + cs.delta_kg
     cd.slope_from_prev[0] = 0
     slope = cd.slope_from_prev[index]
-    Power_gravity = slope * 9.81 * mass_total * speed
+    power_gravity = slope * 9.81 * mass_total * speed
 
 
-    return Power_gravity
+    return power_gravity
 
 
 
