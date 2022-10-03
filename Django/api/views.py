@@ -9,7 +9,7 @@ from django.views.decorators.http import require_POST, require_GET
 from django.views.decorators.http import require_http_methods
 """ from django.views.decorators.csrf import ensure_csrf_cookie
 from django.middleware.csrf import get_token """
-from api.models import Athlete
+from api.models import *
 
 # Create your views here.
 
@@ -207,3 +207,82 @@ def username_exists(username):
     if User.objects.filter(username=username).exists():
         return True
     return False
+
+
+def all_static_model_view(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'detail': 'User not authenticated'}, status=401)
+
+    #get all static models
+    if request.method == "GET":
+        static_models = StaticModel.objects.all().values()
+        return JsonResponse({'Static Model': list(static_models)})
+
+    #add static model -- assumes, all these values are submitted with the same request
+    if request.method == "POST":
+        model_data = json.loads(request.body)
+
+        bike_plus_rider_model = BikePlusRiderModel.objects.create(
+            mass_rider = model_data["mass_rider"],
+            mass_bike = model_data["mass_bike"],
+            mass_other = model_data["mass_other"],
+            crr = model_data["crr"],
+            mechanical_efficiency = model_data["mechanical_efficiency"],
+            mol_whl_front = model_data["mol_whl_front"],
+            mol_whl_rear = model_data["mol_whl_rear"],
+            wheel_radius = model_data["wheel_radius"]
+        )
+        cp_model = CPModel.objects.create(
+            cp = model_data["cp"],
+            w_prime = model_data["w_prime"],
+            w_prime_recovery_function = model_data["w_prime_recovery_function"],
+            below_steady_state_max_slope = model_data["below_steady_state_max_slope"],
+            below_steady_state_power_usage = model_data["below_steady_state_power_usage"],
+            over_threshold_min_slope = model_data["over_threshold_min_slope"],
+            over_threshold_power_usage = model_data["over_threshold_power_usage"],
+            steady_state_power_usage = model_data["steady_state_power_usage"]
+        )
+        position_model = PositionModel.objects.create(
+            climbing_cda_increment = model_data["climbing_cda_increment"],
+            climbing_min_slope = model_data["climbing_min_slope"],
+            descending_cda_increment = model_data["descending_cda_increment"],
+            descending_max_slope = model_data["descending_max_slope"]
+        ) 
+        environment_model = EnvironmentModel.objects.create(
+            wind_direction = model_data["wind_direction"],
+            wind_speed_mps = model_data["wind_speed_mps"],
+            wind_density = model_data["wind_density"]
+        )
+        technical_model = TechnicalModel.objects.create(
+            timestep_size = model_data["timestep_size"],
+            starting_distance = model_data["starting_distance"],
+            starting_speed = model_data["starting_speed"]
+        )
+
+        model = StaticModel.objects.create(
+            bike_plus_rider_model = bike_plus_rider_model,
+            cp_model = cp_model,
+            position_model = position_model,
+            environment_model = environment_model,
+            technical_model = technical_model
+        )
+        model.save()
+
+
+def static_model_view(request, gpx_model_id):
+    if not request.user.is_authenticated:
+        return JsonResponse({'detail': 'User not authenticated'}, status=401)
+
+    if request.method == "GET":
+        static_model = StaticModel.objects.filter(id=gpx_model_id).values()
+        return JsonResponse({'Static Model': list(static_model)})
+
+    if request.method == "PUT":
+        model_data = json.loads(request.body)
+        model = StaticModel.objects.get(id=gpx_model_id)
+ 
+
+        model.save()
+
+    if request.method == "DELETE":
+        return True
