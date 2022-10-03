@@ -21,6 +21,23 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
+-- Name: athletes; Type: TABLE; Schema: public; Owner: zoestevens
+--
+
+CREATE TABLE public.athletes (
+    athlete_id character(8) NOT NULL,
+    firstname character varying,
+    lastname character varying,
+    height_cm integer,
+    weight_kg double precision,
+    cp_watts integer,
+    wdash_joules integer
+);
+
+
+ALTER TABLE public.athletes OWNER TO zoestevens;
+
+--
 -- Name: users; Type: TABLE; Schema: public; Owner: zoestevens
 --
 
@@ -34,6 +51,15 @@ CREATE TABLE public.users (
 
 
 ALTER TABLE public.users OWNER TO zoestevens;
+
+--
+-- Data for Name: athletes; Type: TABLE DATA; Schema: public; Owner: zoestevens
+--
+
+COPY public.athletes (athlete_id, firstname, lastname, height_cm, weight_kg, cp_watts, wdash_joules) FROM stdin;
+abcd1234	John	Stanley	172	86.1	430	35000
+\.
+
 
 --
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: zoestevens
@@ -51,6 +77,14 @@ COPY public.users (user_id, firstname, lastname, email, password) FROM stdin;
 0000009a	Ollie	Lane	OLane33@gmail.com	OLane33
 0000010a	Levi	West	Levi88West@gmail.com	Levi88West
 \.
+
+
+--
+-- Name: athletes athletes_pkey; Type: CONSTRAINT; Schema: public; Owner: zoestevens
+--
+
+ALTER TABLE ONLY public.athletes
+    ADD CONSTRAINT athletes_pkey PRIMARY KEY (athlete_id);
 
 
 --

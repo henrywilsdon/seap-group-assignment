@@ -1,23 +1,34 @@
 import { Button, TextField, Typography } from '@mui/material';
 import { useContext, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './LoginPage.css';
 import UserContext from './UserContext';
 
 function LoginPage() {
     const { login } = useContext(UserContext);
+    const navigate = useNavigate();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
 
     const handleName = (event: any) => {
         setUsername(event.target.value);
+        setErrorMessage('');
     };
 
     const handlePass = (event: any) => {
         setPassword(event.target.value);
+        setErrorMessage('');
     };
 
     const handleClick = () => {
-        login(username, password);
+        login(username, password).catch((error) => {
+            setErrorMessage(error.message);
+        });
+    };
+
+    const handleReg = () => {
+        navigate('/register');
     };
 
     return (
@@ -32,21 +43,33 @@ function LoginPage() {
                 label="Username"
                 value={username}
                 onChange={handleName}
+                error={!!errorMessage}
             />
 
             <TextField
                 color="primary"
+                type="password"
                 variant="standard"
                 label="Password"
                 value={password}
                 onChange={handlePass}
+                error={!!errorMessage}
+                helperText={errorMessage}
                 sx={{
                     marginBottom: 2,
                 }}
             />
 
-            <Button variant="contained" onClick={handleClick}>
+            <Button
+                variant="contained"
+                onClick={handleClick}
+                sx={{ marginBottom: 2 }}
+            >
                 Submit
+            </Button>
+
+            <Button variant="contained" onClick={handleReg}>
+                Register Account
             </Button>
         </div>
     );
