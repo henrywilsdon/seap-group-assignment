@@ -33,7 +33,7 @@ def predict_power_aero(course: CourseModel, distance: float, speed: float) -> fl
     # looks up the current roughness in that dictionary
     v_mpsec = roughness_to_vmpsecs[course.dynamic.roughness_class[index]]
 
-    wind_speed_1m = course.static.wind_speed_mps * math.log(1 / v_mpsec) / math.log(10 / v_mpsec)
+    wind_speed_1m = v_mpsec
 
     headwind_bearing_deg = course.static.wind_direction - 180
     course.dynamic.bearing_from_prev[0] = 0 # baked into the sheet, since the blank at 'Course info'!$H$3 is counted as 0 by vlookup (likely a bug)
