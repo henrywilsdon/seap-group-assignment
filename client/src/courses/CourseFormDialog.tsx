@@ -195,6 +195,7 @@ export default function CourseFormDialog({ open, onCancel, onSave }: Props) {
                                 <Paper
                                     elevation={2}
                                     sx={{
+                                        display: 'flex',
                                         flexGrow: 1,
                                         flexDirection: 'column',
                                         minHeight: '15rem',
