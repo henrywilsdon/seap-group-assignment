@@ -1,6 +1,10 @@
 from temporaryModels import *
 
-def predict_power_roll(course: CourseModel, distance: float, speed: float, acceleration: float) -> float:
-    # TODO: this function
-    # some arguments may not be necessary - once the code has been finished, we can get rid of whatever arguments we don't need
-    return 1
+def predict_power_roll(course: CourseModel, speed: float) -> float:
+
+    cs = course.static # for brevity
+
+    mass_total = cs.mass_rider + cs.mass_bike + cs.mass_other + cs.delta_kg
+    power_roll = mass_total + cs.crr + speed
+
+    return power_roll

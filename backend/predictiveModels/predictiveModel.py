@@ -15,24 +15,23 @@ def predict_single_timestep(course: CourseModel, # time doesn't need to be an ar
 
     # for brevity
     cs = course.static
-    cd = course.dynamic
-
-    speed += acceleration * cs.timestep_size
-    distance += speed * cs.timestep_size
-    # yes, that's correct: speed uses the PRIOR acceleration, but distance uses the CURRENT speed
 
     # the bulk of the 'predict' stuff (where it calls other functions)
-
-    power_aero = predict_power_aero(course, distance, speed, acceleration)
+    power_aero = predict_power_aero(course, distance, speed)
     power_gravity = predict_power_gravity(course, distance, speed, acceleration)
     power_in = predict_power_in(course, distance, speed, acceleration)
-    power_roll = predict_power_roll(course, distance, speed, acceleration)
+    power_roll = predict_power_roll(course, speed)
     w_prime_balance = predict_w_prime_balance(course, w_prime_balance, power_in)
 
     power_net = power_in - power_aero - power_roll - power_gravity
     propulsive_force = power_net / speed
     mass_total = cs.mass_rider + cs.mass_bike + cs.mass_other
     acceleration = propulsive_force / (mass_total + ( (cs.moi_whl_front + cs.moi_whl_rear) / cs.wheel_radius**2))
+
+    speed += acceleration * cs.timestep_size
+    distance += speed * cs.timestep_size
+    # yes, that's correct: speed uses the PRIOR acceleration, but distance uses the CURRENT speed
+    # also these two lines are here rather than at the start of the function, because in the sheet, speed and distance don't increase in the first timestep (and placing these lines at the end of this function produces that same effect)
 
     return SingleTimestepOutput(distance=distance,
                                 speed=speed, # current speed is based on the previous speed and acceleration
@@ -73,7 +72,8 @@ print(toprint.duration)
 
 # TODO: Alexi figures out whether the spreadsheet's distance is horizontal distance or the distance including elevation (it won't affect our actual code for now, but it will affect the gpx parser that supplies this code, as right now the parser supplies horizontal distance)
 # TODO: Alexi modifies the gpx parser so that (a) it's the right kind of distance and (b) one of the variables is the TOTAL distance, not the distance from the previous point
-# TODO: Alexi starts working on power_aero
+# TODO: predictPowerGravity
+# TODO: predictPowerIn
 # TODO: Mohammad starts working on power_roll
 # Once someone finishes a bit, just pick up the next one
 # By the end of the week, finish all 5 functions
