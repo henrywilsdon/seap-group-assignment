@@ -11,12 +11,11 @@ def predict_power_in(course: CourseModel, distance: float) -> float:
     slope = course.dynamic.slope_from_prev[index]
 
     if(slope < course.static.below_steady_state_max_slope):
-        v_lookup = course.static.cp*0.02
-    
+        v_lookup = course.static.cp * course.static.below_steady_state_power_usage
     elif(slope >  course.static.over_threshold_min_slope):
-         v_lookup = course.static.cp*0.91
+         v_lookup = course.static.cp * course.static.over_threshold_power_usage
     else:
-         v_lookup = course.static.cp*1.1
+         v_lookup = course.static.cp * course.static.steady_state_power_usage
 
     power_in = course.static.mechanical_efficiency * v_lookup + course.static.delta_watts
     

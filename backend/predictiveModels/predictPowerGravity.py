@@ -1,9 +1,6 @@
 from temporaryModels import *
 
 def predict_power_gravity(course: CourseModel, distance: float, speed: float) -> float:
-    # TODO: this function
-    # some arguments may not be necessary - once the code has been finished, we can get rid of whatever arguments we don't need
-
     index = 0
     for checkedIndex in reversed(range(len(course.dynamic.distance))):
         if course.dynamic.distance[checkedIndex] <= distance:
