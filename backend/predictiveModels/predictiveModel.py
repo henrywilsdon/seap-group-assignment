@@ -70,14 +70,6 @@ toprint = predict_entire_course(CourseModel())
 print(toprint.duration)
 
 
-# TODO: Alexi figures out whether the spreadsheet's distance is horizontal distance or the distance including elevation (it won't affect our actual code for now, but it will affect the gpx parser that supplies this code, as right now the parser supplies horizontal distance)
-# TODO: Alexi modifies the gpx parser so that (a) it's the right kind of distance and (b) one of the variables is the TOTAL distance, not the distance from the previous point
-# TODO: predictPowerGravity
-# TODO: predictPowerIn
-# TODO: Mohammad starts working on power_roll
-# Once someone finishes a bit, just pick up the next one
-# By the end of the week, finish all 5 functions
-
 
 
 

@@ -1,20 +1,8 @@
-from doctest import master
 from temporaryModels import *
 
 def predict_power_gravity(course: CourseModel, distance: float, speed: float, acceleration: float) -> float:
     # TODO: this function
     # some arguments may not be necessary - once the code has been finished, we can get rid of whatever arguments we don't need
-    
-    #////////////// Sudo code ////////////////////////////
-    # Power_gravity = Slope * 9.81 * Mass_total * Speed
-
-    # Slope = standard rise/run percent (i.e. (change in elevation) divided by change in distance)
-
-    # Mass_total = add together mass_rider, mass_bike, mass_other
-
-    # Speed = calculated in predict_single_timestep (changes throughout the course)
-
-    #//////////////////////////////////////////////////////////////////////////////////////////////
 
     index = 0
     for checkedIndex in reversed(range(len(course.dynamic.distance))):

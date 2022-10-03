@@ -1,4 +1,3 @@
-#from symbol import power
 from temporaryModels import *
 
 def predict_power_in(course: CourseModel, distance: float, speed: float, acceleration: float) -> float:
