@@ -68,7 +68,7 @@ export default function CourseMap(props: Props) {
     return (
         <Wrapper apiKey="AIzaSyDks89zgKUUG0qc_hixpNMndMj6hDOOGWw">
             <GoogleMap
-                style={{ height: '600px', width: '900px' }}
+                style={{ flexGrow: '1', height: '100%' }}
                 zoom={14}
                 center={{ lat: 35.36558, lng: 138.92561 }}
                 zoomControl

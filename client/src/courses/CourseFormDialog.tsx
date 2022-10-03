@@ -170,28 +170,41 @@ export default function CourseFormDialog({ open, onCancel, onSave }: Props) {
                                 <Paper
                                     elevation={2}
                                     sx={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
                                         minHeight: '25rem',
                                         textAlign: 'center',
                                     }}
                                 >
-                                    <CourseMap
-                                        points={points}
-                                        splits={splits}
-                                        hoverPoint={hoverPoint}
-                                        hoverSplitIdx={hoverSplitIdx}
-                                    />
+                                    <Box
+                                        sx={{
+                                            flexGrow: 1,
+                                            flexDirection: 'column',
+                                            display: 'flex',
+                                            height: '100%',
+                                        }}
+                                    >
+                                        <CourseMap
+                                            points={points}
+                                            splits={splits}
+                                            hoverPoint={hoverPoint}
+                                            hoverSplitIdx={hoverSplitIdx}
+                                        />
+                                    </Box>
                                 </Paper>
                                 <Paper
                                     elevation={2}
                                     sx={{
+                                        flexGrow: 1,
+                                        flexDirection: 'column',
                                         minHeight: '15rem',
                                         textAlign: 'center',
                                     }}
                                 >
                                     <Box
                                         sx={{
-                                            height: '200px',
-                                            width: '900px',
+                                            flexGrow: 1,
+                                            width: '100%',
                                         }}
                                     >
                                         <HeightMap

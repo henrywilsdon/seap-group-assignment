@@ -93,63 +93,65 @@ export default function ManageCoursesPage({}: Props) {
     //  A table to list athletes
     //  Each athlete in the table has buttons to Edit and Remove
     return (
-        <Box sx={{ m: 2 }}>
+        <>
             <CourseFormDialog
                 onCancel={handleCreateCourseClose}
                 onSave={() => {}}
                 open={createCourseOpen}
             />
+            <Box sx={{ m: 2 }}>
+                <Button variant="contained" onClick={handleCreateCourseOpen}>
+                    + Create
+                </Button>
 
-            <Button variant="contained" onClick={handleCreateCourseOpen}>
-                + Create
-            </Button>
-
-            {/* The athletes table */}
-            <TableContainer component={Paper}>
-                <Table sx={{ minWidth: 650 }} aria-label="Athletes table">
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Name</TableCell>
-                            <TableCell align="right">Location</TableCell>
-                            <TableCell align="right">Updated</TableCell>
-                            <TableCell></TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {
-                            // List all athletes: name, rider mass, bike mass, other mass,
-                            // total mass (sum of rider mass, bike mass, and other mass),
-                            // CP/FTP, and W'
-                            data.map((row) => (
-                                <TableRow
-                                    key={row.id}
-                                    sx={{
-                                        '&:last-child td, &:last-child th': {
-                                            border: 0,
-                                        },
-                                    }}
-                                >
-                                    <TableCell component="th" scope="row">
-                                        {row.name}
-                                    </TableCell>
-                                    <TableCell align="right">
-                                        {row.location}
-                                    </TableCell>
-                                    <TableCell align="right">
-                                        {row.last_updated?.toLocaleDateString()}{' '}
-                                        {row.last_updated?.toLocaleTimeString()}
-                                    </TableCell>
-                                    {/* Button to Remove / Edit course */}
-                                    <TableCell>
-                                        <Button>Remove</Button>
-                                        <Button>Edit</Button>
-                                    </TableCell>
-                                </TableRow>
-                            ))
-                        }
-                    </TableBody>
-                </Table>
-            </TableContainer>
-        </Box>
+                {/* The athletes table */}
+                <TableContainer component={Paper}>
+                    <Table sx={{ minWidth: 650 }} aria-label="Athletes table">
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>Name</TableCell>
+                                <TableCell align="right">Location</TableCell>
+                                <TableCell align="right">Updated</TableCell>
+                                <TableCell></TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {
+                                // List all athletes: name, rider mass, bike mass, other mass,
+                                // total mass (sum of rider mass, bike mass, and other mass),
+                                // CP/FTP, and W'
+                                data.map((row) => (
+                                    <TableRow
+                                        key={row.id}
+                                        sx={{
+                                            '&:last-child td, &:last-child th':
+                                                {
+                                                    border: 0,
+                                                },
+                                        }}
+                                    >
+                                        <TableCell component="th" scope="row">
+                                            {row.name}
+                                        </TableCell>
+                                        <TableCell align="right">
+                                            {row.location}
+                                        </TableCell>
+                                        <TableCell align="right">
+                                            {row.last_updated?.toLocaleDateString()}{' '}
+                                            {row.last_updated?.toLocaleTimeString()}
+                                        </TableCell>
+                                        {/* Button to Remove / Edit course */}
+                                        <TableCell>
+                                            <Button>Remove</Button>
+                                            <Button>Edit</Button>
+                                        </TableCell>
+                                    </TableRow>
+                                ))
+                            }
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            </Box>
+        </>
     );
 }
