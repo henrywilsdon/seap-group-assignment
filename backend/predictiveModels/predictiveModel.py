@@ -10,11 +10,16 @@ def predict_single_timestep(course: CourseModel, # time doesn't need to be an ar
                             w_prime_balance: float,
                             distance: float,
                             speed: float,
-                            acceleration: float) \
+                            acceleration: float,
+                            is_first: bool) \
                             -> SingleTimestepOutput:
 
-    # for brevity
-    cs = course.static
+    cs = course.static # for brevity
+
+    if not is_first:
+        speed += acceleration * cs.timestep_size
+        distance += speed * cs.timestep_size
+    # yes, that's correct: speed uses the PRIOR acceleration, but distance uses the CURRENT speed
 
     # the bulk of the 'predict' stuff (where it calls other functions)
     power_aero = predict_power_aero(course, distance, speed)
@@ -27,11 +32,6 @@ def predict_single_timestep(course: CourseModel, # time doesn't need to be an ar
     propulsive_force = power_net / speed
     mass_total = cs.mass_rider + cs.mass_bike + cs.mass_other
     acceleration = propulsive_force / (mass_total + ( (cs.moi_whl_front + cs.moi_whl_rear) / cs.wheel_radius**2))
-
-    speed += acceleration * cs.timestep_size
-    distance += speed * cs.timestep_size
-    # yes, that's correct: speed uses the PRIOR acceleration, but distance uses the CURRENT speed
-    # also these two lines are here rather than at the start of the function, because in the sheet, speed and distance don't increase in the first timestep (and placing these lines at the end of this function produces that same effect)
 
     return SingleTimestepOutput(distance=distance,
                                 speed=speed, # current speed is based on the previous speed and acceleration
@@ -48,6 +48,7 @@ def predict_entire_course(course) -> PredictEntireCourseOutput:
     current_time = 0
     current_w_prime_balance = course.static.w_prime
     min_w_prime_balance = float('inf')
+    is_first = True
 
     while current_distance < max_distance:
 
@@ -55,7 +56,8 @@ def predict_entire_course(course) -> PredictEntireCourseOutput:
                                              w_prime_balance=current_w_prime_balance,
                                              distance=current_distance,
                                              speed=current_speed,
-                                             acceleration=current_acceleration)
+                                             acceleration=current_acceleration,
+                                             is_first=is_first)
 
         current_distance = single_out.distance
         current_speed = single_out.speed
@@ -63,6 +65,7 @@ def predict_entire_course(course) -> PredictEntireCourseOutput:
         current_time += course.static.timestep_size
         min_w_prime_balance = min(current_w_prime_balance, single_out.w_prime_balance)
         current_w_prime_balance = single_out.w_prime_balance
+        is_first = False
 
     return PredictEntireCourseOutput(duration=current_time, min_w_prime_balance=min_w_prime_balance)
 
