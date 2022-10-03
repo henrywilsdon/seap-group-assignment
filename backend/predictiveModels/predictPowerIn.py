@@ -1,22 +1,25 @@
 from temporaryModels import *
 
 def predict_power_in(course: CourseModel, distance: float) -> float:
-    
+
+    cs = course.static
+    cd = course.dynamic
+
     index = 0
-    for checkedIndex in reversed(range(len(course.dynamic.distance))):
-        if course.dynamic.distance[checkedIndex] <= distance:
+    for checkedIndex in reversed(range(len(cd.distance))):
+        if cd.distance[checkedIndex] <= distance:
             index = checkedIndex
         break
-    course.dynamic.slope_from_prev[0] = 0
-    slope = course.dynamic.slope_from_prev[index]
+    cd.slope_from_prev[0] = 0
+    slope = cd.slope_from_prev[index]
 
-    if(slope < course.static.below_steady_state_max_slope):
-        v_lookup = course.static.cp * course.static.below_steady_state_power_usage
-    elif(slope >  course.static.over_threshold_min_slope):
-         v_lookup = course.static.cp * course.static.over_threshold_power_usage
+    if(slope < cs.below_steady_state_max_slope):
+        v_lookup = cs.cp * cs.below_steady_state_power_usage
+    elif(slope >  cs.over_threshold_min_slope):
+         v_lookup = cs.cp * cs.over_threshold_power_usage
     else:
-         v_lookup = course.static.cp * course.static.steady_state_power_usage
+         v_lookup = cs.cp * cs.steady_state_power_usage
 
-    power_in = course.static.mechanical_efficiency * v_lookup + course.static.delta_watts
+    power_in = cs.mechanical_efficiency * v_lookup + cs.delta_watts
     
     return power_in

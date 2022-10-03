@@ -3,9 +3,12 @@ import math
 
 def predict_power_aero(course: CourseModel, distance: float, speed: float) -> float:
 
+    cs = course.static
+    cd = course.dynamic
+
     index = None
-    for checkedIndex in reversed(range(len(course.dynamic.distance))):
-        if course.dynamic.distance[checkedIndex] <= distance:
+    for checkedIndex in reversed(range(len(cd.distance))):
+        if cd.distance[checkedIndex] <= distance:
             index = checkedIndex
             break
 
@@ -27,17 +30,17 @@ def predict_power_aero(course: CourseModel, distance: float, speed: float) -> fl
     for row_index in range(len(factor_lookup_table)):
         # populates the v/msec column, so it's no longer None
         z0 = factor_lookup_table[row_index][1]
-        factor_lookup_table[row_index][2] = course.static.wind_speed_mps * math.log(1/z0) / math.log(10/z0)
+        factor_lookup_table[row_index][2] = cs.wind_speed_mps * math.log(1/z0) / math.log(10/z0)
         # converts it to a {roughness class: v/msec} dictionary, for ease of lookup
         roughness_to_vmpsecs[factor_lookup_table[row_index][0]] = factor_lookup_table[row_index][2]
     # looks up the current roughness in that dictionary
-    v_mpsec = roughness_to_vmpsecs[course.dynamic.roughness_class[index]]
+    v_mpsec = roughness_to_vmpsecs[cd.roughness_class[index]]
 
     wind_speed_1m = v_mpsec
 
-    headwind_bearing_deg = course.static.wind_direction - 180
-    course.dynamic.bearing_from_prev[0] = 0 # baked into the sheet, since the blank at 'Course info'!$H$3 is counted as 0 by vlookup (likely a bug)
-    relative_wind_angle_deg = course.dynamic.bearing_from_prev[index] - headwind_bearing_deg
+    headwind_bearing_deg = cs.wind_direction - 180
+    cd.bearing_from_prev[0] = 0 # baked into the sheet, since the blank at 'Course info'!$H$3 is counted as 0 by vlookup (likely a bug)
+    relative_wind_angle_deg = cd.bearing_from_prev[index] - headwind_bearing_deg
 
     headwind = wind_speed_1m * math.cos(math.radians(relative_wind_angle_deg))
     sidewind = wind_speed_1m * math.sin(math.radians(relative_wind_angle_deg))
@@ -55,12 +58,12 @@ def predict_power_aero(course: CourseModel, distance: float, speed: float) -> fl
         "b": [0.228, 0.228, 0.228, 0.226, 0.224, 0.223, 0.222, 0.222, 0.222, 0.222, 0.222, 0.222, 0.222, 0.222],
         "c": [0.193, 0.193, 0.193, 0.191, 0.189, 0.188, 0.187, 0.187, 0.187, 0.187, 0.187, 0.187, 0.187, 0.187]
     }
-    slope = course.dynamic.slope_from_prev[index]
+    slope = cd.slope_from_prev[index]
     if index == 0:
         position = "b" # this is baked into the spreadsheet at 'Course info'!$M$3
-    elif slope > course.static.over_threshold_min_slope:
+    elif slope > cs.over_threshold_min_slope:
         position = "b"
-    elif slope < course.static.below_steady_state_max_slope:
+    elif slope < cs.below_steady_state_max_slope:
         position = "c"
     else:
         position = "a" # position is the row that will be used in the vlookup
@@ -81,12 +84,12 @@ def predict_power_aero(course: CourseModel, distance: float, speed: float) -> fl
 
     vlookup_thingy_b = vlookup_thingy_b_table[math.floor(math.fabs(effective_yaw_angle))]
 
-    cda = course.static.delta_cda + vlookup_thingy_a + vlookup_thingy_b
+    cda = cs.delta_cda + vlookup_thingy_a + vlookup_thingy_b
 
 
 
     # ---------------------------------------------------------------
     # FINAL CALCULATIONS
 
-    power_aero = 0.5 * course.static.wind_density * relative_wind_speed**3 * cda
+    power_aero = 0.5 * cs.wind_density * relative_wind_speed**3 * cda
     return power_aero

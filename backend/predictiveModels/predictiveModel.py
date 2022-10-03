@@ -41,12 +41,15 @@ def predict_single_timestep(course: CourseModel, # time doesn't need to be an ar
 
 def predict_entire_course(course) -> PredictEntireCourseOutput:
 
-    max_distance = course.dynamic.distance[-1] # last distance in list
-    current_distance = course.static.starting_distance
-    current_speed = course.static.starting_speed
+    cs = course.static # for brevity
+    cd = course.dynamic
+
+    max_distance = cd.distance[-1] # last distance in list
+    current_distance = cs.starting_distance
+    current_speed = cs.starting_speed
     current_acceleration = 0
     current_time = 0
-    current_w_prime_balance = course.static.w_prime
+    current_w_prime_balance = cs.w_prime
     min_w_prime_balance = float('inf')
     is_first = True
 
@@ -62,7 +65,7 @@ def predict_entire_course(course) -> PredictEntireCourseOutput:
         current_distance = single_out.distance
         current_speed = single_out.speed
         current_acceleration = single_out.acceleration
-        current_time += course.static.timestep_size
+        current_time += cs.timestep_size
         min_w_prime_balance = min(current_w_prime_balance, single_out.w_prime_balance)
         current_w_prime_balance = single_out.w_prime_balance
         is_first = False
