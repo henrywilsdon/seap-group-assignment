@@ -60,7 +60,7 @@ Power_gravity = Slope * 9.81 * Mass_total * Speed
 
     Slope = standard rise/run percent (i.e. (change in elevation) divided by change in distance)
 
-    Mass_total = add together mass_rider, mass_bike, mass_other
+    Mass_total = add together mass_rider, mass_bike, mass_other, delta_kg
 
     Speed = calculated in predict_single_timestep (changes throughout the course)
 
