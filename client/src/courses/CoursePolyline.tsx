@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { LatLngElev } from './ManageCoursesPage';
+import { LatLngElev } from './useMapState';
 
 type Props = {
     points: LatLngElev[];
@@ -8,7 +8,10 @@ type Props = {
     map?: google.maps.Map;
 };
 
-export default function MapCourse({
+/**
+ * Adds polyline to map.
+ */
+export default function CoursePolyline({
     points,
     splits,
     hoverSegment,

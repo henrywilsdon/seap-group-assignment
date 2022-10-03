@@ -1,14 +1,10 @@
-import { Box } from '@mui/system';
 import React, { useEffect, useState } from 'react';
 import { AxisOptions, Chart, Datum } from 'react-charts';
-import { LatLngElev } from './ManageCoursesPage';
-import mapJSON from './tokyo.json';
+import { LatLngElev } from './useMapState';
 
 type Props = {
-    // splitPoints: LatLngElev[][];
     points: LatLngElev[];
     splits: number[];
-    // hoverPoint: LatLngElev | null;
     onHoverPointChange: (point: LatLngElev | null) => void;
     onClick:
         | ((
@@ -23,6 +19,9 @@ type Series = {
     data: LatLngElev[];
 };
 
+/**
+ * Graph showing change in elevation over distance.
+ */
 export default function HeightMap({
     points,
     splits,

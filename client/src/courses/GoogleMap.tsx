@@ -7,6 +7,9 @@ interface MapProps extends google.maps.MapOptions {
     render?: (map: google.maps.Map | undefined) => React.ReactNode;
 }
 
+/**
+ * Google map frame.
+ */
 export default function GoogleMap({
     onClick,
     onIdle,
