@@ -1,3 +1,8 @@
+import pprint # used only for testing code
+import xmltodict
+import great_circle_calculator.great_circle_calculator as gcc
+import geojson
+
 from contextlib import redirect_stderr
 import json
 from django.shortcuts import render, redirect
@@ -10,6 +15,8 @@ from django.views.decorators.http import require_http_methods
 """ from django.views.decorators.csrf import ensure_csrf_cookie
 from django.middleware.csrf import get_token """
 from api.models import Athlete
+from api.models import DynamicModel
+from api.gpxParser import gpx_to_json
 
 # Create your views here.
 
@@ -207,3 +214,37 @@ def username_exists(username):
     if User.objects.filter(username=username).exists():
         return True
     return False
+
+
+
+def get_gpx_data(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'detail': 'User not authenticated'}, status=401)
+    
+    if request.method == 'POST':
+        
+        uploaded_file = request.FILES['attachment']
+        gpx_json = gpx_to_json(uploaded_file)
+
+        owner = request.user.username
+
+        lat = []
+        lon = []
+        ele = []
+        dis = []
+        bear = []
+        slope = []
+        i = 0
+        for key in gpx_json['segments'][0]:
+            lat.append(gpx_json['segments'][0][i]['lat'])
+            lon.append(gpx_json['segments'][0][i]['lon'])
+            ele.append(gpx_json['segments'][0][i]['ele'])
+            dis.append(gpx_json['segments'][0][i]['horz_dist_from_prev'])
+            bear.append(gpx_json['segments'][0][i]['bearing_from_prev'])
+            i = i + 1
+        DynamicModel.objects.create(owner=owner,lat=lat,long=lon,ele=ele,distance=dis,bearing=bear,slope=slope)
+        dynam = DynamicModel.objects.get(owner=owner)
+
+        return JsonResponse({'detail': 'Successfully uploaded gpx data.', 'name': uploaded_file.name}, status=200)
+
+    
