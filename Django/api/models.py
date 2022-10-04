@@ -12,8 +12,8 @@ class Athlete(models.Model):
     CP_FTP = models.FloatField()
     W_prime = models.FloatField()
 
-    
-    
+
+
 class BikePlusRiderModel(models.Model):
     mass_rider = models.FloatField()
     mass_bike = models.FloatField()
