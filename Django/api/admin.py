@@ -1,7 +1,5 @@
 from django.contrib import admin
-
 from .models import *
-
 
 @admin.register(Athlete)
 class AthleteAdmin(admin.ModelAdmin):
