@@ -1,10 +1,20 @@
 import { Box } from '@mui/system';
-import EnvironmentParams from './EnvironmentParams';
-import MechanicalParams from './MechanicalParams';
+import { Dispatch } from 'react';
 import AthleteParams from './AthleteParams';
 import CourseParams from './CourseParams';
+import EnvironmentParams from './EnvironmentParams';
+import MechanicalParams from './MechanicalParams';
+import { AthleteAction, AthleteInputState } from './useAthleteReducer';
 
-function HandleParamFields() {
+type Props = {
+    athlete: AthleteInputState;
+    originalAthlete: AthleteInputState;
+    athleteDispatch: Dispatch<AthleteAction>;
+};
+
+function HandleParamFields(props: Props) {
+    const { athlete, originalAthlete, athleteDispatch } = props;
+
     return (
         <div>
             <Box
@@ -17,7 +27,11 @@ function HandleParamFields() {
             >
                 <MechanicalParams></MechanicalParams>
                 <EnvironmentParams></EnvironmentParams>
-                <AthleteParams></AthleteParams>
+                <AthleteParams
+                    athlete={athlete}
+                    originalAthlete={originalAthlete}
+                    athleteDispatch={athleteDispatch}
+                />
                 <CourseParams></CourseParams>
             </Box>
         </div>

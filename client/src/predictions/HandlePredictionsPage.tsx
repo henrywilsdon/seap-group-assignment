@@ -1,12 +1,15 @@
-import { Box } from '@mui/system';
 import { Typography } from '@mui/material';
-import HandleParamFields from './HandleParamFields';
-import HandleOutputPredictionsUI from './HandleOutputPredictions';
-import HandleDropButtons from './HandleDropButtons';
+import { Box } from '@mui/system';
 import HandleCourseMap from './HandleCourseMap';
+import HandleDropButtons from './HandleDropButtons';
+import HandleOutputPredictionsUI from './HandleOutputPredictions';
+import HandleParamFields from './HandleParamFields';
 import HandleSplitMetrics from './SplitMetrics';
+import useAthleteReducer from './useAthleteReducer';
 
 function HandlePredictionsPage() {
+    const { athlete, athleteDispatch, originalAthlete } = useAthleteReducer();
+
     return (
         <div>
             <Box
@@ -46,11 +49,15 @@ function HandlePredictionsPage() {
                     }}
                 >
                     <HandleCourseMap></HandleCourseMap>
-                    <HandleDropButtons></HandleDropButtons>
+                    <HandleDropButtons athleteDispatch={athleteDispatch} />
                 </Box>
 
                 <Box>
-                    <HandleParamFields></HandleParamFields>
+                    <HandleParamFields
+                        athlete={athlete}
+                        originalAthlete={originalAthlete}
+                        athleteDispatch={athleteDispatch}
+                    />
                 </Box>
             </Box>
         </div>
