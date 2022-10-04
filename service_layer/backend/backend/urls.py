@@ -20,16 +20,16 @@ from server_functions import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.home, name='home'),
     #path('server_functions/<int:user_id>/', views.user_detail, name='user_detail'),
     path('server_functions/register/', views.register_view, name='register'),
+    # path('', views.home, name='home'),
     path('server_functions/login/', views.login_view, name='login'),
     path('server_functions/logout/', views.logout_view, name='logout'),
     path('server_functions/user/me/', views.user_view, name='update_user'),
     path('server_functions/user/me/password/',
          views.user_password_view, name='update_user_password'),
     path('server_functions/athlete/', views.all_athletes_view, name='athlete'),
-    path('server_functions/athlete/<int:athlete_id>',
+    path('server_functions/athlete/<int:athlete_id>/',
          views.athlete_view, name='athlete'),
     #path('server_functions/user/get/', views.get_user_view, name='get_user'),
     #path('server_functions/user/me/dummy', views.current_user,name='current_user'),

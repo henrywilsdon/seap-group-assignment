@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -8,6 +8,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { Button } from '@mui/material';
+import CourseFormDialog from './CourseFormDialog';
 
 /**
 Course
@@ -76,6 +77,15 @@ export default function ManageCoursesPage({}: Props) {
     // Manage a list of all courses
     // By now, pre-populate with sample data
     const [data, setData] = React.useState(sampleData);
+    const [createCourseOpen, setCreateCourseOpen] = useState(false);
+
+    const handleCreateCourseOpen = () => {
+        setCreateCourseOpen(true);
+    };
+
+    const handleCreateCourseClose = () => {
+        setCreateCourseOpen(false);
+    };
 
     // Composing the Manage Athletes page:
     //  An instance of AthleteFormDialog
@@ -84,7 +94,15 @@ export default function ManageCoursesPage({}: Props) {
     //  Each athlete in the table has buttons to Edit and Remove
     return (
         <Box sx={{ m: 2 }}>
-            <Button variant="contained">+ Create</Button>
+            <CourseFormDialog
+                onCancel={handleCreateCourseClose}
+                onSave={() => {}}
+                open={createCourseOpen}
+            />
+
+            <Button variant="contained" onClick={handleCreateCourseOpen}>
+                + Create
+            </Button>
 
             {/* The athletes table */}
             <TableContainer component={Paper}>
