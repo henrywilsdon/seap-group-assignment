@@ -1,6 +1,8 @@
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 
+
+
 class Athlete(models.Model):
     name = models.CharField(max_length=30)
     bike_mass = models.FloatField()
@@ -10,6 +12,8 @@ class Athlete(models.Model):
     CP_FTP = models.FloatField()
     W_prime = models.FloatField()
 
+    
+    
 class BikePlusRiderModel(models.Model):
     mass_rider = models.FloatField()
     mass_bike = models.FloatField()
