@@ -1,8 +1,8 @@
 import { Box } from '@mui/system';
-import EnvironmentParamsUI from './EnvironmentParams';
-import MechanicalParamsUI from './MechanicalParams';
-import AthleteParamsUI from './AthleteParamsUI';
-import CourseParamsUI from './CourseParamsUI';
+import EnvironmentParams from './EnvironmentParams';
+import MechanicalParams from './MechanicalParams';
+import AthleteParams from './AthleteParams';
+import CourseParams from './CourseParams';
 
 function HandleParamFields() {
     return (
@@ -15,10 +15,10 @@ function HandleParamFields() {
                     },
                 }}
             >
-                <MechanicalParamsUI></MechanicalParamsUI>
-                <EnvironmentParamsUI></EnvironmentParamsUI>
-                <AthleteParamsUI></AthleteParamsUI>
-                <CourseParamsUI></CourseParamsUI>
+                <MechanicalParams></MechanicalParams>
+                <EnvironmentParams></EnvironmentParams>
+                <AthleteParams></AthleteParams>
+                <CourseParams></CourseParams>
             </Box>
         </div>
     );

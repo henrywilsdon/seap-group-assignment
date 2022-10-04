@@ -1,8 +1,8 @@
 import { Paper, Box, TextField, Typography } from '@mui/material';
 
-function MechanicalParamsUI() {
+function MechanicalParams() {
     return (
-        <div className="MechanicalParamsUI">
+        <div className="MechanicalParams">
             <Box
                 sx={{
                     display: 'flex',
@@ -65,4 +65,4 @@ function MechanicalParamsUI() {
     );
 }
 
-export default MechanicalParamsUI;
+export default MechanicalParams;

@@ -1,8 +1,8 @@
 import { Paper, Box, TextField, Typography } from '@mui/material';
 
-function EnvironmentParamsUI() {
+function EnvironmentParams() {
     return (
-        <div className="EnvironmentParamsUI">
+        <div className="EnvironmentParams">
             <Box
                 sx={{
                     display: 'flex',
@@ -58,4 +58,4 @@ function EnvironmentParamsUI() {
     );
 }
 
-export default EnvironmentParamsUI;
+export default EnvironmentParams;

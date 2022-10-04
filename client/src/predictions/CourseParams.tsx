@@ -1,8 +1,8 @@
 import { Paper, Box, TextField, Typography } from '@mui/material';
 
-function AthleteParamsUI() {
+function CourseParams() {
     return (
-        <div className="AthleteParamsUI">
+        <div className="CourseParams">
             <Box
                 sx={{
                     display: 'flex',
@@ -22,41 +22,20 @@ function AthleteParamsUI() {
                     }}
                 >
                     <Typography variant="h6">
-                        Edit Athlete Parameters
+                        Edit Environment Parameters
                     </Typography>
 
                     <TextField
                         color="primary"
                         variant="standard"
-                        label="Rider Mass"
+                        label="Slope Threshold Minimum"
                         fullWidth
                     />
 
                     <TextField
                         color="primary"
                         variant="standard"
-                        label="Bike Mass"
-                        fullWidth
-                    />
-
-                    <TextField
-                        color="primary"
-                        variant="standard"
-                        label="Other Mass"
-                        fullWidth
-                    />
-
-                    <TextField
-                        color="primary"
-                        variant="standard"
-                        label="FTP"
-                        fullWidth
-                    />
-
-                    <TextField
-                        color="primary"
-                        variant="standard"
-                        label="W'"
+                        label="Slope Threshold Maximum"
                         fullWidth
                     />
                 </Paper>
@@ -65,4 +44,4 @@ function AthleteParamsUI() {
     );
 }
 
-export default AthleteParamsUI;
+export default CourseParams;
