@@ -60,12 +60,13 @@ class StaticModel(models.Model):
 
 
 class DynamicModel(models.Model):
-    lat = ArrayField(models.FloatField())
-    long = ArrayField(models.FloatField())
-    ele = ArrayField(models.FloatField())
-    distance = ArrayField(models.FloatField())
-    bearing = ArrayField(models.FloatField())
-    slope = ArrayField(models.FloatField())
+    owner = models.CharField(max_length=30, blank=True)
+    lat = ArrayField(models.FloatField(), blank=True)
+    long = ArrayField(models.FloatField(), blank=True)
+    ele = ArrayField(models.FloatField(), blank=True)
+    distance = ArrayField(models.FloatField(), blank=True)
+    bearing = ArrayField(models.FloatField(), blank=True)
+    slope = ArrayField(models.FloatField(), blank=True)
 
 
 
