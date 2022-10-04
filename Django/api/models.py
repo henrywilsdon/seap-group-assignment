@@ -91,4 +91,3 @@ course = {
     }
 } # The data is being stored as {data type: [all timesteps]}, just because it makes it easier to write the above code
 """
-
