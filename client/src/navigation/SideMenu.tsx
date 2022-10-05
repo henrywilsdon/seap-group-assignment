@@ -2,6 +2,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import DirectionsBikeIcon from '@mui/icons-material/DirectionsBike';
 import PersonIcon from '@mui/icons-material/Person';
 import RouteIcon from '@mui/icons-material/Route';
+import CalculateIcon from '@mui/icons-material/Calculate';
 import {
     List,
     ListItem,
@@ -34,7 +35,7 @@ const items = [
     },
     {
         label: 'Predictions',
-        Icon: RouteIcon,
+        Icon: CalculateIcon,
         path: '/predictions',
     },
 ];
