@@ -1,5 +1,6 @@
 
 import json
+from xml.etree import ElementTree
 import xmltodict
 import geojson
 from django.test import TestCase
@@ -97,18 +98,32 @@ class UserTestCase(TestCase):
                                content_type='application/json')
         self.assertEqual(response.status_code, 200)
 
-    def test_files(self):
+    def test_gpx_post(self):
         client = Client()
 
-        client.login(username="blake", password="BlakeMan")
+        client.login(username="tim", password="1234567")
 
         filepath = "GPX example files/Tokyo-Olympics-Men's-ITT_track.gpx"
         with open(filepath) as gpx:
-            response = client.post('/api/upload/', {'attachment': gpx})
+            xmldata = gpx.read()
+            response = client.post('/api/gpx/upload/', {'gpx_data': xmldata}, content_type='application/json')
 
-        data = json.loads(response.content)
-        name = data["name"]
         self.assertEqual(response.status_code, 200)   
+    
+    def test_gpx_get(self):
+        client = Client()
+
+        client.login(username="tim", password="1234567")
+
+        filepath = "GPX example files/Tokyo-Olympics-Men's-ITT_track.gpx"
+        with open(filepath) as gpx:
+            xmldata = gpx.read()
+            response = client.post('/api/gpx/get/', {'gpx_data': xmldata}, content_type='application/json')
+
+        self.assertEqual(response.status_code, 200)
+        #data = json.loads(response.content)
+        #print(data['latitude'])
+
 
 
     """ def test_get_user(self):

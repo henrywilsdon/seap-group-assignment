@@ -326,15 +326,15 @@ def static_model_view(request, gpx_model_id):
         model.delete()
         return HttpResponse(status=200)
 
-
-def get_gpx_data(request):
+def upload_gpx_data(request):
     if not request.user.is_authenticated:
         return JsonResponse({'detail': 'User not authenticated'}, status=401)
     
     if request.method == 'POST':
         
-        uploaded_file = request.FILES['attachment']
-        gpx_json = gpx_to_json(uploaded_file)
+        data = json.loads(request.body)
+        gpx_data_as_string = data['gpx_data']
+        gpx_json = gpx_to_json(gpx_data_as_string)
 
         owner = request.user.username
 
@@ -355,6 +355,45 @@ def get_gpx_data(request):
         DynamicModel.objects.create(owner=owner,lat=lat,long=lon,ele=ele,distance=dis,bearing=bear,slope=slope)
         dynam = DynamicModel.objects.get(owner=owner)
 
-        return JsonResponse({'detail': 'Successfully uploaded gpx data.', 'name': uploaded_file.name}, status=200)
+        return JsonResponse({'detail': 'Successfully uploaded gpx data.'}, status=200)
 
+def get_gpx_data(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'detail': 'User not authenticated'}, status=401)
+
+    if request.method == 'POST':
+        
+        #missing Validation
+        data = json.loads(request.body)
+        gpx_data_as_string = data['gpx_data']
+        gpx_json = gpx_to_json(gpx_data_as_string)
     
+        lat = []
+        lon = []
+        ele = []
+        dis = []
+        bear = []
+        slope = []
+        i = 0
+        for key in gpx_json['segments'][0]:
+            lat.append(gpx_json['segments'][0][i]['lat'])
+            lon.append(gpx_json['segments'][0][i]['lon'])
+            ele.append(gpx_json['segments'][0][i]['ele'])
+            dis.append(gpx_json['segments'][0][i]['horz_dist_from_prev'])
+            bear.append(gpx_json['segments'][0][i]['bearing_from_prev'])
+            i = i + 1
+        
+        lat_json = json.dumps(lat)
+        lon_json = json.dumps(lon)
+        ele_json = json.dumps(ele)
+        dis_json = json.dumps(dis)
+        bear_json = json.dumps(bear)
+
+        return JsonResponse({'detail': 'Successfully returned gpx data.', 
+                'latitude': lat_json,
+                'longitude': lon_json,
+                'elevation': ele_json,
+                'horizontal_distance_to_last_point' : dis_json,
+                'bearing_from_last_point' : bear_json}, status=200)
+    else:
+        return JsonResponse({'detail': 'Invalid Request method'}, status=405)

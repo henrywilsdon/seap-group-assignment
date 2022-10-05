@@ -29,7 +29,9 @@ urlpatterns = [
     path('api/athlete/', views.all_athletes_view, name='athlete'),
 
     path('api/athlete/<int:athlete_id>/', views.athlete_view, name='athlete'),
-    path('api/upload/', views.get_gpx_data, name='get_gpx_data'),
+    path('api/gpx/upload/', views.upload_gpx_data, name='upload_gpx_data'),
+    path('api/gpx/get/', views.get_gpx_data, name='get_gpx_data'),
+    
     #path('api/user/get/', views.get_user_view, name='get_user'),
     #path('api/user/me/dummy', views.current_user,name='current_user'),
     #path('api/csrf', views.csrf,name='csrf'),

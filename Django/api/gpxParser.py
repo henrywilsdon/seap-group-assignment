@@ -29,7 +29,7 @@ def gpx_to_json(file: str) -> dict:
     """
 
     
-    gpx_dict = xmltodict.parse(file.read())['gpx']
+    gpx_dict = xmltodict.parse(file)['gpx']
 
     info = {'creator': gpx_dict['@creator'],
             'version': gpx_dict['@version'],
