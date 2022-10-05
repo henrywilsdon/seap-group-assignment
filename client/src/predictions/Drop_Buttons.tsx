@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 import React from 'react';
 
-function HandleDropButtons() {
+function DropButtons() {
     const [athlete, setAthlete] = React.useState('');
 
     const handleEvent = (event: SelectChangeEvent) => {
@@ -18,7 +18,7 @@ function HandleDropButtons() {
     };
 
     return (
-        <div className="HandleDropButtons">
+        <div className="DropButtons">
             <Box
                 sx={{
                     '& > :not(style)': {
@@ -124,4 +124,4 @@ function HandleDropButtons() {
     );
 }
 
-export default HandleDropButtons;
+export default DropButtons;

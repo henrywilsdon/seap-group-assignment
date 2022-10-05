@@ -1,12 +1,12 @@
 import { Box } from '@mui/system';
 import { Typography } from '@mui/material';
-import HandleParamFields from './HandleParamFields';
-import HandleOutputPredictionsUI from './HandleOutputPredictions';
-import HandleDropButtons from './HandleDropButtons';
-import HandleCourseMap from './HandleCourseMap';
-import HandleSplitMetrics from './SplitMetrics';
+import ParamFields from './ParamFields';
+import OutputPredictionsUI from './OutputPredictions';
+import DropButtons from './Drop_Buttons';
+import CourseMap from './CourseMap';
+import SplitMetrics from './SplitMetrics';
 
-function HandlePredictionsPage() {
+function RenderPredictionsPage() {
     return (
         <div>
             <Box
@@ -32,8 +32,8 @@ function HandlePredictionsPage() {
                     <Typography variant="h6">Predictions Page</Typography>
 
                     {/* Add external functions here to render them, change as needed */}
-                    <HandleOutputPredictionsUI></HandleOutputPredictionsUI>
-                    <HandleSplitMetrics></HandleSplitMetrics>
+                    <OutputPredictionsUI></OutputPredictionsUI>
+                    <SplitMetrics></SplitMetrics>
                 </Box>
 
                 <Box
@@ -45,16 +45,16 @@ function HandlePredictionsPage() {
                         },
                     }}
                 >
-                    <HandleCourseMap></HandleCourseMap>
-                    <HandleDropButtons></HandleDropButtons>
+                    <CourseMap></CourseMap>
+                    <DropButtons></DropButtons>
                 </Box>
 
                 <Box>
-                    <HandleParamFields></HandleParamFields>
+                    <ParamFields></ParamFields>
                 </Box>
             </Box>
         </div>
     );
 }
 
-export default HandlePredictionsPage;
+export default RenderPredictionsPage;

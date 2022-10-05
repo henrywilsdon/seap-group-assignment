@@ -3,7 +3,7 @@ import { Route, Routes } from 'react-router-dom';
 import ManageAthletesPage from '../athletes/ManageAthletesPage';
 import ManageCoursesPage from '../courses/ManageCoursesPage';
 import SideMenu from '../navigation/SideMenu';
-import HandlePredictionsPage from '../predictions/HandlePredictionsPage';
+import RenderPredictionsPage from '../predictions/PredictionsPage';
 import LoginPage from '../user/LoginPage';
 import ManageProfilePage from '../user/ManageProfilePage';
 import RegisterPage from '../user/RegisterPage';
@@ -29,7 +29,7 @@ function App() {
                     <Route path="/profile" element={<ManageProfilePage />} />
                     <Route
                         path="/predictions"
-                        element={<HandlePredictionsPage />}
+                        element={<RenderPredictionsPage />}
                     />
                 </Routes>
             </main>

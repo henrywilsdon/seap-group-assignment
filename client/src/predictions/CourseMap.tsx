@@ -1,8 +1,8 @@
 import { Paper, Box, Typography } from '@mui/material';
 
-function HandleCourseMap() {
+function CourseMap() {
     return (
-        <div className="HandleCourseMap">
+        <div className="CourseMap">
             <Box
                 sx={{
                     display: 'flex',
@@ -19,4 +19,4 @@ function HandleCourseMap() {
     );
 }
 
-export default HandleCourseMap;
+export default CourseMap;

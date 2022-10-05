@@ -1,8 +1,8 @@
 import { Paper, Box, Typography } from '@mui/material';
 
-function HandleSplitMetrics() {
+function SplitMetrics() {
     return (
-        <div className="HandleSplitMetrics">
+        <div className="SplitMetrics">
             <Box
                 sx={{
                     display: 'flex',
@@ -19,4 +19,4 @@ function HandleSplitMetrics() {
     );
 }
 
-export default HandleSplitMetrics;
+export default SplitMetrics;

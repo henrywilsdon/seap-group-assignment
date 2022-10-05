@@ -1,8 +1,8 @@
 import { Paper, Box, Typography } from '@mui/material';
 
-function HandleOutputPredictionsUI() {
+function OutputPredictions() {
     return (
-        <div className="HandleOutputPredictionsUI">
+        <div className="OutputPredictions">
             <Box
                 sx={{
                     display: 'flex',
@@ -21,4 +21,4 @@ function HandleOutputPredictionsUI() {
     );
 }
 
-export default HandleOutputPredictionsUI;
+export default OutputPredictions;
