@@ -36,5 +36,5 @@ urlpatterns = [
     #path('api/login', views.empty_login,name='login'),
 
     path('api/staticmodels', views.all_static_model_view, name='static_models'),
-    path('api/staticmodels/<int:static_model_id>', views.static_model_view, name='static_models')
+    path('api/staticmodels/<int:gpx_model_id>', views.static_model_view, name='static_models')
 ]
