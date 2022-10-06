@@ -326,6 +326,9 @@ def static_model_view(request, gpx_model_id):
         model.delete()
         return HttpResponse(status=200)
 
+        return True
+
+
 
 def get_gpx_data(request):
     if not request.user.is_authenticated:
@@ -356,5 +359,6 @@ def get_gpx_data(request):
         dynam = DynamicModel.objects.get(owner=owner)
 
         return JsonResponse({'detail': 'Successfully uploaded gpx data.', 'name': uploaded_file.name}, status=200)
+
 
     
