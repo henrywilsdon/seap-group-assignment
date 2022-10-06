@@ -14,9 +14,9 @@ class Athlete(models.Model):
 
 class Course(models.Model):
     name = models.CharField(max_length=30)
-    location = models.JSONField()
+    location = models.CharField(max_length=30)
     last_updated = models.DateTimeField()
-    gps_geo_json = models.OneToOneField("DynamicModel", on_delete=models.CASCADE)
+    gps_geo_json = models.CharField(max_length=30)
 
 class BikePlusRiderModel(models.Model):
     mass_rider = models.FloatField()

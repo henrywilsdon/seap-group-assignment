@@ -427,7 +427,7 @@ def course_view(request, course_id):
 
 
     elif request.method == "DELETE":
-        course = Athlete.objects.get(id=course_id)
+        course = Course.objects.get(id=course_id)
         course.delete()
 
         if Course.objects.filter(id=course_id).exists():
