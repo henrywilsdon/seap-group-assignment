@@ -374,11 +374,22 @@ def all_courses_view(request):
     elif request.method == "POST":
         course_data = json.loads(request.body)
 
+        gps_json=course_data["gps_geo_json"]
+        empty_slope = []
+
         course = Course.objects.create(
             name=course_data["name"],
             location=course_data["location"],
             last_updated=course_data["last_updated"],
-            gps_geo_json=course_data["gps_geo_json"]
+            gps_geo_json=DynamicModel.objects.create(
+                owner=request.user.username,
+                lat=gps_json['latitude'],
+                long=gps_json['longitude'],
+                ele=gps_json['elevation'],
+                distance=gps_json['horizontal_distance_to_last_point'],
+                bearing=gps_json['bearing_from_last_point'],
+                slope=empty_slope
+            )
         )
         course.save()
 
