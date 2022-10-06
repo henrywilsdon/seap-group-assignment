@@ -413,10 +413,21 @@ def course_view(request, course_id):
         course_data = json.loads(request.body)
         course = Course.objects.get(id=course_id)
 
+        gps_json=course_data["gps_geo_json"]
+        empty_slope = []
+
         course.name = course_data["name"]
         course.location = course_data["location"]
         course.last_updated = course_data["last_updated"]
-        course.gps_geo_json = course_data["gps_geo_json"]
+        course.gps_geo_json = DynamicModel.objects.create(
+                owner=request.user.username,
+                lat=gps_json['latitude'],
+                long=gps_json['longitude'],
+                ele=gps_json['elevation'],
+                distance=gps_json['horizontal_distance_to_last_point'],
+                bearing=gps_json['bearing_from_last_point'],
+                slope=empty_slope
+            )
 
         course.save()
 
@@ -427,7 +438,7 @@ def course_view(request, course_id):
 
 
     elif request.method == "DELETE":
-        course = Course.objects.get(id=course_id)
+        course = Athlete.objects.get(id=course_id)
         course.delete()
 
         if Course.objects.filter(id=course_id).exists():
