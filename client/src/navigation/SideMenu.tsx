@@ -16,6 +16,7 @@ import { matchPath, useLocation, useNavigate } from 'react-router-dom';
 import logo from '../logo.svg';
 import UserContext from '../user/UserContext';
 import ConfirmLogoutDialog from '../user/ConfirmLogoutDialog';
+import CalculateIcon from '@mui/icons-material/Calculate';
 
 const items = [
     {
@@ -27,6 +28,11 @@ const items = [
         label: 'Courses',
         Icon: RouteIcon,
         path: '/courses',
+    },
+    {
+        label: 'Predictions',
+        Icon: CalculateIcon,
+        path: '/predictions',
     },
     {
         label: 'Profile',

@@ -5,8 +5,8 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import { DialogContentText, Grid, InputAdornment } from '@mui/material';
-import { AthleteData } from './ManageAthletesPage';
+import { Alert, DialogContentText, Grid, InputAdornment } from '@mui/material';
+import { AthleteData } from './athletesAPI';
 
 type Props = {
     open: boolean;
@@ -14,6 +14,8 @@ type Props = {
     athleteData?: AthleteData;
     onCancel: () => void;
     onSave: (athleteData: AthleteData) => void;
+    // Error message to display
+    error?: string;
 };
 
 /**
@@ -30,10 +32,11 @@ export default function AthleteFormDialog({
     athleteData,
     onCancel,
     onSave,
+    error,
 }: Props) {
     // Update the form to show the given athlete data
     React.useEffect(() => {
-        setName((athleteData && athleteData.name) || '');
+        setName((athleteData && athleteData.fullName) || '');
         setRiderMass((athleteData && athleteData.riderMass) || 0);
         setBikeMass((athleteData && athleteData.bikeMass) || 0);
         setOtherMass((athleteData && athleteData.otherMass) || 0);
@@ -53,7 +56,8 @@ export default function AthleteFormDialog({
     // Handle Save button to call "onSave" with the edited data
     const handleSave = () =>
         onSave({
-            name,
+            id: athleteData?.id,
+            fullName: name,
             riderMass,
             bikeMass,
             otherMass,
@@ -187,6 +191,7 @@ export default function AthleteFormDialog({
                         </Grid>
                     </Grid>
                 )}
+                {error && <Alert severity="error">{error}</Alert>}
             </DialogContent>
             <DialogActions>
                 <Button onClick={onCancel}>Cancel</Button>
