@@ -18,7 +18,7 @@ type Props = {
     >;
 };
 
-function HandleDropButtons(props: Props) {
+function DropButtons(props: Props) {
     const { athleteDispatch } = props;
     const [selectedAthleteId, setSelectedAthleteId] = useState<number | ''>('');
     const [allAthletes, setAllAthletes] = useState<AthleteData[]>([]);

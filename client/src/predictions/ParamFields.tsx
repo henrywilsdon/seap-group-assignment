@@ -12,7 +12,7 @@ type Props = {
     athleteDispatch: Dispatch<AthleteAction>;
 };
 
-function HandleParamFields(props: Props) {
+function ParamFields(props: Props) {
     const { athlete, originalAthlete, athleteDispatch } = props;
 
     return (
@@ -38,4 +38,4 @@ function HandleParamFields(props: Props) {
     );
 }
 
-export default HandleParamFields;
+export default ParamFields;
