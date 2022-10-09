@@ -1,6 +1,50 @@
-import { Paper, Box, TextField, Typography } from '@mui/material';
+import { Clear } from '@mui/icons-material';
+import {
+    Paper,
+    Box,
+    TextField,
+    Typography,
+    TextFieldProps,
+    InputAdornment,
+    Tooltip,
+    IconButton,
+} from '@mui/material';
+import { ChangeEvent, Dispatch } from 'react';
+import {
+    CourseParamsAction,
+    CourseParamsInputState,
+} from './useCourseParamsReducer';
 
-function CourseParams() {
+type Props = {
+    courseParams: CourseParamsInputState;
+    courseParamsDispatch: Dispatch<CourseParamsAction>;
+};
+
+export default function CourseParams(props: Props) {
+    const { courseParams, courseParamsDispatch } = props;
+
+    const handleMinSlopeThresholdChange = (
+        event: ChangeEvent<HTMLInputElement>,
+    ) => {
+        courseParamsDispatch({
+            type: 'setMinSlopeThreshold',
+            minSlopeThreshold: event.target.value,
+        });
+    };
+
+    const handleMaxSlopeThresholdChange = (
+        event: ChangeEvent<HTMLInputElement>,
+    ) => {
+        courseParamsDispatch({
+            type: 'setMaxSlopeThreshold',
+            maxSlopeThreshold: event.target.value,
+        });
+    };
+
+    const handleCourseParamsClear = () => {
+        courseParamsDispatch({ type: 'clear' });
+    };
+
     return (
         <div className="CourseParams">
             <Box
@@ -21,22 +65,45 @@ function CourseParams() {
                         flexDirection: 'column',
                     }}
                 >
-                    <Typography variant="h6">
-                        Edit Environment Parameters
-                    </Typography>
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                        }}
+                    >
+                        <Typography variant="h6">Course Parameters</Typography>
+                        <Tooltip title="Clear Values">
+                            <IconButton onClick={handleCourseParamsClear}>
+                                <Clear />
+                            </IconButton>
+                        </Tooltip>
+                    </Box>
 
-                    <TextField
-                        color="primary"
-                        variant="standard"
-                        label="Slope Threshold Minimum"
-                        fullWidth
+                    <CustomTextField
+                        label="Minimum Slope Threshold"
+                        value={courseParams.minSlopeThreshold}
+                        onChange={handleMinSlopeThresholdChange}
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    %
+                                </InputAdornment>
+                            ),
+                        }}
                     />
 
-                    <TextField
-                        color="primary"
-                        variant="standard"
-                        label="Slope Threshold Maximum"
-                        fullWidth
+                    <CustomTextField
+                        label="Maximum Slope Threshold"
+                        value={courseParams.maxSlopeThreshold}
+                        onChange={handleMaxSlopeThresholdChange}
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    %
+                                </InputAdornment>
+                            ),
+                        }}
                     />
                 </Paper>
             </Box>
@@ -44,4 +111,14 @@ function CourseParams() {
     );
 }
 
-export default CourseParams;
+function CustomTextField({ label, ...textFieldProps }: TextFieldProps & {}) {
+    return (
+        <TextField
+            variant="standard"
+            type="number"
+            label={label}
+            fullWidth
+            {...textFieldProps}
+        />
+    );
+}

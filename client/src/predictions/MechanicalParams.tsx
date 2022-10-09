@@ -1,6 +1,66 @@
-import { Paper, Box, TextField, Typography } from '@mui/material';
+import { Clear } from '@mui/icons-material';
+import {
+    Paper,
+    Box,
+    TextField,
+    Typography,
+    TextFieldProps,
+    InputAdornment,
+    Tooltip,
+    IconButton,
+} from '@mui/material';
+import { ChangeEvent, Dispatch } from 'react';
+import { MechanicalAction, MechanicalInputState } from './useMechanicalReducer';
 
-function MechanicalParams() {
+type Props = {
+    mechanical: MechanicalInputState;
+    mechanicalDispatch: Dispatch<MechanicalAction>;
+};
+
+export default function MechanicalParams(props: Props) {
+    const { mechanical, mechanicalDispatch } = props;
+
+    const handleCrrChange = (event: ChangeEvent<HTMLInputElement>) => {
+        mechanicalDispatch({
+            type: 'setCrr',
+            crrValue: event.target.value,
+        });
+    };
+
+    const handleMechEfficiencyChange = (
+        event: ChangeEvent<HTMLInputElement>,
+    ) => {
+        mechanicalDispatch({
+            type: 'setMechEfficiency',
+            mechEfficiency: event.target.value,
+        });
+    };
+
+    const handleMolWhlFrontChange = (event: ChangeEvent<HTMLInputElement>) => {
+        mechanicalDispatch({
+            type: 'setMolWhlFront',
+            molWhlFront: event.target.value,
+        });
+    };
+
+    const handleMolWhlRearChange = (event: ChangeEvent<HTMLInputElement>) => {
+        mechanicalDispatch({
+            type: 'setMolWhlRear',
+            molWhlRear: event.target.value,
+        });
+    };
+
+    const handleWheelRadiusChange = (event: ChangeEvent<HTMLInputElement>) => {
+        mechanicalDispatch({
+            type: 'setWheelRadius',
+            wheelRadius: event.target.value,
+        });
+    };
+
+    const handleMechanicalClear = () => {
+        mechanicalDispatch({ type: 'clear' });
+    };
+
     return (
         <div className="MechanicalParams">
             <Box
@@ -21,43 +81,79 @@ function MechanicalParams() {
                         flexDirection: 'column',
                     }}
                 >
-                    <Typography variant="h6">
-                        Edit Mechanical Parameters
-                    </Typography>
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                        }}
+                    >
+                        <Typography variant="h6">
+                            Mechanical Parameters
+                        </Typography>
+                        <Tooltip title="Clear Values">
+                            <IconButton onClick={handleMechanicalClear}>
+                                <Clear />
+                            </IconButton>
+                        </Tooltip>
+                    </Box>
 
-                    <TextField
-                        color="primary"
-                        variant="standard"
+                    <CustomTextField
                         label="Crr"
-                        fullWidth
+                        value={mechanical.crrValue}
+                        onChange={handleCrrChange}
                     />
 
-                    <TextField
-                        color="primary"
-                        variant="standard"
+                    <CustomTextField
                         label="Mechanical Efficiency"
-                        fullWidth
+                        value={mechanical.mechEfficiency}
+                        onChange={handleMechEfficiencyChange}
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    %
+                                </InputAdornment>
+                            ),
+                        }}
                     />
 
-                    <TextField
-                        color="primary"
-                        variant="standard"
-                        label="Mol Whl Front"
-                        fullWidth
+                    <CustomTextField
+                        label="Mol Wheel Front"
+                        value={mechanical.molWhlFront}
+                        onChange={handleMolWhlFrontChange}
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    kg.m^2
+                                </InputAdornment>
+                            ),
+                        }}
                     />
 
-                    <TextField
-                        color="primary"
-                        variant="standard"
-                        label="Mol Whl Rear"
-                        fullWidth
+                    <CustomTextField
+                        label="Mol Wheel Rear"
+                        value={mechanical.molWhlRear}
+                        onChange={handleMolWhlRearChange}
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    kg.m^2
+                                </InputAdornment>
+                            ),
+                        }}
                     />
 
-                    <TextField
-                        color="primary"
-                        variant="standard"
-                        label="Wheel Radius"
-                        fullWidth
+                    <CustomTextField
+                        label="Mol Wheel Front"
+                        value={mechanical.wheelRadius}
+                        onChange={handleWheelRadiusChange}
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    m
+                                </InputAdornment>
+                            ),
+                        }}
                     />
                 </Paper>
             </Box>
@@ -65,4 +161,14 @@ function MechanicalParams() {
     );
 }
 
-export default MechanicalParams;
+function CustomTextField({ label, ...textFieldProps }: TextFieldProps & {}) {
+    return (
+        <TextField
+            variant="standard"
+            type="number"
+            label={label}
+            fullWidth
+            {...textFieldProps}
+        />
+    );
+}
