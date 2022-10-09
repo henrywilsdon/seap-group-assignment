@@ -29,11 +29,6 @@ const items = [
         path: '/courses',
     },
     {
-        label: 'Predictions',
-        Icon: CalculateIcon,
-        path: '/predictions',
-    },
-    {
         label: 'Profile',
         Icon: PersonIcon,
         path: '/profile',
