@@ -1,3 +1,5 @@
+import pprint
+
 from temporaryModels import *
 import math
 from predictPowerAero import *
@@ -36,7 +38,11 @@ def predict_single_timestep(course: CourseModel, # time doesn't need to be an ar
     return SingleTimestepOutput(distance=distance,
                                 speed=speed, # current speed is based on the previous speed and acceleration
                                 acceleration=acceleration,
-                                w_prime_balance=w_prime_balance
+                                w_prime_balance=w_prime_balance,
+                                timestep=1, #TODO
+                                segment=1, #TODO
+                                power_in=power_in,
+                                yaw=1 #TODO
                                 )
 
 def predict_entire_course(course) -> PredictEntireCourseOutput:
@@ -53,6 +59,12 @@ def predict_entire_course(course) -> PredictEntireCourseOutput:
     min_w_prime_balance = float('inf')
     is_first = True
 
+    segments_data = {} # Dictionary not list, because segments are 1-indexed
+    for index in set(course.dynamic.segment):
+        segments_data[index] = SingleSegmentData()
+    timesteps_data = AllTimestepsData([], [], [], [], [])
+    overall_data = FullCourseData
+
     while current_distance < max_distance:
 
         single_out = predict_single_timestep(course=course,
@@ -62,6 +74,17 @@ def predict_entire_course(course) -> PredictEntireCourseOutput:
                                              acceleration=current_acceleration,
                                              is_first=is_first)
 
+        # Adds the per-segment data
+        segments_data[single_out.segment].duration += cs.timestep_size
+        segments_data[single_out.segment].min_w_prime_balance = min(single_out.w_prime_balance, segments_data[single_out.segment].min_w_prime_balance)
+        segments_data[single_out.segment].power_in += single_out.power_in
+        segments_data[single_out.segment].distance += (single_out.distance - current_distance)
+        segments_data[single_out.segment].total_yaw += single_out.yaw # used as an intermediate step in calculating average yaw
+        segments_data[single_out.segment].timesteps += 1
+        if single_out.speed >= 40:
+            segments_data[single_out.segment].total_yaw_over_40kmh += single_out.yaw
+            segments_data[single_out.segment].timesteps_over_40kmh += 1
+
         current_distance = single_out.distance
         current_speed = single_out.speed
         current_acceleration = single_out.acceleration
@@ -70,11 +93,18 @@ def predict_entire_course(course) -> PredictEntireCourseOutput:
         current_w_prime_balance = single_out.w_prime_balance
         is_first = False
 
-    return PredictEntireCourseOutput(duration=current_time, min_w_prime_balance=min_w_prime_balance)
+    for index in segments_data:
+        if segments_data[index].timesteps > 0:
+            segments_data[index].average_yaw = segments_data[index].total_yaw / segments_data[index].timesteps
+        if segments_data[index].timesteps_over_40kmh > 0:
+            segments_data[index].average_yaw_above_40kmh = segments_data[index].total_yaw_over_40kmh / segments_data[index].timesteps_over_40kmh
 
-toprint = predict_entire_course(CourseModel())
-print("Duration:  ", toprint.duration)
-print("Min W` bal:", toprint.min_w_prime_balance)
+    return PredictEntireCourseOutput(segments_data=segments_data, overall_data=None, timesteps_data=None)
+
+toprint = predict_entire_course(CourseModel()).segments_data
+pprint.PrettyPrinter().pprint(toprint)
+# print("Duration:  ", toprint.duration)
+# print("Min W` bal:", toprint.min_w_prime_balance)
 
 
 

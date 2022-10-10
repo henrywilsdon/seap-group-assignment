@@ -60,6 +60,7 @@ class DynamicModel():
     bearing_from_prev = [None, 73.89, 62.00, 63.93, 63.00, 61.47, 63.00, 63.93, 63.00, 59.33, 62.00, 62.00, 60.93, 58.15, 59.33, 59.33, 59.33, 63.00, 58.92, 59.33, 58.92, 60.44, 59.99, 58.92, 60.99, 60.44, 56.88, 59.51, 84.52, 122.1, 102.7, 85.34, 46.43, 26.79]
     slope_from_prev = [None, 0.002, 0.007, -0.011, -0.026, -0.021, 0.000, -0.007, -0.007, 0.000, 0.000, 0.000, -0.012, 0.019, 0.004, 0.007, 0.000, -0.007, -0.004, 0.000, -0.007, -0.011, 0.007, -0.007, -0.020, -0.018, -0.020, -0.009, -0.038, -0.031, -0.006, 0.022, 0.042, 0.045]
     roughness_class = [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2] # baked into the spreadsheet, at 'Course info'!$Q$21:$R$30
+    segment = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
 
 
 
@@ -72,20 +73,75 @@ class SingleTimestepOutput():
                  distance,
                  speed,
                  acceleration,
-                 w_prime_balance # the amount 'left in the bucket'
+                 w_prime_balance,
+                 timestep,
+                 segment,
+                 power_in,
+                 yaw
                  ):
         self.distance = distance
         self.speed = speed
         self.acceleration = acceleration
         self.w_prime_balance = w_prime_balance
+        self.timestep=timestep
+        self.segment=segment
+        self.power_in=power_in
+        self.yaw=yaw
+
+class SingleSegmentData():
+    duration = 0
+    min_w_prime_balance = float("inf")
+    power_in = 0
+    distance = 0
+    average_yaw = None
+    average_yaw_above_40kmh = None
+    total_yaw = 0
+    total_yaw_over_40kmh = 0
+    timesteps = 0
+    timesteps_over_40kmh = 0
+
+class FullCourseData():
+    def __init__(self,
+                 duration,
+                 min_w_prime_balance,
+                 power,
+                 distance,
+                 average_yaw,
+                 average_yaw_above_40kmh):
+
+        self.duration = duration
+        self.min_w_prime_balance = min_w_prime_balance
+        self.power = power
+        self.distance = distance
+        self.average_yaw = average_yaw
+        self.average_yaw_above_40kmh = average_yaw_above_40kmh
+
+class AllTimestepsData():
+    def __init__(self,
+                 elevation,
+                 w_prime_balance,
+                 power_in,
+                 speed,
+                 yaw):
+
+        self.elevation = elevation
+        self.w_prime_balance = w_prime_balance
+        self.power_in = power_in
+        self.speed = speed
+        self.yaw = yaw
+
 
 class PredictEntireCourseOutput():
     def __init__(self,
-                 duration,
-                 min_w_prime_balance
+                 segments_data, # "segmented" means "one data point per segment, and also for the entire course"
+                 overall_data,
+                 timesteps_data, # "timestep" means "one data point for every timestep"
                  ):
-        self.duration = duration # how long the entire course took
-        self.min_w_prime_balance = min_w_prime_balance # the lowest the bucket went (the coaches will adjust all the values until this is close to zero, but not negative, meaning that the athlete never ran out).
+
+        self.segments_data = segments_data, # list of SegmentData
+        self.overall_data = overall_data, # a single OverallOutputData
+        self.timesteps_data = timesteps_data # a single TimestepsData
+
 
 
 
