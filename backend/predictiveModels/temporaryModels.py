@@ -62,11 +62,13 @@ class DynamicModel():
     roughness_class = [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2] # baked into the spreadsheet, at 'Course info'!$Q$21:$R$30
     segment = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
 
-
-
 class CourseModel():
     static = StaticModel()
     dynamic = DynamicModel()
+
+
+
+
 
 class SingleTimestepOutput():
     def __init__(self,
@@ -119,17 +121,16 @@ class AllTimestepsData():
     speed = []
     yaw = []
 
-
 class PredictEntireCourseOutput():
     def __init__(self,
-                 segments_data, # "segmented" means "one data point per segment, and also for the entire course"
+                 segments_data,
                  full_course_data,
                  timesteps_data, # "timestep" means "one data point for every timestep"
                  ):
 
-        self.segments_data = segments_data, # list of SegmentData
+        self.segments_data = segments_data, # list of SingleSegmentData
         self.full_course_data = full_course_data, # a single FullCourseData
-        self.timesteps_data = timesteps_data # a single TimestepsData
+        self.timesteps_data = timesteps_data # a single AllTimestepsData
 
 
 
