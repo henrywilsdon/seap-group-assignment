@@ -1,18 +1,10 @@
 from temporaryModels import *
 import math
 
-def predict_power_aero(course: CourseModel, distance: float, speed: float) -> float:
+def predict_power_aero(course: CourseModel, distance: float, speed: float, index: int) -> dict:
 
     cs = course.static
     cd = course.dynamic
-
-    index = None
-    for checkedIndex in reversed(range(len(cd.distance))):
-        if cd.distance[checkedIndex] <= distance:
-            index = checkedIndex
-            break
-
-
 
     # ---------------------------------------------------------------
     # THE PART THAT FIGURES OUT THE RELATIVE WIND SPEED
@@ -94,4 +86,4 @@ def predict_power_aero(course: CourseModel, distance: float, speed: float) -> fl
     # FINAL CALCULATIONS
 
     power_aero = 0.5 * cs.wind_density * relative_wind_speed**3 * cda
-    return power_aero
+    return {"power_aero": power_aero, "yaw": effective_yaw_angle}

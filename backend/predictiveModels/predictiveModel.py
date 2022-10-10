@@ -15,16 +15,26 @@ def predict_single_timestep(course: CourseModel, # time doesn't need to be an ar
                             -> SingleTimestepOutput:
 
     cs = course.static # for brevity
+    cd = course.dynamic
 
     if not is_first:
         speed += acceleration * cs.timestep_size
         distance += speed * cs.timestep_size
     # yes, that's correct: speed uses the PRIOR acceleration, but distance uses the CURRENT speed
 
+    # calculates what index you're up to in course.dynamic, based on your current distance
+    index = None
+    for checkedIndex in reversed(range(len(cd.distance))):
+        if cd.distance[checkedIndex] <= distance:
+            index = checkedIndex
+            break
+
     # the bulk of the 'predict' stuff (where it calls other functions)
-    power_aero = predict_power_aero(course, distance, speed)
-    power_gravity = predict_power_gravity(course, distance, speed)
-    power_in = predict_power_in(course, distance)
+    power_aero_func = predict_power_aero(course, distance, speed, index)
+    power_aero = power_aero_func["power_aero"]
+    yaw = power_aero_func["yaw"]
+    power_gravity = predict_power_gravity(course, distance, speed, index)
+    power_in = predict_power_in(course, distance, index)
     power_roll = predict_power_roll(course, speed)
     w_prime_balance = predict_w_prime_balance(course, w_prime_balance, power_in)
 
@@ -37,10 +47,10 @@ def predict_single_timestep(course: CourseModel, # time doesn't need to be an ar
                                 speed=speed, # current speed is based on the previous speed and acceleration
                                 acceleration=acceleration,
                                 w_prime_balance=w_prime_balance,
-                                segment=1, #TODO
+                                segment=cd.segment[index],
                                 power_in=power_in,
-                                yaw=1, #TODO
-                                elevation=1 #TODO
+                                yaw=yaw,
+                                elevation=cd.ele[index]
                                 )
 
 def predict_entire_course(course) -> PredictEntireCourseOutput:
