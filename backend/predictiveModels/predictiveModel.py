@@ -1,5 +1,3 @@
-import pprint
-
 from temporaryModels import *
 import math
 from predictPowerAero import *
@@ -63,7 +61,7 @@ def predict_entire_course(course) -> PredictEntireCourseOutput:
     for index in set(course.dynamic.segment):
         segments_data[index] = SingleSegmentData()
     timesteps_data = AllTimestepsData([], [], [], [], [])
-    overall_data = FullCourseData
+    full_course_data = FullCourseData()
 
     while current_distance < max_distance:
 
@@ -74,7 +72,7 @@ def predict_entire_course(course) -> PredictEntireCourseOutput:
                                              acceleration=current_acceleration,
                                              is_first=is_first)
 
-        # Adds the per-segment data
+        # ADDS THE PER-SEGMENT DATA TO THE OUTPUT
         segments_data[single_out.segment].duration += cs.timestep_size
         segments_data[single_out.segment].min_w_prime_balance = min(single_out.w_prime_balance, segments_data[single_out.segment].min_w_prime_balance)
         segments_data[single_out.segment].power_in += single_out.power_in
@@ -85,28 +83,48 @@ def predict_entire_course(course) -> PredictEntireCourseOutput:
             segments_data[single_out.segment].total_yaw_over_40kmh += single_out.yaw
             segments_data[single_out.segment].timesteps_over_40kmh += 1
 
+        # ADDS THE FULL-COURSE DATA TO THE OUTPUT
+        full_course_data.duration += cs.timestep_size
+        full_course_data.min_w_prime_balance = min(single_out.w_prime_balance, full_course_data.min_w_prime_balance)
+        full_course_data.power_in += single_out.power_in
+        full_course_data.distance += (single_out.distance - current_distance)
+        full_course_data.total_yaw += single_out.yaw  # used as an intermediate step in calculating average yaw
+        full_course_data.timesteps += 1
+        if single_out.speed >= 40:
+            full_course_data.total_yaw_over_40kmh += single_out.yaw
+            full_course_data.timesteps_over_40kmh += 1
+
+        # MAINTAINS THE LIST OF DATA USED IN THE CALCULATIONS
         current_distance = single_out.distance
         current_speed = single_out.speed
         current_acceleration = single_out.acceleration
         current_time += cs.timestep_size
-        min_w_prime_balance = min(current_w_prime_balance, single_out.w_prime_balance)
         current_w_prime_balance = single_out.w_prime_balance
         is_first = False
 
+    # CONVERTS TOTALS TO AVERAGES IN PER-SEGMENT DATA
     for index in segments_data:
         if segments_data[index].timesteps > 0:
             segments_data[index].average_yaw = segments_data[index].total_yaw / segments_data[index].timesteps
         if segments_data[index].timesteps_over_40kmh > 0:
             segments_data[index].average_yaw_above_40kmh = segments_data[index].total_yaw_over_40kmh / segments_data[index].timesteps_over_40kmh
 
-    return PredictEntireCourseOutput(segments_data=segments_data, overall_data=None, timesteps_data=None)
+    # CONVERTS TOTALS TO AVERAGES IN FULL-COURSE DATA
+    if full_course_data.timesteps > 0:
+        full_course_data.average_yaw = full_course_data.total_yaw / full_course_data.timesteps
+    if full_course_data.timesteps_over_40kmh > 0:
+        full_course_data.average_yaw_above_40kmh = full_course_data.total_yaw_over_40kmh / full_course_data.timesteps_over_40kmh
 
-toprint = predict_entire_course(CourseModel()).segments_data
-pprint.PrettyPrinter().pprint(toprint)
+    return PredictEntireCourseOutput(segments_data=segments_data, full_course_data=full_course_data, timesteps_data=None)
+
+toprint = predict_entire_course(CourseModel())
+print(toprint.segments_data)
+print(toprint.full_course_data)
 # print("Duration:  ", toprint.duration)
 # print("Min W` bal:", toprint.min_w_prime_balance)
 
 
 
 
-
+# TODO: Add the proper output data for elevation, yaw, timestep, etc (rather than default values)
+# TODO: all timesteps data

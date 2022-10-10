@@ -101,20 +101,16 @@ class SingleSegmentData():
     timesteps_over_40kmh = 0
 
 class FullCourseData():
-    def __init__(self,
-                 duration,
-                 min_w_prime_balance,
-                 power,
-                 distance,
-                 average_yaw,
-                 average_yaw_above_40kmh):
-
-        self.duration = duration
-        self.min_w_prime_balance = min_w_prime_balance
-        self.power = power
-        self.distance = distance
-        self.average_yaw = average_yaw
-        self.average_yaw_above_40kmh = average_yaw_above_40kmh
+    duration = 0
+    min_w_prime_balance = float("inf")
+    power_in = 0
+    distance = 0
+    average_yaw = None
+    average_yaw_above_40kmh = None
+    total_yaw = 0
+    total_yaw_over_40kmh = 0
+    timesteps = 0
+    timesteps_over_40kmh = 0
 
 class AllTimestepsData():
     def __init__(self,
@@ -134,12 +130,12 @@ class AllTimestepsData():
 class PredictEntireCourseOutput():
     def __init__(self,
                  segments_data, # "segmented" means "one data point per segment, and also for the entire course"
-                 overall_data,
+                 full_course_data,
                  timesteps_data, # "timestep" means "one data point for every timestep"
                  ):
 
         self.segments_data = segments_data, # list of SegmentData
-        self.overall_data = overall_data, # a single OverallOutputData
+        self.full_course_data = full_course_data, # a single FullCourseData
         self.timesteps_data = timesteps_data # a single TimestepsData
 
 
