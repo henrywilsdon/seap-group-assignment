@@ -74,19 +74,19 @@ class SingleTimestepOutput():
                  speed,
                  acceleration,
                  w_prime_balance,
-                 timestep,
                  segment,
                  power_in,
-                 yaw
+                 yaw,
+                 elevation
                  ):
         self.distance = distance
         self.speed = speed
         self.acceleration = acceleration
         self.w_prime_balance = w_prime_balance
-        self.timestep=timestep
         self.segment=segment
         self.power_in=power_in
         self.yaw=yaw
+        self.elevation=elevation
 
 class SingleSegmentData():
     duration = 0
@@ -113,18 +113,11 @@ class FullCourseData():
     timesteps_over_40kmh = 0
 
 class AllTimestepsData():
-    def __init__(self,
-                 elevation,
-                 w_prime_balance,
-                 power_in,
-                 speed,
-                 yaw):
-
-        self.elevation = elevation
-        self.w_prime_balance = w_prime_balance
-        self.power_in = power_in
-        self.speed = speed
-        self.yaw = yaw
+    elevation = []
+    w_prime_balance = []
+    power_in = []
+    speed = []
+    yaw = []
 
 
 class PredictEntireCourseOutput():

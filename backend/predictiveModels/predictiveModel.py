@@ -37,10 +37,10 @@ def predict_single_timestep(course: CourseModel, # time doesn't need to be an ar
                                 speed=speed, # current speed is based on the previous speed and acceleration
                                 acceleration=acceleration,
                                 w_prime_balance=w_prime_balance,
-                                timestep=1, #TODO
                                 segment=1, #TODO
                                 power_in=power_in,
-                                yaw=1 #TODO
+                                yaw=1, #TODO
+                                elevation=1 #TODO
                                 )
 
 def predict_entire_course(course) -> PredictEntireCourseOutput:
@@ -54,13 +54,12 @@ def predict_entire_course(course) -> PredictEntireCourseOutput:
     current_acceleration = 0
     current_time = 0
     current_w_prime_balance = cs.w_prime
-    min_w_prime_balance = float('inf')
     is_first = True
 
     segments_data = {} # Dictionary not list, because segments are 1-indexed
     for index in set(course.dynamic.segment):
         segments_data[index] = SingleSegmentData()
-    timesteps_data = AllTimestepsData([], [], [], [], [])
+    timesteps_data = AllTimestepsData()
     full_course_data = FullCourseData()
 
     while current_distance < max_distance:
@@ -94,6 +93,13 @@ def predict_entire_course(course) -> PredictEntireCourseOutput:
             full_course_data.total_yaw_over_40kmh += single_out.yaw
             full_course_data.timesteps_over_40kmh += 1
 
+        # ADDS THE PER-TIMESTEP DATA TO THE OUTPUT
+        timesteps_data.elevation += [single_out.elevation]
+        timesteps_data.w_prime_balance += [single_out.w_prime_balance]
+        timesteps_data.power_in += [single_out.power_in]
+        timesteps_data.speed += [single_out.speed]
+        timesteps_data.yaw += [single_out.yaw]
+
         # MAINTAINS THE LIST OF DATA USED IN THE CALCULATIONS
         current_distance = single_out.distance
         current_speed = single_out.speed
@@ -115,11 +121,14 @@ def predict_entire_course(course) -> PredictEntireCourseOutput:
     if full_course_data.timesteps_over_40kmh > 0:
         full_course_data.average_yaw_above_40kmh = full_course_data.total_yaw_over_40kmh / full_course_data.timesteps_over_40kmh
 
-    return PredictEntireCourseOutput(segments_data=segments_data, full_course_data=full_course_data, timesteps_data=None)
+    return PredictEntireCourseOutput(segments_data=segments_data, full_course_data=full_course_data, timesteps_data=timesteps_data)
 
 toprint = predict_entire_course(CourseModel())
 print(toprint.segments_data)
 print(toprint.full_course_data)
+print(toprint.timesteps_data)
+x=1
+
 # print("Duration:  ", toprint.duration)
 # print("Min W` bal:", toprint.min_w_prime_balance)
 
