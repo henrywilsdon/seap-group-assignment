@@ -1,5 +1,4 @@
 /**global google */
-import { pid } from 'process';
 import React, { useCallback, useEffect, useState } from 'react';
 import { BackendCourseGPS } from './courseAPI';
 
@@ -39,10 +38,11 @@ export function useMapState(gpsPoints: BackendCourseGPS | null): {
     useEffect(() => {
         if (!gpsPoints) {
             setPoints([]);
+            setSplits([]);
             setCenterLatLng(null);
             return;
         }
-
+        console.log('parse points');
         const newPoints: GpsPoint[] = [];
         let maxLat = -90;
         let minLat = 90;
@@ -53,14 +53,14 @@ export function useMapState(gpsPoints: BackendCourseGPS | null): {
         for (let i = 0; i < gpsPoints.lat.length; i++) {
             maxLat = Math.max(maxLat, gpsPoints.lat[i]);
             minLat = Math.min(minLat, gpsPoints.lat[i]);
-            maxLng = Math.max(maxLng, gpsPoints.long[i]);
-            minLng = Math.min(minLng, gpsPoints.long[i]);
+            maxLng = Math.max(maxLng, gpsPoints.lon[i]);
+            minLng = Math.min(minLng, gpsPoints.lon[i]);
 
-            totalDistanceKm += gpsPoints.distance[i] / 1000;
+            totalDistanceKm += (gpsPoints.distance[i] || 0) / 1000;
             newPoints.push({
                 idx: i,
                 lat: gpsPoints.lat[i],
-                lng: gpsPoints.long[i],
+                lng: gpsPoints.lon[i],
                 elev: gpsPoints.ele[i],
                 distance: gpsPoints.distance[i],
                 totalDistanceKm: parseFloat(totalDistanceKm.toFixed(3)),
@@ -81,7 +81,7 @@ export function useMapState(gpsPoints: BackendCourseGPS | null): {
         console.log(minLat, maxLat, minLng, maxLng);
 
         setPoints(newPoints);
-    }, [splits, gpsPoints]);
+    }, [gpsPoints]);
 
     // Set the current hover split
     useEffect(() => {

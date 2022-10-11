@@ -355,10 +355,15 @@ def get_gpx_data(request):
             dis.append(gpx_json['segments'][0][i]['horz_dist_from_prev'])
             bear.append(gpx_json['segments'][0][i]['bearing_from_prev'])
             i = i + 1
-        DynamicModel.objects.create(owner=owner,lat=lat,long=lon,ele=ele,distance=dis,bearing=bear,slope=slope)
-        dynam = DynamicModel.objects.get(owner=owner)
+        dynam = DynamicModel.objects.create(owner=owner,lat=lat,long=lon,ele=ele,distance=dis,bearing=bear,slope=slope)
 
-        return JsonResponse({'detail': 'Successfully uploaded gpx data.', 'name': uploaded_file.name}, status=200)
+        return JsonResponse({
+            'detail': 'Successfully uploaded gpx data.', 
+            'lat': lat,
+            'lon': lon,
+            'ele': ele,
+            'distance': dis, 
+        }, status=200)
 
 
 def all_courses_view(request):

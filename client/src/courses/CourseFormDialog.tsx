@@ -20,9 +20,9 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import React, { ChangeEvent, useCallback, useEffect } from 'react';
+import React, { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { Datum } from 'react-charts';
-import parseGpx from './courseAPI';
+import { parseGpx, BackendCourseGPS } from './courseAPI';
 import CourseMap from './CourseMap';
 import HeightMap from './HeightMap';
 import { GpsPoint, useMapState } from './useMapState';
@@ -56,6 +56,8 @@ export default function CourseFormDialog({ open, onCancel, onSave }: Props) {
 
     // State for the GPX file
     const [gpxFile, setGpxFile] = React.useState<File | null>(null);
+    const [backendCourseGps, setBackendCourseGps] =
+        useState<BackendCourseGPS | null>(null);
 
     const {
         points,
@@ -66,7 +68,16 @@ export default function CourseFormDialog({ open, onCancel, onSave }: Props) {
         setHoverPoint,
         addSplit,
         removeSplit,
-    } = useMapState(parseGpx(''));
+    } = useMapState(backendCourseGps);
+
+    useEffect(() => {
+        if (!gpxFile) {
+            setBackendCourseGps(null);
+            return;
+        }
+
+        parseGpx(gpxFile).then(setBackendCourseGps);
+    }, [gpxFile]);
 
     useEffect(() => {
         if (points.length === 0) {

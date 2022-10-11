@@ -2,7 +2,7 @@
 import { Wrapper } from '@googlemaps/react-wrapper';
 import { ReactNode } from 'react';
 import GoogleMap from './GoogleMap';
-import MapCourse from './CoursePolyline';
+import CoursePolyline from './CoursePolyline';
 import Marker from './Marker';
 import { GpsPoint } from './useMapState';
 
@@ -13,6 +13,8 @@ type Props = {
     hoverPoint: GpsPoint | null;
     hoverSplitIdx: number | null;
 };
+
+const mapStyle = { flexGrow: '1', height: '100%' };
 
 /**
  * Show google map with course path segments overlayed.
@@ -69,9 +71,7 @@ export default function CourseMap(props: Props) {
     return (
         <Wrapper apiKey="AIzaSyDks89zgKUUG0qc_hixpNMndMj6hDOOGWw">
             <GoogleMap
-                style={{ flexGrow: '1', height: '100%' }}
-                zoom={14}
-                bounds={bounds}
+                style={mapStyle}
                 zoomControl
                 render={(map) => (
                     <>
@@ -84,15 +84,20 @@ export default function CourseMap(props: Props) {
                             />
                         )}
                         {points.length > 0 && (
-                            <MapCourse
+                            <CoursePolyline
                                 points={points}
                                 splits={splits}
+                                bounds={bounds}
                                 hoverSegment={hoverSplitIdx}
                                 map={map}
                             />
                         )}
                     </>
                 )}
+                {...(points.length === 0 && {
+                    zoom: 10,
+                    center: { lat: -34.92866, lng: 138.59863 },
+                })}
             />
         </Wrapper>
     );

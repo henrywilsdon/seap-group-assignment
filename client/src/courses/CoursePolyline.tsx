@@ -1,4 +1,5 @@
-import React, { useRef } from 'react';
+/** global google */
+import React, { useEffect, useRef } from 'react';
 import { GpsPoint } from './useMapState';
 
 type Props = {
@@ -6,6 +7,7 @@ type Props = {
     splits: number[];
     hoverSegment: number | null;
     map?: google.maps.Map;
+    bounds?: google.maps.LatLngBoundsLiteral | null;
 };
 
 /**
@@ -16,8 +18,25 @@ export default function CoursePolyline({
     splits,
     hoverSegment,
     map,
+    bounds,
 }: Props) {
     const segmentPaths = useRef<google.maps.Polyline[] | []>([]);
+    const prevMap = useRef<google.maps.Map | null>(null);
+    const prevBounds = useRef<google.maps.LatLngBoundsLiteral | null>(null);
+
+    useEffect(() => {
+        if (!map || !bounds) {
+            return;
+        }
+
+        // Only run if map just loaded or bounds has changed
+        if (!prevMap.current || bounds !== prevBounds.current) {
+            console.log(!prevMap.current, bounds !== prevBounds.current);
+            map.fitBounds(bounds);
+            prevMap.current = map;
+            prevBounds.current = bounds;
+        }
+    }, [map, bounds]);
 
     React.useEffect(() => {
         if (!map) return;
