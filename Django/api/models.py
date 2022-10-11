@@ -12,7 +12,11 @@ class Athlete(models.Model):
     CP_FTP = models.FloatField()
     W_prime = models.FloatField()
 
-
+class Course(models.Model):
+    name = models.CharField(max_length=30)
+    location = models.CharField(max_length=30)
+    last_updated = models.DateTimeField()
+    gps_geo_json = models.OneToOneField("DynamicModel", on_delete=models.CASCADE)
 
 class BikePlusRiderModel(models.Model):
     mass_rider = models.FloatField()

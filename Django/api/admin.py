@@ -32,3 +32,7 @@ class StaticModelAdmin(admin.ModelAdmin):
 @admin.register(DynamicModel)
 class DynamicModel(admin.ModelAdmin):
     list_display = ['lat', 'long', 'ele', 'distance', 'bearing', 'slope']
+
+@admin.register(Course)
+class Course(admin.ModelAdmin):
+    list_display = ['name', 'location', 'last_updated', 'gps_geo_json']
