@@ -1,11 +1,9 @@
 from django.contrib import admin
-
 from .models import *
 
-# Register your models here.
 @admin.register(Athlete)
 class AthleteAdmin(admin.ModelAdmin):
-    list_display = ['name','bike_mass','rider_other','total_mass','CP_FTP','W_prime']
+    list_display = ['name', 'bike_mass', 'rider_mass', 'other_mass', 'total_mass', 'CP_FTP', 'W_prime']
 
 @admin.register(BikePlusRiderModel)
 class BikePlusRiderModelAdmin(admin.ModelAdmin):
@@ -34,3 +32,7 @@ class StaticModelAdmin(admin.ModelAdmin):
 @admin.register(DynamicModel)
 class DynamicModel(admin.ModelAdmin):
     list_display = ['lat', 'long', 'ele', 'distance', 'bearing', 'slope']
+
+@admin.register(Course)
+class Course(admin.ModelAdmin):
+    list_display = ['name', 'location', 'last_updated', 'gps_geo_json']

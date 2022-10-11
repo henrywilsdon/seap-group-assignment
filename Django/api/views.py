@@ -1,3 +1,8 @@
+import pprint # used only for testing code
+import xmltodict
+import great_circle_calculator.great_circle_calculator as gcc
+import geojson
+
 from contextlib import redirect_stderr
 import json
 from django.shortcuts import render, redirect
@@ -10,6 +15,8 @@ from django.views.decorators.http import require_http_methods
 """ from django.views.decorators.csrf import ensure_csrf_cookie
 from django.middleware.csrf import get_token """
 from api.models import *
+from api.models import DynamicModel
+from api.gpxParser import gpx_to_json
 
 # Create your views here.
 
@@ -280,9 +287,162 @@ def static_model_view(request, gpx_model_id):
     if request.method == "PUT":
         model_data = json.loads(request.body)
         model = StaticModel.objects.get(id=gpx_model_id)
- 
+        
+        model.bike_plus_rider_model.mass_rider = model_data["mass_rider"]
+        model.bike_plus_rider_model.mass_bike = model_data["mass_bike"]
+        model.bike_plus_rider_model.mass_other = model_data["mass_other"]
+        model.bike_plus_rider_model.crr = model_data["crr"]
+        model.bike_plus_rider_model.mechanical_efficiency = model_data["mechanical_efficiency"]
+        model.bike_plus_rider_model.mol_whl_rear = model_data["mol_whl_rear"]
+        model.bike_plus_rider_model.mol_whl_front = model_data["mol_whl_front"]
+        model.bike_plus_rider_model.wheel_radius = model_data["wheel_radius"]
+
+        model.cp_model.cp = model_data["cp"]
+        model.cp_model.w_prime = model_data["w_prime"]
+        model.cp_model.w_prime_recovery_function = model_data["w_prime_recovery_function"]
+        model.cp_model.below_steady_state_max_slope = model_data["below_steady_state_max_slope"]
+        model.cp_model.below_steady_state_power_usage = model_data["below_steady_state_power_usage"]
+        model.cp_model.over_threshold_min_slope = model_data["over_threshold_min_slope"]
+        model.cp_model.over_threshold_power_usage = model_data["over_threshold_power_usage"]
+        model.cp_model.steady_state_power_usage = model_data["steady_state_power_usage"]
+
+        model.position_model.climbing_min_slope = model_data["climbing_min_slope"]
+        model.position_model.climbing_cda_increment = model_data["climbing_cda_increment"]
+        model.position_model.descending_cda_increment = model_data["descending_cda_increment"]
+        model.position_model.descending_max_slope = model_data["descending_max_slope"]
+
+        model.environment_model.wind_density = model_data["wind_density"]
+        model.environment_model.wind_direction = model_data["wind_direction"]
+        model.environment_model.wind_speed_mps = model_data["wind_speed_mps"]
+
+        model.technical_model.timestep_size = model_data["timestep_size"]
+        model.technical_model.starting_speed = model_data["starting_speed"]
+        model.technical_model.starting_distance = model_data["starting_distance"]
 
         model.save()
 
     if request.method == "DELETE":
+        model = StaticModel.objects.get(id=gpx_model_id)
+        model.delete()
+        return HttpResponse(status=200)
+
         return True
+
+
+
+def get_gpx_data(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'detail': 'User not authenticated'}, status=401)
+    
+    if request.method == 'POST':
+        
+        uploaded_file = request.FILES['attachment']
+        gpx_json = gpx_to_json(uploaded_file)
+
+        owner = request.user.username
+
+        lat = []
+        lon = []
+        ele = []
+        dis = []
+        bear = []
+        slope = []
+        i = 0
+        for key in gpx_json['segments'][0]:
+            lat.append(gpx_json['segments'][0][i]['lat'])
+            lon.append(gpx_json['segments'][0][i]['lon'])
+            ele.append(gpx_json['segments'][0][i]['ele'])
+            dis.append(gpx_json['segments'][0][i]['horz_dist_from_prev'])
+            bear.append(gpx_json['segments'][0][i]['bearing_from_prev'])
+            i = i + 1
+        DynamicModel.objects.create(owner=owner,lat=lat,long=lon,ele=ele,distance=dis,bearing=bear,slope=slope)
+        dynam = DynamicModel.objects.get(owner=owner)
+
+        return JsonResponse({'detail': 'Successfully uploaded gpx data.', 'name': uploaded_file.name}, status=200)
+
+
+def all_courses_view(request):
+    if request.method == "GET":
+        courses = Course.objects.all().values()
+        
+        if Course.objects.all().exists():
+            return JsonResponse({'All Courses:': list(courses)}, status=200)
+        else:
+            return JsonResponse({'detail': 'No courses exist'}, status=400)
+
+
+    elif request.method == "POST":
+        course_data = json.loads(request.body)
+
+        gps_json=course_data["gps_geo_json"]
+        empty_slope = []
+
+        course = Course.objects.create(
+            name=course_data["name"],
+            location=course_data["location"],
+            last_updated=course_data["last_updated"],
+            gps_geo_json=DynamicModel.objects.create(
+                owner=request.user.username,
+                lat=gps_json['latitude'],
+                long=gps_json['longitude'],
+                ele=gps_json['elevation'],
+                distance=gps_json['horizontal_distance_to_last_point'],
+                bearing=gps_json['bearing_from_last_point'],
+                slope=empty_slope
+            )
+        )
+        course.save()
+
+        if course.name == course_data["name"]:
+            return HttpResponse(status=200)
+        else:
+            return JsonResponse({'detail': 'Failed to add course'}, status=400)
+
+
+def course_view(request, course_id):
+    if request.method == "GET":
+        course = Course.objects.filter(id=course_id).values()
+
+        if Course.objects.filter(id=course_id).exists():
+            return JsonResponse({'Course:': list(course)}, status=200)
+        else:
+            return JsonResponse({'detail': 'course does not exist'}, status=404)
+
+
+    elif request.method == "PUT":
+        course_data = json.loads(request.body)
+        course = Course.objects.get(id=course_id)
+
+        gps_json=course_data["gps_geo_json"]
+        empty_slope = []
+
+        course.name = course_data["name"]
+        course.location = course_data["location"]
+        course.last_updated = course_data["last_updated"]
+        course.gps_geo_json = DynamicModel.objects.create(
+                owner=request.user.username,
+                lat=gps_json['latitude'],
+                long=gps_json['longitude'],
+                ele=gps_json['elevation'],
+                distance=gps_json['horizontal_distance_to_last_point'],
+                bearing=gps_json['bearing_from_last_point'],
+                slope=empty_slope
+            )
+
+        course.save()
+
+        if course.name == course_data["name"]:
+            return HttpResponse(status=200)
+        else:
+            return JsonResponse({'detail': 'Failed to update course'}, status=400)
+
+
+    elif request.method == "DELETE":
+        course = Course.objects.get(id=course_id)
+        course.delete()
+
+        if Course.objects.filter(id=course_id).exists():
+            return JsonResponse({'detail': 'failed to delete course'}, status=400)
+        else:
+            return JsonResponse({'detail': 'course deleted'}, status=200)
+

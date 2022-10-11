@@ -21,18 +21,22 @@ from api import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),
-    #path('api/<int:user_id>/', views.user_detail, name='user_detail'),
     path('api/register/', views.register_view, name='register'),
     path('api/login/', views.login_view, name='login'),
     path('api/logout/', views.logout_view, name='logout'),
     path('api/user/me/', views.user_view, name='update_user'),
     path('api/user/me/password/', views.user_password_view, name='update_user_password'),
     path('api/athlete/', views.all_athletes_view, name='athlete'),
-    path('api/athlete/<int:athlete_id>', views.athlete_view, name='athlete'),
+
+    path('api/athlete/<int:athlete_id>/', views.athlete_view, name='athlete'),
+    path('api/upload/', views.get_gpx_data, name='get_gpx_data'),
     #path('api/user/get/', views.get_user_view, name='get_user'),
     #path('api/user/me/dummy', views.current_user,name='current_user'),
     #path('api/csrf', views.csrf,name='csrf'),
     #path('api/login', views.empty_login,name='login'),
-    path('api/staticmodels', views.all_static_model_view, name='static_models'),
-    path('api/staticmodels/<int:static_model_id>', views.static_model_view, name='static_models')
+
+    path('api/staticmodels/', views.all_static_model_view, name='static_models'),
+    path('api/staticmodels/<int:gpx_model_id>/', views.static_model_view, name='static_models'),
+    path('api/course/', views.all_courses_view, name='courses'),
+    path('api/course/<int:course_id>/', views.course_view, name='courses')
 ]

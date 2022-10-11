@@ -2,16 +2,21 @@ from django.contrib.postgres.fields import ArrayField
 from django.db import models
 
 
-# Create your models here.
+
 class Athlete(models.Model):
     name = models.CharField(max_length=30)
     bike_mass = models.FloatField()
-    rider_other = models.FloatField(null=True)
+    rider_mass = models.FloatField(null=True)
+    other_mass = models.FloatField(null=True)
     total_mass = models.FloatField()
     CP_FTP = models.FloatField()
     W_prime = models.FloatField()
 
-
+class Course(models.Model):
+    name = models.CharField(max_length=30)
+    location = models.CharField(max_length=30)
+    last_updated = models.DateTimeField()
+    gps_geo_json = models.OneToOneField("DynamicModel", on_delete=models.CASCADE)
 
 class BikePlusRiderModel(models.Model):
     mass_rider = models.FloatField()
@@ -59,12 +64,13 @@ class StaticModel(models.Model):
 
 
 class DynamicModel(models.Model):
-    lat = ArrayField(models.FloatField())
-    long = ArrayField(models.FloatField())
-    ele = ArrayField(models.FloatField())
-    distance = ArrayField(models.FloatField())
-    bearing = ArrayField(models.FloatField())
-    slope = ArrayField(models.FloatField())
+    owner = models.CharField(max_length=30, blank=True)
+    lat = ArrayField(models.FloatField(), blank=True)
+    long = ArrayField(models.FloatField(), blank=True)
+    ele = ArrayField(models.FloatField(), blank=True)
+    distance = ArrayField(models.FloatField(), blank=True)
+    bearing = ArrayField(models.FloatField(), blank=True)
+    slope = ArrayField(models.FloatField(), blank=True)
 
 
 
