@@ -1,11 +1,6 @@
-import { GpsPoint } from './useMapState';
+import tokyo from './tokyo2.json';
 
-type CourseGps = [
-    //
-    [number, number, number, number],
-];
-
-interface BackendCourseGPS {
+export interface BackendCourseGPS {
     lat: number[];
     long: number[];
     ele: number[];
@@ -14,27 +9,8 @@ interface BackendCourseGPS {
     slope: number[];
 }
 
-export default function parseGpx(gpx: string): GpsPoint[] {
-    const backendCourse: BackendCourseGPS = {
-        lat: [],
-        long: [],
-        ele: [],
-        distance: [],
-        bearing: [],
-        slope: [],
-    };
+export default function parseGpx(gpx: string): BackendCourseGPS {
+    const backendCourse: BackendCourseGPS = tokyo;
 
-    const gpsPoints: GpsPoint[] = [];
-    for (let i = 0; i < backendCourse.lat.length; i++) {
-        gpsPoints.push({
-            idx: i,
-            lat: backendCourse.lat[i],
-            lng: backendCourse.long[i],
-            elev: backendCourse.ele[i],
-            distance: backendCourse.distance[i],
-            segment: 0,
-        });
-    }
-
-    return gpsPoints;
+    return backendCourse;
 }

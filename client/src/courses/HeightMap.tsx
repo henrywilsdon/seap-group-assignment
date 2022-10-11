@@ -1,3 +1,5 @@
+import { convertLength } from '@mui/material/styles/cssUtils';
+import { Box } from '@mui/system';
 import React, { useEffect, useState } from 'react';
 import { AxisOptions, Chart, Datum } from 'react-charts';
 import { GpsPoint } from './useMapState';
@@ -28,7 +30,6 @@ export default function HeightMap({
     onHoverPointChange,
     onClick,
 }: Props) {
-    const [primaryCursor, setPrimaryCursor] = useState(null);
     const [data, setData] = useState<Series[]>([]);
 
     useEffect(() => {
@@ -57,14 +58,17 @@ export default function HeightMap({
         );
     }, [points, splits]);
 
-    useEffect(() => {
-        const newHoverPoint = primaryCursor ? points[primaryCursor] : null;
+    const handleFocusDatum = (datum: Datum<GpsPoint> | null) => {
+        const newHoverPoint = datum ? points[datum.originalDatum.idx] : null;
         onHoverPointChange(newHoverPoint);
-    }, [primaryCursor]);
+    };
 
     const primaryAxis = React.useMemo(
         (): AxisOptions<GpsPoint> => ({
-            getValue: (datum) => datum.idx,
+            getValue: (datum) => datum.totalDistanceKm,
+            formatters: {
+                scale: (v: number) => v + ' km',
+            },
         }),
         [],
     );
@@ -73,6 +77,9 @@ export default function HeightMap({
         (): AxisOptions<GpsPoint>[] => [
             {
                 getValue: (datum) => datum.elev,
+                formatters: {
+                    scale: (v: number) => v + ' m',
+                },
             },
         ],
         [],
@@ -80,18 +87,22 @@ export default function HeightMap({
 
     if (data.length > 0) {
         return (
-            <Chart
-                options={{
-                    data,
-                    primaryAxis,
-                    secondaryAxes,
-                    primaryCursor: {
-                        value: primaryCursor,
-                        onChange: setPrimaryCursor,
-                    },
-                    onClickDatum: onClick,
+            <Box
+                sx={{
+                    flexGrow: 1,
+                    m: 0.5,
                 }}
-            />
+            >
+                <Chart
+                    options={{
+                        data,
+                        primaryAxis,
+                        secondaryAxes,
+                        onClickDatum: onClick,
+                        onFocusDatum: handleFocusDatum,
+                    }}
+                />
+            </Box>
         );
     } else {
         return null;

@@ -18,10 +18,12 @@ export default function GoogleMap({
     hoverPos,
     onHoverPosChange,
     render,
+    bounds,
     ...options
 }: React.PropsWithChildren<MapProps> & {
     hoverPos?: google.maps.LatLngLiteral | null;
     onHoverPosChange?: (latLng: google.maps.LatLngLiteral | null) => void;
+    bounds?: google.maps.LatLngBoundsLiteral | null;
 }) {
     const ref = React.useRef<HTMLDivElement>(null);
     const [map, setMap] = React.useState<google.maps.Map>();
@@ -43,6 +45,14 @@ export default function GoogleMap({
             setLoaded(true);
         }
     }, [map, options, loaded]);
+
+    useEffect(() => {
+        if (!map || !bounds || loaded) {
+            return;
+        }
+
+        map.fitBounds(bounds);
+    }, [map, bounds, loaded]);
 
     // useEffect(() => {
     //     if (map) {

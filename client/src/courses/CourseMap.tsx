@@ -9,6 +9,7 @@ import { GpsPoint } from './useMapState';
 type Props = {
     points: GpsPoint[];
     splits: number[];
+    bounds?: google.maps.LatLngBoundsLiteral | null;
     hoverPoint: GpsPoint | null;
     hoverSplitIdx: number | null;
 };
@@ -17,7 +18,7 @@ type Props = {
  * Show google map with course path segments overlayed.
  */
 export default function CourseMap(props: Props) {
-    const { points, splits, hoverPoint, hoverSplitIdx } = props;
+    const { points, splits, bounds, hoverPoint, hoverSplitIdx } = props;
 
     const renderSegmentMarkers = (map: google.maps.Map | undefined) => {
         const markers: ReactNode[] = [];
@@ -70,7 +71,7 @@ export default function CourseMap(props: Props) {
             <GoogleMap
                 style={{ flexGrow: '1', height: '100%' }}
                 zoom={14}
-                center={{ lat: 35.36558, lng: 138.92561 }}
+                bounds={bounds}
                 zoomControl
                 render={(map) => (
                     <>
