@@ -361,4 +361,88 @@ def get_gpx_data(request):
         return JsonResponse({'detail': 'Successfully uploaded gpx data.', 'name': uploaded_file.name}, status=200)
 
 
-    
+def all_courses_view(request):
+    if request.method == "GET":
+        courses = Course.objects.all().values()
+        
+        if Course.objects.all().exists():
+            return JsonResponse({'All Courses:': list(courses)}, status=200)
+        else:
+            return JsonResponse({'detail': 'No courses exist'}, status=400)
+
+
+    elif request.method == "POST":
+        course_data = json.loads(request.body)
+
+        gps_json=course_data["gps_geo_json"]
+        empty_slope = []
+
+        course = Course.objects.create(
+            name=course_data["name"],
+            location=course_data["location"],
+            last_updated=course_data["last_updated"],
+            gps_geo_json=DynamicModel.objects.create(
+                owner=request.user.username,
+                lat=gps_json['latitude'],
+                long=gps_json['longitude'],
+                ele=gps_json['elevation'],
+                distance=gps_json['horizontal_distance_to_last_point'],
+                bearing=gps_json['bearing_from_last_point'],
+                slope=empty_slope
+            )
+        )
+        course.save()
+
+        if course.name == course_data["name"]:
+            return HttpResponse(status=200)
+        else:
+            return JsonResponse({'detail': 'Failed to add course'}, status=400)
+
+
+def course_view(request, course_id):
+    if request.method == "GET":
+        course = Course.objects.filter(id=course_id).values()
+
+        if Course.objects.filter(id=course_id).exists():
+            return JsonResponse({'Course:': list(course)}, status=200)
+        else:
+            return JsonResponse({'detail': 'course does not exist'}, status=404)
+
+
+    elif request.method == "PUT":
+        course_data = json.loads(request.body)
+        course = Course.objects.get(id=course_id)
+
+        gps_json=course_data["gps_geo_json"]
+        empty_slope = []
+
+        course.name = course_data["name"]
+        course.location = course_data["location"]
+        course.last_updated = course_data["last_updated"]
+        course.gps_geo_json = DynamicModel.objects.create(
+                owner=request.user.username,
+                lat=gps_json['latitude'],
+                long=gps_json['longitude'],
+                ele=gps_json['elevation'],
+                distance=gps_json['horizontal_distance_to_last_point'],
+                bearing=gps_json['bearing_from_last_point'],
+                slope=empty_slope
+            )
+
+        course.save()
+
+        if course.name == course_data["name"]:
+            return HttpResponse(status=200)
+        else:
+            return JsonResponse({'detail': 'Failed to update course'}, status=400)
+
+
+    elif request.method == "DELETE":
+        course = Course.objects.get(id=course_id)
+        course.delete()
+
+        if Course.objects.filter(id=course_id).exists():
+            return JsonResponse({'detail': 'failed to delete course'}, status=400)
+        else:
+            return JsonResponse({'detail': 'course deleted'}, status=200)
+
