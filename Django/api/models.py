@@ -22,6 +22,7 @@ class Course(models.Model):
 
 
 class BikePlusRiderModel(models.Model):
+    #rider, bike and other mass should be removed from this model
     mass_rider = models.FloatField()
     mass_bike = models.FloatField()
     mass_other = models.FloatField()
@@ -31,6 +32,8 @@ class BikePlusRiderModel(models.Model):
     mol_whl_rear = models.FloatField()
     wheel_radius = models.FloatField()
 
+
+#Are these model still required
 class CPModel(models.Model):
     cp = models.FloatField()
     w_prime = models.FloatField()
