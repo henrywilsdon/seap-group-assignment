@@ -144,7 +144,7 @@ export default function MechanicalParams(props: Props) {
                     />
 
                     <CustomTextField
-                        label="Mol Wheel Front"
+                        label="Wheel Radius"
                         value={mechanical.wheelRadius}
                         onChange={handleWheelRadiusChange}
                         InputProps={{
