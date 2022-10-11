@@ -362,6 +362,9 @@ def get_gpx_data(request):
 
 
 def all_courses_view(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'detail': 'User not authenticated'}, status=401)
+
     if request.method == "GET":
         courses = Course.objects.all().values()
         
@@ -390,6 +393,8 @@ def all_courses_view(request):
                 bearing=gps_json['bearing_from_last_point'],
                 slope=empty_slope
             )
+            course.min_slope_threshold = 0,
+            course.max_slope_threshold = 0,
         )
         course.save()
 
@@ -400,6 +405,9 @@ def all_courses_view(request):
 
 
 def course_view(request, course_id):
+    if not request.user.is_authenticated:
+        return JsonResponse({'detail': 'User not authenticated'}, status=401)
+    
     if request.method == "GET":
         course = Course.objects.filter(id=course_id).values()
 
@@ -428,6 +436,10 @@ def course_view(request, course_id):
                 bearing=gps_json['bearing_from_last_point'],
                 slope=empty_slope
             )
+        #This will be updated in the later parameters view
+        course.min_slope_threshold = 0
+        course.max_slope_threshold = 0
+
 
         course.save()
 
@@ -446,3 +458,141 @@ def course_view(request, course_id):
         else:
             return JsonResponse({'detail': 'course deleted'}, status=200)
 
+
+
+
+
+
+def all_prediction_parameters(request, course_id):
+    if not request.user.is_authenticated:
+        return JsonResponse({'detail': 'User not authenticated'}, status=401)
+
+    course = Course.objects.filter(id=course_id).values()
+
+
+
+    if request.method == "POST":
+        parameters = json.loads(request.body)
+
+        #Unpack paramter boxes
+        athlete_paramters = parameters["athlete_paramters"]
+        environment_paramters = parameters["environment_paramters"]
+        mechanical_paramters = parameters["mechanical_paramters"]
+        course_paramters = parameters["course_parameters"]
+
+        course.min_slope_threshold = course_paramters["min_slope_threshold"]
+        course.max_slope_threshold = course_paramters["max_slope_threshold"]
+
+        athlete = Athlete.objects.create(
+            name=athlete_paramters["name"],
+            bike_mass=athlete_paramters["bike_mass"],
+            rider_mass=athlete_paramters["rider_mass"],
+            other_mass=athlete_paramters["other_mass"],
+            total_mass=athlete_paramters["total_mass"],
+            CP_FTP=athlete_paramters["CP_FTP"],
+            W_prime=athlete_paramters["W_prime"],
+        )
+        athlete.save()
+
+
+        bike_plus_rider_model = BikePlusRiderModel.objects.create(
+            mass_rider = athlete_paramters["rider_mass"],
+            mass_bike = athlete_paramters["bike_mass"],
+            mass_other = athlete_paramters["other_mass"],
+            crr = mechanical_paramters["crr"],
+            mechanical_efficiency = mechanical_paramters["mechanical_efficiency"],
+            mol_whl_front = mechanical_paramters["mol_whl_front"],
+            mol_whl_rear = mechanical_paramters["mol_whl_rear"],
+            wheel_radius = mechanical_paramters["wheel_radius"]
+        )
+
+        #Where can we get this data?  and to we need it?
+        """ cp_model = CPModel.objects.create(
+            cp = model_data["cp"],
+            w_prime = model_data["w_prime"],
+            w_prime_recovery_function = model_data["w_prime_recovery_function"],
+            below_steady_state_max_slope = model_data["below_steady_state_max_slope"],
+            below_steady_state_power_usage = model_data["below_steady_state_power_usage"],
+            over_threshold_min_slope = model_data["over_threshold_min_slope"],
+            over_threshold_power_usage = model_data["over_threshold_power_usage"],
+            steady_state_power_usage = model_data["steady_state_power_usage"]
+        ) """
+
+        #Same deal with this one
+        """ position_model = PositionModel.objects.create(
+            climbing_cda_increment = model_data["climbing_cda_increment"],
+            climbing_min_slope = model_data["climbing_min_slope"],
+            descending_cda_increment = model_data["descending_cda_increment"],
+            descending_max_slope = model_data["descending_max_slope"]
+        )  """
+
+
+        environment_model = EnvironmentModel.objects.create(
+            wind_direction = environment_paramters["wind_direction"],
+            wind_speed_mps = environment_paramters["wind_speed_mps"],
+            wind_density = environment_paramters["wind_density"]
+        )
+
+        """ 
+        The paramters in this model can be changed depending on what the predictive model needs
+         """
+        technical_model = TechnicalModel.objects.create(
+            timestep_size = 0.5,
+            starting_distance = 0,
+            starting_speed = 0.01,
+        )
+
+        model = StaticModel.objects.create(
+            bike_plus_rider_model = bike_plus_rider_model,
+            cp_model = cp_model,
+            position_model = position_model,
+            environment_model = environment_model,
+            technical_model = technical_model
+        )
+        model.save()
+
+        #Call predictive model
+        PredictiveModel(model,course)
+
+        #Return this
+        """ 
+            Distance Array
+            W' Balance Array over that distance
+            Power In Array over distance
+            Speed Array
+            Yaw Array
+            Power Array
+
+            Values:
+            Total time
+            Total power
+            Total distance
+            Total Average Yaw
+            Average yaw over 40 km/h
+         """
+
+        distance = [0,0,0]
+        power_in = [0,0,0]
+        speed = [0,0,0]
+        yaw = [0,0,0]
+        power = [0,0,0]
+        result = {'Power In': power_in, 'W prime': }
+
+        
+        #Hard coded dumpy return
+        distance = [0,0,0]
+        power_in = [0,0,0]
+        speed = [0,0,0]
+        yaw = [0,0,0]
+        power = [0,0,0]
+        result = {'Power In': power_in, 'Distance': distance}
+
+
+        return JsonResponse({'detail': 'Prediction complete', 'result' : result}, status=200)
+
+
+
+
+
+
+    

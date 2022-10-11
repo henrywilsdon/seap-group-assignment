@@ -17,6 +17,9 @@ class Course(models.Model):
     location = models.CharField(max_length=30)
     last_updated = models.DateTimeField()
     gps_geo_json = models.OneToOneField("DynamicModel", on_delete=models.CASCADE)
+    min_slope_threshold = models.FloatField(blank=True)
+    max_slope_threshold = models.FloatField(blank=True)
+
 
 class BikePlusRiderModel(models.Model):
     mass_rider = models.FloatField()
