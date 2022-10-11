@@ -1,8 +1,8 @@
 import React, { useRef } from 'react';
-import { LatLngElev } from './useMapState';
+import { GpsPoint } from './useMapState';
 
 type Props = {
-    points: LatLngElev[];
+    points: GpsPoint[];
     splits: number[];
     hoverSegment: number | null;
     map?: google.maps.Map;

@@ -1,28 +1,30 @@
+/**global google */
 import React, { useCallback, useEffect, useState } from 'react';
 
 // [longitude, latitude, elevation]
-type GpsPoint = [number, number, number];
+type GeoJsonPoint = [number, number, number];
 
-export interface LatLngElev extends google.maps.LatLngLiteral {
+export interface GpsPoint extends google.maps.LatLngLiteral {
     idx: number;
     elev: number;
     segment: number;
+    distance: number;
 }
 
 /**
  * State for course map and height map.
  */
-export function useMapState(gpsPoints: GpsPoint[]): {
-    points: LatLngElev[];
+export function useMapState(gpsPoints: GeoJsonPoint[]): {
+    points: GpsPoint[];
     splits: number[];
-    hoverPoint: LatLngElev | null;
+    hoverPoint: GpsPoint | null;
     hoverSplitIdx: number | null;
-    setHoverPoint: React.Dispatch<React.SetStateAction<LatLngElev | null>>;
+    setHoverPoint: React.Dispatch<React.SetStateAction<GpsPoint | null>>;
     setHoverSplitIdx: React.Dispatch<React.SetStateAction<number | null>>;
     addSplit: (point: number | null) => void;
 } {
-    const [hoverPoint, setHoverPoint] = useState<LatLngElev | null>(null);
-    const [points, setPoints] = useState<LatLngElev[]>([]);
+    const [hoverPoint, setHoverPoint] = useState<GpsPoint | null>(null);
+    const [points, setPoints] = useState<GpsPoint[]>([]);
     const [splits, setSplits] = useState<number[]>([]);
     const [hoverSplitIdx, setHoverSplitIdx] = useState<number | null>(null);
 

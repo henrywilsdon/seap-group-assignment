@@ -17,7 +17,7 @@ import { Datum } from 'react-charts';
 import CourseMap from './CourseMap';
 import HeightMap from './HeightMap';
 import mapJSON from './tokyo.json';
-import { LatLngElev, useMapState } from './useMapState';
+import { GpsPoint, useMapState } from './useMapState';
 
 /**
 SegmentData
@@ -87,7 +87,7 @@ export default function CourseFormDialog({ open, onCancel, onSave }: Props) {
     );
 
     const handleHeightMapClick = useCallback(
-        (point: Datum<LatLngElev> | null) => {
+        (point: Datum<GpsPoint> | null) => {
             const newSplitPointIdx = point?.originalDatum?.idx || null;
             addSplit(newSplitPointIdx);
         },

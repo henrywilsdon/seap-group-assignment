@@ -4,12 +4,12 @@ import { ReactNode } from 'react';
 import GoogleMap from './GoogleMap';
 import MapCourse from './CoursePolyline';
 import Marker from './Marker';
-import { LatLngElev } from './useMapState';
+import { GpsPoint } from './useMapState';
 
 type Props = {
-    points: LatLngElev[];
+    points: GpsPoint[];
     splits: number[];
-    hoverPoint: LatLngElev | null;
+    hoverPoint: GpsPoint | null;
     hoverSplitIdx: number | null;
 };
 

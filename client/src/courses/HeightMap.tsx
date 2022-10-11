@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { AxisOptions, Chart, Datum } from 'react-charts';
-import { LatLngElev } from './useMapState';
+import { GpsPoint } from './useMapState';
 
 type Props = {
-    points: LatLngElev[];
+    points: GpsPoint[];
     splits: number[];
-    onHoverPointChange: (point: LatLngElev | null) => void;
+    onHoverPointChange: (point: GpsPoint | null) => void;
     onClick:
         | ((
-              datum: Datum<LatLngElev> | null,
+              datum: Datum<GpsPoint> | null,
               event: React.MouseEvent<SVGSVGElement, MouseEvent>,
           ) => void)
         | undefined;
@@ -16,7 +16,7 @@ type Props = {
 
 type Series = {
     label: string;
-    data: LatLngElev[];
+    data: GpsPoint[];
 };
 
 /**
@@ -41,7 +41,7 @@ export default function HeightMap({
 
         setData(
             [...splits, points.length].map((split, splitIdx) => {
-                const _points: LatLngElev[] = [];
+                const _points: GpsPoint[] = [];
                 for (
                     let i = splitIdx > 0 ? splits[splitIdx - 1] : 0;
                     i < split;
@@ -63,14 +63,14 @@ export default function HeightMap({
     }, [primaryCursor]);
 
     const primaryAxis = React.useMemo(
-        (): AxisOptions<LatLngElev> => ({
+        (): AxisOptions<GpsPoint> => ({
             getValue: (datum) => datum.idx,
         }),
         [],
     );
 
     const secondaryAxes = React.useMemo(
-        (): AxisOptions<LatLngElev>[] => [
+        (): AxisOptions<GpsPoint>[] => [
             {
                 getValue: (datum) => datum.elev,
             },
