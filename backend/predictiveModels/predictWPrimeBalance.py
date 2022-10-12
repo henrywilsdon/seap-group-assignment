@@ -1,4 +1,4 @@
-from temporaryModels import *
+from temporaryModelsLonger import *
 import math
 
 def predict_w_prime_balance(course: CourseModel, prev_w_prime_balance, power_in) -> float:

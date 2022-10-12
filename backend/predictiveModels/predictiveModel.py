@@ -1,4 +1,4 @@
-from temporaryModels import *
+from temporaryModelsLonger import *
 import math
 from predictPowerAero import *
 from predictPowerGravity import *

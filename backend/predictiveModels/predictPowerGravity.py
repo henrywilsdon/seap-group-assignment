@@ -1,4 +1,4 @@
-from temporaryModels import *
+from temporaryModelsLonger import *
 
 def predict_power_gravity(course: CourseModel, distance: float, speed: float, index: int) -> float:
     cs = course.static # for brevity

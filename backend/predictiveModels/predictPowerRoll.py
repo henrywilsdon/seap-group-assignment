@@ -1,4 +1,4 @@
-from temporaryModels import *
+from temporaryModelsLonger import *
 
 def predict_power_roll(course: CourseModel, speed: float) -> float:
 

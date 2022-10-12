@@ -1,4 +1,4 @@
-from temporaryModels import *
+from temporaryModelsLonger import *
 import math
 
 def predict_power_aero(course: CourseModel, distance: float, speed: float, index: int) -> dict:

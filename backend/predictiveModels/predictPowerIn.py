@@ -1,4 +1,4 @@
-from temporaryModels import *
+from temporaryModelsLonger import *
 
 def predict_power_in(course: CourseModel, distance: float, index: int) -> float:
 
