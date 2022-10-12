@@ -53,9 +53,9 @@ def predict_power_aero(course: CourseModel, distance: float, speed: float, index
     slope = cd.slope_from_prev[index]
     if index == 0:
         position = "b" # this is baked into the spreadsheet at 'Course info'!$M$3
-    elif slope > cs.over_threshold_min_slope:
+    elif slope > cs.climbing_min_slope:
         position = "b"
-    elif slope < cs.below_steady_state_max_slope:
+    elif slope < cs.descending_max_slope:
         position = "c"
     else:
         position = "a" # position is the row that will be used in the vlookup

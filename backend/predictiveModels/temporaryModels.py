@@ -31,7 +31,7 @@ class StaticModel():
 
     # the position (pose/stance) of the rider
     climbing_cda_increment = 0.04
-    climbing_min_slope = 0.3
+    climbing_min_slope = 0.03
     descending_cda_increment = -0.005
     descending_max_slope = -0.01
 
