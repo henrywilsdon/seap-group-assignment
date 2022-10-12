@@ -11,7 +11,8 @@ def predict_single_timestep(course: CourseModel, # time doesn't need to be an ar
                             distance: float,
                             speed: float,
                             acceleration: float,
-                            is_first: bool) \
+                            is_first: bool,
+                            timestep: int) \
                             -> SingleTimestepOutput:
 
     cs = course.static # for brevity
@@ -38,10 +39,18 @@ def predict_single_timestep(course: CourseModel, # time doesn't need to be an ar
     power_roll = predict_power_roll(course, speed)
     w_prime_balance = predict_w_prime_balance(course, w_prime_balance, power_in)
 
+
+
     power_net = power_in - power_aero - power_roll - power_gravity
     propulsive_force = power_net / speed
     mass_total = cs.mass_rider + cs.mass_bike + cs.mass_other
     acceleration = propulsive_force / (mass_total + ( (cs.moi_whl_front + cs.moi_whl_rear) / cs.wheel_radius**2))
+
+    # PRINTS STUFF
+    # print(f"aero: {power_aero}, gravity: {power_gravity}, in: {power_in}, roll: {power_roll}, w prime balance: {w_prime_balance}, net: {power_net}, acceleration: {acceleration}, speed: {speed}, distance: {distance}, index: {index}, timestep: {timestep}")
+    # if timestep % 3500 == 0:
+    #     input()
+
 
     return SingleTimestepOutput(distance=distance,
                                 speed=speed, # current speed is based on the previous speed and acceleration
@@ -79,7 +88,8 @@ def predict_entire_course(course) -> PredictEntireCourseOutput:
                                              distance=current_distance,
                                              speed=current_speed,
                                              acceleration=current_acceleration,
-                                             is_first=is_first)
+                                             is_first=is_first,
+                                             timestep=full_course_data.timesteps + 1)
 
         # ADDS THE PER-SEGMENT DATA TO THE OUTPUT
         segments_data[single_out.segment].duration += cs.timestep_size
