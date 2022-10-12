@@ -120,6 +120,7 @@ class AllTimestepsData():
     power_in = []
     speed = []
     yaw = []
+    distance = []
 
 class PredictEntireCourseOutput():
     def __init__(self,

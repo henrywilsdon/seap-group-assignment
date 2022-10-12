@@ -109,6 +109,7 @@ def predict_entire_course(course) -> PredictEntireCourseOutput:
         timesteps_data.power_in += [single_out.power_in]
         timesteps_data.speed += [single_out.speed]
         timesteps_data.yaw += [single_out.yaw]
+        timesteps_data.distance += [single_out.distance]
 
         # MAINTAINS THE LIST OF DATA USED IN THE CALCULATIONS
         current_distance = single_out.distance
@@ -133,10 +134,10 @@ def predict_entire_course(course) -> PredictEntireCourseOutput:
 
     return PredictEntireCourseOutput(segments_data=segments_data, full_course_data=full_course_data, timesteps_data=timesteps_data)
 
-toprint = predict_entire_course(CourseModel())
-print(toprint.segments_data)
-print(toprint.full_course_data)
-print(toprint.timesteps_data)
+output = predict_entire_course(CourseModel())
+print(output.segments_data)
+print(output.full_course_data)
+print(output.timesteps_data)
 x=1
 
 # print("Duration:  ", toprint.duration)
