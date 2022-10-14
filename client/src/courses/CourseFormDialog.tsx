@@ -12,6 +12,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { Button, Grid, Stack, TextField, Typography } from '@mui/material';
+import { CourseData } from './ManageCoursesPage';
 
 /**
 SegmentData
@@ -47,17 +48,27 @@ const sampleSegmentsData: SegmentData[] = [
 
 type Props = {
     open: boolean;
+    removal?: boolean;
+    courseData?: CourseData;
     onCancel: () => void;
-    onSave: () => void;
+    onSave: (courseData: CourseData) => void;
 };
 
 /**
  * Create a Dialog for adding/editing a course data.
  * @param param0.open Set true/false to show/hide the dialog
+ * @param param0.removal Set true to show dialog for removal confirmation
+ * @param param0.athleteData The current athlete data to edit
  * @param param0.onCancel Callback when user hits "cancel", used by the caller to hide this dialog
- * @param param0.onSave Callback when user hits "Save" button, used by the caller to update the course data
+ * @param param0.onSave Callback when user hits "Save" button, used by the caller to update the athlete data
  */
-export default function CourseFormDialog({ open, onCancel, onSave }: Props) {
+export default function CourseFormDialog({
+    open,
+    removal,
+    courseData,
+    onCancel,
+    onSave,
+}: Props) {
     // Manage a list of segments
     // By now, pre-populate with sample data
     const [segments, setSegments] = React.useState(sampleSegmentsData);
@@ -77,12 +88,63 @@ export default function CourseFormDialog({ open, onCancel, onSave }: Props) {
         }
     };
 
+    // Managed state for all input fields for course data
+    const [name, setName] = React.useState('');
+    const [location, setLocation] = React.useState('');
+
+    // Update the form to show the given course data
+    React.useEffect(() => {
+        setName((courseData && courseData.name) || '');
+        setLocation((courseData && courseData.location) || '');
+    }, [courseData]);
+
     // Handle Save button to call "onSave" with the edited data
-    const handleSave = () => onSave();
+    const handleSave = () =>
+        onSave({
+            name,
+            location,
+            gps_data: '',
+        });
+
+    if (removal) {
+        return (
+            <Dialog fullWidth open={open} onClose={onCancel}>
+                <DialogTitle>Remove Course</DialogTitle>
+                <DialogContent>
+                    <Box>
+                        <TextField
+                            required
+                            margin="dense"
+                            fullWidth
+                            label="Course Name"
+                            value={name}
+                            onChange={(evt) => setName(evt.target.value)}
+                        />
+                    </Box>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={onCancel}>Cancel</Button>
+                    <Button
+                        onClick={handleSave}
+                        variant="contained"
+                        color="error"
+                    >
+                        Remove
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        );
+    }
 
     return (
         <Dialog fullWidth maxWidth={false} open={open} onClose={onCancel}>
-            <DialogTitle>New Course</DialogTitle>
+            <DialogTitle>
+                {
+                    // Title: New/Edit Course
+                    courseData && courseData.id ? 'Edit' : 'New'
+                }{' '}
+                Course
+            </DialogTitle>
             <DialogContent>
                 <Box sx={{ padding: '1em' }}>
                     <Grid container spacing={2}>
@@ -95,6 +157,10 @@ export default function CourseFormDialog({ open, onCancel, onSave }: Props) {
                                             margin="dense"
                                             fullWidth
                                             label="Course Name"
+                                            value={name}
+                                            onChange={(evt) =>
+                                                setName(evt.target.value)
+                                            }
                                         />
                                     </Grid>
                                     <Grid item sm={6}>
@@ -135,6 +201,10 @@ export default function CourseFormDialog({ open, onCancel, onSave }: Props) {
                                             margin="dense"
                                             fullWidth
                                             label="Location / Address"
+                                            value={location}
+                                            onChange={(evt) =>
+                                                setLocation(evt.target.value)
+                                            }
                                         />
                                     </Grid>
                                 </Grid>
