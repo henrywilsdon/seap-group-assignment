@@ -134,17 +134,4 @@ def predict_entire_course(course) -> PredictEntireCourseOutput:
 
     return PredictEntireCourseOutput(segments_data=segments_data, full_course_data=full_course_data, timesteps_data=timesteps_data)
 
-output = predict_entire_course(CourseModel())
-print(output.segments_data)
-print(output.full_course_data)
-print(output.timesteps_data)
-x=1
-
-# print("Duration:  ", toprint.duration)
-# print("Min W` bal:", toprint.min_w_prime_balance)
-
-
-
-
-# TODO: Add the proper output data for elevation, yaw, timestep, etc (rather than default values)
-# TODO: all timesteps data
+# output = predict_entire_course(CourseModel())
