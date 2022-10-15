@@ -166,16 +166,6 @@ function DropButtons(props: Props) {
                     <Button variant="contained" onClick={onPredictionClick}>
                         Calculate Metrics
                     </Button>
-
-                    <Button
-                        variant="contained"
-                        onClick={() => {
-                            //Change to necessary functionality
-                            alert('Button Clicked');
-                        }}
-                    >
-                        Reset Course
-                    </Button>
                 </Paper>
             </Box>
         </div>
