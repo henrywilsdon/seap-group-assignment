@@ -17,7 +17,8 @@ export type PredictionObjects = {
 export function makePrediction(
     predictionData: PredictionObjects,
 ): Promise<any> {
-    return fetch('http://localhost:8000/api/prediction', {
+    console.log('makePrediction Request Called');
+    return fetch('http://localhost:8000/api/prediction/', {
         method: 'POST',
         credentials: 'include',
         headers: {
