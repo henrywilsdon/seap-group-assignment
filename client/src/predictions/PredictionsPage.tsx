@@ -9,12 +9,25 @@ import useAthleteReducer from './useAthleteReducer';
 import useMechanicalReducer from './useMechanicalReducer';
 import useEnvironmentReducer from './useEnvironmentReducer';
 import useCourseParamsReducer from './useCourseParamsReducer';
+import { makePrediction } from './PredictionsAPI';
+import { useState } from 'react';
 
 export default function RenderPredictionsPage() {
     const { athlete, athleteDispatch, originalAthlete } = useAthleteReducer();
     const { mechanical, mechanicalDispatch } = useMechanicalReducer();
     const { environment, environmentDispatch } = useEnvironmentReducer();
     const { courseParams, courseParamsDispatch } = useCourseParamsReducer();
+    const [selectedCourseId, setCourseId] = useState(0);
+    const handlePredictionClick = () => {
+        makePrediction({
+            athlete_parameters: athlete,
+            mechanical_parameters: mechanical,
+            environment_parameters: environment,
+            course_parameters: courseParams,
+            //Need to add course ID from when select course is implemented and it can be accessed properly
+            //course_ID: selectedCourseID,
+        });
+    };
 
     return (
         <div>
@@ -55,7 +68,10 @@ export default function RenderPredictionsPage() {
                     }}
                 >
                     <CourseMap></CourseMap>
-                    <DropButtons athleteDispatch={athleteDispatch} />
+                    <DropButtons
+                        athleteDispatch={athleteDispatch}
+                        onPredictionClick={handlePredictionClick}
+                    />
                 </Box>
 
                 <Box>

@@ -16,10 +16,11 @@ type Props = {
     athleteDispatch: Dispatch<
         { type: 'setAthlete'; athlete: AthleteInputState } | { type: 'clear' }
     >;
+    onPredictionClick: () => any;
 };
 
 function DropButtons(props: Props) {
-    const { athleteDispatch } = props;
+    const { athleteDispatch, onPredictionClick } = props;
     const [selectedAthleteId, setSelectedAthleteId] = useState<number | ''>('');
     const [allAthletes, setAllAthletes] = useState<AthleteData[]>([]);
     const prevSelectedAthleteId = useRef<number | ''>('');
@@ -162,14 +163,8 @@ function DropButtons(props: Props) {
                         Save Prediction
                     </Button>
 
-                    <Button
-                        variant="contained"
-                        onClick={() => {
-                            //Change to necessary functionality
-                            alert('Button Clicked');
-                        }}
-                    >
-                        Recalculate Metrics
+                    <Button variant="contained" onClick={onPredictionClick}>
+                        Calculate Metrics
                     </Button>
 
                     <Button

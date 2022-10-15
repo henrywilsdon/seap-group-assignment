@@ -100,6 +100,9 @@ export default function MechanicalParams(props: Props) {
 
                     <CustomTextField
                         label="Crr"
+                        inputProps={{
+                            step: '0.1',
+                        }}
                         value={mechanical.crrValue}
                         onChange={handleCrrChange}
                     />
