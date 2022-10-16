@@ -103,7 +103,6 @@ export default function CourseFormDialog({
         onSave({
             name,
             location,
-            gps_data: '',
         });
 
     if (removal) {

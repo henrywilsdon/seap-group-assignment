@@ -6,9 +6,8 @@ export type BackendCourse = {
     id?: number;
     name?: string;
     location?: string;
-    last_updated?: any;
-    gps_data?: string;
-    gps_geo_json?: string;
+    last_updated?: string;
+    gps_geo_json?: any;
 };
 
 /**
@@ -21,6 +20,7 @@ function backendCourseToFrontend(backendCourse: BackendCourse): CourseData {
     course.id = backendCourse.id;
     course.name = backendCourse.name;
     course.location = backendCourse.location;
+
     if (backendCourse.last_updated) {
         course.last_updated = new Date(backendCourse.last_updated);
     }
@@ -39,8 +39,16 @@ function backendCourseFromFrontend(course: CourseData): BackendCourse {
     const backendCourse: BackendCourse = {};
     backendCourse.name = course.name;
     backendCourse.location = course.location;
-    backendCourse.gps_geo_json = course.gps_data;
-    backendCourse.last_updated = new Date();
+    backendCourse.last_updated = new Date().toISOString();
+
+    // Hard-code the GPS data by now
+    backendCourse.gps_geo_json = {
+        latitude: [],
+        longitude: [],
+        elevation: [],
+        horizontal_distance_to_last_point: [],
+        bearing_from_last_point: [],
+    };
     return backendCourse;
 }
 /**
@@ -52,7 +60,9 @@ export function getCourses(): Promise<CourseData[]> {
         credentials: 'include',
     }).then(async (response) => {
         if (response.ok) {
-            const courses: BackendCourse[] = (await response.json()).courses;
+            const courses: BackendCourse[] = (await response.json())[
+                'All Courses:'
+            ];
             return courses.map<CourseData>(backendCourseToFrontend);
         } else {
             if (response.headers.get('Content-Type') === 'application/json') {
@@ -89,7 +99,7 @@ export function createCourse(course: CourseData): Promise<void> {
  * Update a course to the back-end
  */
 export function updateCourse(courseId: any, course: CourseData): Promise<void> {
-    return fetch(`${BACK_END_URL}/${courseId}`, {
+    return fetch(`${BACK_END_URL}${courseId}/`, {
         method: 'PUT',
         credentials: 'include',
         body: JSON.stringify(backendCourseFromFrontend(course)),
@@ -109,8 +119,8 @@ export function updateCourse(courseId: any, course: CourseData): Promise<void> {
  * Delete a course from the back-end
  */
 export function deleteCourse(courseId: any): Promise<void> {
-    return fetch(`${BACK_END_URL}/${courseId}`, {
-        method: 'POST',
+    return fetch(`${BACK_END_URL}${courseId}/`, {
+        method: 'DELETE',
         credentials: 'include',
     }).then(async (response) => {
         if (!response.ok) {
