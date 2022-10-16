@@ -180,12 +180,6 @@ def all_athletes_view(request):
         else:
             return JsonResponse({'detail': 'Could not add athlete'}, status=400)
 
-def courses_view(request):
-    if request.method == "GET":
-        return JsonResponse({'map': 'get map data'}, status=200)
-
-    elif request.method == "POST":
-        return JsonResponse({'map': 'send map data'}, status=200)
 
 """ @require_http_methods(["GET"])
 def get_user_view(request):
