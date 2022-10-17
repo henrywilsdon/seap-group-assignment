@@ -59,7 +59,7 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
 
     useEffect(() => {
         if (!user && !['/login', '/register'].includes(location.pathname)) {
-            // navigate('/login');
+            navigate('/login');
         }
     }, [location, user, navigate]);
 
