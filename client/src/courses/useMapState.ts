@@ -1,6 +1,6 @@
 /**global google */
-import React, { useCallback, useEffect, useState } from 'react';
-import { BackendCourseGPS } from './courseAPI';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { BackendCourse, BackendGpsPoints } from './CourseApi';
 
 export interface GpsPoint extends google.maps.LatLngLiteral {
     idx: number;
@@ -13,7 +13,7 @@ export interface GpsPoint extends google.maps.LatLngLiteral {
 /**
  * State for course map and height map.
  */
-export function useMapState(gpsPoints: BackendCourseGPS | null): {
+export function useMapState(backendGpsPoints: BackendGpsPoints | null): {
     points: GpsPoint[];
     splits: number[];
     hoverPoint: GpsPoint | null;
@@ -24,6 +24,7 @@ export function useMapState(gpsPoints: BackendCourseGPS | null): {
     setHoverSplitIdx: React.Dispatch<React.SetStateAction<number | null>>;
     addSplit: (pointIdx: number | null) => void;
     removeSplit: (pointIdx: number) => void;
+    createBackendGpsPoints: () => BackendCourse['gps_geo_json'] | null;
 } {
     const [hoverPoint, setHoverPoint] = useState<GpsPoint | null>(null);
     const [points, setPoints] = useState<GpsPoint[]>([]);
@@ -33,16 +34,23 @@ export function useMapState(gpsPoints: BackendCourseGPS | null): {
         useState<google.maps.LatLngLiteral | null>(null);
     const [boundsLatLng, setBoundsLatLng] =
         useState<google.maps.LatLngBoundsLiteral | null>(null);
+    const prevBackendGpsPoints = useRef<BackendGpsPoints | null>(null);
 
     // Parse map points
     useEffect(() => {
-        if (!gpsPoints) {
+        if (!backendGpsPoints) {
             setPoints([]);
             setSplits([]);
             setCenterLatLng(null);
             return;
         }
-        console.log('parse points');
+
+        // Reset splits if course changes
+        if (backendGpsPoints !== prevBackendGpsPoints.current) {
+            setSplits([]);
+        }
+        prevBackendGpsPoints.current = backendGpsPoints;
+
         const newPoints: GpsPoint[] = [];
         let maxLat = -90;
         let minLat = 90;
@@ -50,19 +58,21 @@ export function useMapState(gpsPoints: BackendCourseGPS | null): {
         let minLng = 180;
 
         let totalDistanceKm = 0;
-        for (let i = 0; i < gpsPoints.lat.length; i++) {
-            maxLat = Math.max(maxLat, gpsPoints.lat[i]);
-            minLat = Math.min(minLat, gpsPoints.lat[i]);
-            maxLng = Math.max(maxLng, gpsPoints.lon[i]);
-            minLng = Math.min(minLng, gpsPoints.lon[i]);
+        for (let i = 0; i < backendGpsPoints.latitude.length; i++) {
+            maxLat = Math.max(maxLat, backendGpsPoints.latitude[i]);
+            minLat = Math.min(minLat, backendGpsPoints.latitude[i]);
+            maxLng = Math.max(maxLng, backendGpsPoints.longitude[i]);
+            minLng = Math.min(minLng, backendGpsPoints.longitude[i]);
 
-            totalDistanceKm += (gpsPoints.distance[i] || 0) / 1000;
+            totalDistanceKm +=
+                (backendGpsPoints.horizontal_distance_to_last_point[i] || 0) /
+                1000;
             newPoints.push({
                 idx: i,
-                lat: gpsPoints.lat[i],
-                lng: gpsPoints.lon[i],
-                elev: gpsPoints.ele[i],
-                distance: gpsPoints.distance[i],
+                lat: backendGpsPoints.latitude[i],
+                lng: backendGpsPoints.longitude[i],
+                elev: backendGpsPoints.elevation[i],
+                distance: backendGpsPoints.horizontal_distance_to_last_point[i],
                 totalDistanceKm: parseFloat(totalDistanceKm.toFixed(3)),
                 segment: 0,
             });
@@ -78,10 +88,9 @@ export function useMapState(gpsPoints: BackendCourseGPS | null): {
             lat: minLat + (maxLat - minLat) / 2,
             lng: minLng + (maxLng - minLng) / 2,
         });
-        console.log(minLat, maxLat, minLng, maxLng);
 
         setPoints(newPoints);
-    }, [gpsPoints]);
+    }, [backendGpsPoints]);
 
     // Set the current hover split
     useEffect(() => {
@@ -131,6 +140,13 @@ export function useMapState(gpsPoints: BackendCourseGPS | null): {
         [splits],
     );
 
+    const createBackendGpsPoints = useCallback(() => {
+        if (!backendGpsPoints) {
+            return null;
+        }
+        return backendGpsPoints;
+    }, [backendGpsPoints]);
+
     return {
         points,
         splits,
@@ -142,5 +158,6 @@ export function useMapState(gpsPoints: BackendCourseGPS | null): {
         setHoverSplitIdx,
         addSplit,
         removeSplit,
+        createBackendGpsPoints,
     };
 }

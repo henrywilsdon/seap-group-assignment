@@ -22,7 +22,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import React, { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { Datum } from 'react-charts';
-import { BackendCourseGPS, parseGpx } from './courseAPI';
+import { BackendGpsPoints, getCourse, parseGpx } from './CourseApi';
 import CourseMap from './CourseMap';
 import HeightMap from './HeightMap';
 import { CourseData } from './ManageCoursesPage';
@@ -44,6 +44,7 @@ type Props = {
     courseData?: CourseData;
     onCancel: () => void;
     onSave: (courseData: CourseData) => void;
+    isEditing?: boolean;
 };
 
 /**
@@ -60,15 +61,15 @@ export default function CourseFormDialog({
     courseData,
     onCancel,
     onSave,
+    isEditing,
 }: Props) {
     // Manage a list of segments
-    // By now, pre-populate with sample data
     const [segments, setSegments] = React.useState<SegmentData[]>([]);
 
     // State for the GPX file
     const [gpxFile, setGpxFile] = React.useState<File | null>(null);
     const [backendCourseGps, setBackendCourseGps] =
-        useState<BackendCourseGPS | null>(null);
+        useState<BackendGpsPoints | null>(null);
 
     const {
         points,
@@ -79,16 +80,26 @@ export default function CourseFormDialog({
         setHoverPoint,
         addSplit,
         removeSplit,
+        createBackendGpsPoints,
     } = useMapState(backendCourseGps);
 
     useEffect(() => {
-        if (!gpxFile) {
+        if (!open) {
             setBackendCourseGps(null);
+            setGpxFile(null);
             return;
         }
 
-        parseGpx(gpxFile).then(setBackendCourseGps);
-    }, [gpxFile]);
+        if (!gpxFile && isEditing && courseData?.id && courseData.id >= 0) {
+            getCourse(courseData.id).then((_courseData) => {
+                setBackendCourseGps(_courseData?.gps_data || null);
+            });
+        } else if (!gpxFile) {
+            setBackendCourseGps(null);
+        } else {
+            parseGpx(gpxFile).then(setBackendCourseGps);
+        }
+    }, [open, gpxFile, isEditing, courseData]);
 
     useEffect(() => {
         if (points.length === 0) {
@@ -149,11 +160,17 @@ export default function CourseFormDialog({
     }, [courseData]);
 
     // Handle Save button to call "onSave" with the edited data
-    const handleSave = () =>
+    const handleSave = () => {
+        const gps_data = createBackendGpsPoints();
+        if (!gps_data) {
+            return;
+        }
         onSave({
             name,
             location,
+            gps_data,
         });
+    };
 
     if (removal) {
         return (

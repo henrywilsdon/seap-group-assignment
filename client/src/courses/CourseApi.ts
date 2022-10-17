@@ -7,8 +7,16 @@ export type BackendCourse = {
     name?: string;
     location?: string;
     last_updated?: string;
-    gps_geo_json?: any;
+    gps_geo_json?: BackendGpsPoints;
 };
+
+export interface BackendGpsPoints {
+    latitude: number[];
+    longitude: number[];
+    elevation: number[];
+    horizontal_distance_to_last_point: number[];
+    bearing_from_last_point: number[];
+}
 
 /**
  * Convert course data from the back-end
@@ -40,21 +48,13 @@ function backendCourseFromFrontend(course: CourseData): BackendCourse {
     backendCourse.name = course.name;
     backendCourse.location = course.location;
     backendCourse.last_updated = new Date().toISOString();
-
-    // Hard-code the GPS data by now
-    backendCourse.gps_geo_json = {
-        latitude: [],
-        longitude: [],
-        elevation: [],
-        horizontal_distance_to_last_point: [],
-        bearing_from_last_point: [],
-    };
+    backendCourse.gps_geo_json = course.gps_data;
     return backendCourse;
 }
 /**
  * Get all courses from the back-end
  */
-export function getCourses(): Promise<CourseData[]> {
+export function getAllCourses(): Promise<CourseData[]> {
     return fetch(BACK_END_URL, {
         method: 'GET',
         credentials: 'include',
@@ -64,6 +64,25 @@ export function getCourses(): Promise<CourseData[]> {
                 'All Courses:'
             ];
             return courses.map<CourseData>(backendCourseToFrontend);
+        } else {
+            if (response.headers.get('Content-Type') === 'application/json') {
+                const data = await response.json();
+                throw new Error(data?.detail);
+            } else {
+                throw new Error(response.statusText + response.status);
+            }
+        }
+    });
+}
+
+export function getCourse(courseId: number): Promise<CourseData> {
+    return fetch(BACK_END_URL + courseId + '/', {
+        method: 'GET',
+        credentials: 'include',
+    }).then(async (response) => {
+        if (response.ok) {
+            const course: BackendCourse = (await response.json())['Course:'];
+            return backendCourseToFrontend(course);
         } else {
             if (response.headers.get('Content-Type') === 'application/json') {
                 const data = await response.json();
@@ -124,6 +143,41 @@ export function deleteCourse(courseId: any): Promise<void> {
         credentials: 'include',
     }).then(async (response) => {
         if (!response.ok) {
+            if (response.headers.get('Content-Type') === 'application/json') {
+                const data = await response.json();
+                throw new Error(data?.detail);
+            } else {
+                throw new Error(response.statusText + response.status);
+            }
+        }
+    });
+}
+
+export function parseGpx(gpxFile: File): Promise<BackendGpsPoints> {
+    const form = new FormData();
+    form.append('attachment', gpxFile);
+
+    return fetch('http://localhost:8000/api/upload/', {
+        method: 'POST',
+        credentials: 'include',
+        body: form,
+    }).then(async (response) => {
+        if (response.ok) {
+            const responseObj: { detail: string } & BackendGpsPoints =
+                await response.json();
+
+            return {
+                latitude: responseObj.latitude.map((v) => Number(v)),
+                longitude: responseObj.longitude.map((v) => Number(v)),
+                elevation: responseObj.elevation.map((v) => Number(v)),
+                horizontal_distance_to_last_point:
+                    responseObj.horizontal_distance_to_last_point.map((v) =>
+                        Number(v),
+                    ),
+                bearing_from_last_point:
+                    responseObj.bearing_from_last_point.map((v) => Number(v)),
+            };
+        } else {
             if (response.headers.get('Content-Type') === 'application/json') {
                 const data = await response.json();
                 throw new Error(data?.detail);
