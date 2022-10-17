@@ -475,41 +475,41 @@ def all_prediction_parameters(request):#, course_id):
         parameters = json.loads(request.body)
 
         #Unpack paramter boxes
-        athlete_paramters = parameters["athlete_paramters"]
-        environment_paramters = parameters["environment_paramters"]
-        mechanical_paramters = parameters["mechanical_paramters"]
-        course_paramters = parameters["course_parameters"]
+        athlete_parameters = parameters["athlete_parameters"]
+        environment_parameters = parameters["environment_parameters"]
+        mechanical_parameters = parameters["mechanical_parameters"]
+        course_parameters = parameters["course_parameters"]
 
-        #course.min_slope_threshold = course_paramters["min_slope_threshold"]
-        #course.max_slope_threshold = course_paramters["max_slope_threshold"]
+        #course.min_slope_threshold = course_parameters["min_slope_threshold"]
+        #course.max_slope_threshold = course_parameters["max_slope_threshold"]
 
         athlete = Athlete.objects.create(
-            name=athlete_paramters["name"],
-            bike_mass=athlete_paramters["bike_mass"],
-            rider_mass=athlete_paramters["rider_mass"],
-            other_mass=athlete_paramters["other_mass"],
-            total_mass=athlete_paramters["total_mass"],
-            CP_FTP=athlete_paramters["CP_FTP"],
-            W_prime=athlete_paramters["W_prime"],
+            name=athlete_parameters["name"],
+            bike_mass=athlete_parameters["bike_mass"],
+            rider_mass=athlete_parameters["rider_mass"],
+            other_mass=athlete_parameters["other_mass"],
+            total_mass=athlete_parameters["total_mass"],
+            CP_FTP=athlete_parameters["CP_FTP"],
+            W_prime=athlete_parameters["W_prime"],
         )
         athlete.save()
 
 
         bike_plus_rider_model = BikePlusRiderModel.objects.create(
-            mass_rider = athlete_paramters["rider_mass"],
-            mass_bike = athlete_paramters["bike_mass"],
-            mass_other = athlete_paramters["other_mass"],
-            crr = mechanical_paramters["crr"],
-            mechanical_efficiency = mechanical_paramters["mechanical_efficiency"],
-            mol_whl_front = mechanical_paramters["mol_whl_front"],
-            mol_whl_rear = mechanical_paramters["mol_whl_rear"],
-            wheel_radius = mechanical_paramters["wheel_radius"]
+            mass_rider = athlete_parameters["rider_mass"],
+            mass_bike = athlete_parameters["bike_mass"],
+            mass_other = athlete_parameters["other_mass"],
+            crr = mechanical_parameters["crr"],
+            mechanical_efficiency = mechanical_parameters["mechanical_efficiency"],
+            mol_whl_front = mechanical_parameters["mol_whl_front"],
+            mol_whl_rear = mechanical_parameters["mol_whl_rear"],
+            wheel_radius = mechanical_parameters["wheel_radius"]
         )
 
         #Where can we get this data?  and to we need it?
         cp_model = CPModel.objects.create(
-            cp = athlete_paramters["CP_FTP"], #Called FTP in the athlete paratmers (double up)
-            w_prime = athlete_paramters["W_prime"], #(double up)
+            cp = athlete_parameters["CP_FTP"], #Called FTP in the athlete paratmers (double up)
+            w_prime = athlete_parameters["W_prime"], #(double up)
 
             #This is either 1 2 or 3 depending on..
             #Default is 1
@@ -537,13 +537,13 @@ def all_prediction_parameters(request):#, course_id):
 
 
         environment_model = EnvironmentModel.objects.create(
-            wind_direction = environment_paramters["wind_direction"],
-            wind_speed_mps = environment_paramters["wind_speed_mps"],
-            wind_density = environment_paramters["wind_density"]
+            wind_direction = environment_parameters["wind_direction"],
+            wind_speed_mps = environment_parameters["wind_speed_mps"],
+            wind_density = environment_parameters["wind_density"]
         )
 
         """ 
-        The paramters in this model can be changed depending on what the predictive model needs
+        The parameters in this model can be changed depending on what the predictive model needs
          """
         technical_model = TechnicalModel.objects.create(
             timestep_size = 0.5,
