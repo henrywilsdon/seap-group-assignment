@@ -25,26 +25,23 @@ export default function useCourseParamsReducer(): {
     // We have to use the useCallback hook so that this function is not recreated
     // on each render causing all components it is passed too to also be re-rendered
     // for no good reason(React things...)
-    const courseParamsDispatch = useCallback(
-        (action: CourseParamsAction) => {
-            if (action.type === 'setMinSlopeThreshold') {
-                setCourseParams((prevCourseParamsState) => ({
-                    ...prevCourseParamsState,
-                    minSlopeThreshold: action.minSlopeThreshold,
-                }));
-            } else if (action.type === 'setMaxSlopeThreshold') {
-                setCourseParams((prevCourseParamsState) => ({
-                    ...prevCourseParamsState,
-                    maxSlopeThreshold: action.maxSlopeThreshold,
-                }));
-            } else if (action.type === 'clear') {
-                setCourseParams(createEmptyCourseParams());
-            } else {
-                throw new Error('Unknown action');
-            }
-        },
-        [courseParams],
-    );
+    const courseParamsDispatch = useCallback((action: CourseParamsAction) => {
+        if (action.type === 'setMinSlopeThreshold') {
+            setCourseParams((prevCourseParamsState) => ({
+                ...prevCourseParamsState,
+                minSlopeThreshold: action.minSlopeThreshold,
+            }));
+        } else if (action.type === 'setMaxSlopeThreshold') {
+            setCourseParams((prevCourseParamsState) => ({
+                ...prevCourseParamsState,
+                maxSlopeThreshold: action.maxSlopeThreshold,
+            }));
+        } else if (action.type === 'clear') {
+            setCourseParams(createEmptyCourseParams());
+        } else {
+            throw new Error('Unknown action');
+        }
+    }, []);
 
     return {
         courseParams,
