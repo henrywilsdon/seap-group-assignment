@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -9,6 +9,12 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { Button } from '@mui/material';
 import CourseFormDialog from './CourseFormDialog';
+import {
+    createCourse,
+    deleteCourse,
+    getCourses,
+    updateCourse,
+} from './CourseApi';
 
 /**
 Course
@@ -42,28 +48,6 @@ export type CourseData = {
     gps_data?: any;
 };
 
-/** Sample course data for demonstration purpose */
-const sampleData: CourseData[] = [
-    {
-        id: 1,
-        name: 'Course A',
-        location: 'Tokyo Racecourse A',
-        last_updated: new Date(),
-    },
-    {
-        id: 2,
-        name: 'Course B',
-        location: 'Tokyo Racecourse B',
-        last_updated: new Date(),
-    },
-    {
-        id: 3,
-        name: 'Course C',
-        location: 'Tokyo Racecourse C',
-        last_updated: new Date(),
-    },
-];
-
 type Props = {};
 
 /**
@@ -75,38 +59,113 @@ type Props = {};
  */
 export default function ManageCoursesPage({}: Props) {
     // Manage a list of all courses
-    // By now, pre-populate with sample data
-    const [data, setData] = React.useState(sampleData);
-    const [createCourseOpen, setCreateCourseOpen] = useState(false);
+    const [data, setData] = useState<CourseData[]>([]);
 
-    const handleCreateCourseOpen = () => {
-        setCreateCourseOpen(true);
+    const [backendChanged, setBackendChanged] = useState(0);
+
+    // Manage states for CourseFormDialog to add/edit/remove course:
+    // open: whether to show/hide the course dialog
+    const [openCourseDialog, setOpenCourseDialog] = useState(false);
+    // removal: whether to show the course dialog for removal confirmation
+    const [courseDialogRemoval, setCourseDialogRemoval] = useState(false);
+    // editingAthlete: data of the course chosen from the course table
+    const [editingCourse, setEditingCourse] = useState<CourseData>({});
+
+    // Fetch courses data from the backend
+    useEffect(() => {
+        getCourses()
+            .then((courses) => setData(courses))
+            .catch((error: Error) => {
+                alert('Error loading courses: ' + error.message);
+            });
+    }, [backendChanged]);
+
+    // Call to show the dialog for adding new course
+    const onNewCourse = () => {
+        setEditingCourse({});
+        setOpenCourseDialog(true);
+        setCourseDialogRemoval(false);
     };
 
-    const handleCreateCourseClose = () => {
-        setCreateCourseOpen(false);
+    // Call to show the dialog for editing the given course
+    const onEditCourse = (courseData: CourseData) => {
+        setEditingCourse(courseData);
+        setOpenCourseDialog(true);
+        setCourseDialogRemoval(false);
     };
 
-    // Composing the Manage Athletes page:
-    //  An instance of AthleteFormDialog
-    //  A button to add athlete
-    //  A table to list athletes
-    //  Each athlete in the table has buttons to Edit and Remove
+    // Call to show the dialog for removing the given course
+    const onRemoveCourse = (courseData: CourseData) => {
+        setEditingCourse(courseData);
+        setOpenCourseDialog(true);
+        setCourseDialogRemoval(true);
+    };
+
+    // Call to hide the course dialog
+    const handleCreateCourseClose = () => setOpenCourseDialog(false);
+
+    // Callback for "Save" button on the course dialog to perform the
+    // corresponding action
+    const handleCreateCourseSave = (courseData: CourseData) => {
+        if (courseDialogRemoval) {
+            // Remove the course by calling the back-end API
+            console.log(`Remove course ${editingCourse.id}`);
+            deleteCourse(editingCourse.id)
+                .then(() => {
+                    console.log(`Course ${editingCourse.id} deleted`);
+                    setBackendChanged(Date.now());
+                })
+                .catch((error: Error) => {
+                    alert('Error removing course: ' + error.message);
+                });
+        } else if (editingCourse.id) {
+            // Update the corresponding course by calling the back-end API
+            console.log(`Edit course ${editingCourse.id}`, editingCourse);
+            updateCourse(editingCourse.id, courseData)
+                .then(() => {
+                    console.log(`Course ${editingCourse.id} updated`);
+                    setBackendChanged(Date.now());
+                })
+                .catch((error: Error) => {
+                    alert('Error updating course: ' + error.message);
+                });
+        } else {
+            // Create new course by calling the back-end API
+            console.log(`New course`, courseData);
+            createCourse(courseData)
+                .then(() => {
+                    console.log(`Course ${editingCourse.id} created`);
+                    setBackendChanged(Date.now());
+                })
+                .catch((error: Error) => {
+                    alert('Error creating course: ' + error.message);
+                });
+        }
+        setOpenCourseDialog(false);
+    };
+
+    // Composing the Manage Courses page:
+    //  An instance of CourseFormDialog
+    //  A button to add course
+    //  A table to list courses
+    //  Each course in the table has buttons to Edit and Remove
     return (
         <Box sx={{ m: 2 }}>
             <CourseFormDialog
+                courseData={editingCourse}
+                open={openCourseDialog}
+                removal={courseDialogRemoval}
+                onSave={handleCreateCourseSave}
                 onCancel={handleCreateCourseClose}
-                onSave={() => {}}
-                open={createCourseOpen}
             />
 
-            <Button variant="contained" onClick={handleCreateCourseOpen}>
+            <Button variant="contained" onClick={onNewCourse}>
                 + Create
             </Button>
 
-            {/* The athletes table */}
+            {/* The Courses table */}
             <TableContainer component={Paper}>
-                <Table sx={{ minWidth: 650 }} aria-label="Athletes table">
+                <Table sx={{ minWidth: 650 }} aria-label="Courses table">
                     <TableHead>
                         <TableRow>
                             <TableCell>Name</TableCell>
@@ -141,8 +200,16 @@ export default function ManageCoursesPage({}: Props) {
                                     </TableCell>
                                     {/* Button to Remove / Edit course */}
                                     <TableCell>
-                                        <Button>Remove</Button>
-                                        <Button>Edit</Button>
+                                        <Button
+                                            onClick={() => onRemoveCourse(row)}
+                                        >
+                                            Remove
+                                        </Button>
+                                        <Button
+                                            onClick={() => onEditCourse(row)}
+                                        >
+                                            Edit
+                                        </Button>
                                     </TableCell>
                                 </TableRow>
                             ))
