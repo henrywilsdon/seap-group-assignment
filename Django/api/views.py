@@ -355,10 +355,16 @@ def get_gpx_data(request):
             dis.append(gpx_json['segments'][0][i]['horz_dist_from_prev'])
             bear.append(gpx_json['segments'][0][i]['bearing_from_prev'])
             i = i + 1
-        DynamicModel.objects.create(owner=owner,lat=lat,long=lon,ele=ele,distance=dis,bearing=bear,slope=slope)
-        dynam = DynamicModel.objects.get(owner=owner)
+        dynam = DynamicModel.objects.create(owner=owner,lat=lat,long=lon,ele=ele,distance=dis,bearing=bear,slope=slope)
 
-        return JsonResponse({'detail': 'Successfully uploaded gpx data.', 'name': uploaded_file.name}, status=200)
+        return JsonResponse({
+            'detail': 'Successfully uploaded gpx data.',
+            'latitude': lat,
+            'longitude': lon,
+            'elevation': ele,
+            'horizontal_distance_to_last_point': dis,
+            'bearing_from_last_point': bear
+        }, status=200)
 
 
 def all_courses_view(request):
@@ -401,10 +407,23 @@ def all_courses_view(request):
 
 def course_view(request, course_id):
     if request.method == "GET":
-        course = Course.objects.filter(id=course_id).values()
+        course = Course.objects.get(id=course_id)
 
-        if Course.objects.filter(id=course_id).exists():
-            return JsonResponse({'Course:': list(course)}, status=200)
+        if course != None:
+            courseGps = DynamicModel.objects.get(id=course.gps_geo_json_id)
+            return JsonResponse({'Course:': {
+                'id': course.id,
+                'name': course.name,
+                'location': course.location,
+                'last_updated': course.last_updated,
+                'gps_geo_json': {
+                    'latitude': courseGps.lat,
+                    'longitude': courseGps.long,
+                    'elevation': courseGps.ele,
+                    'horizontal_distance_to_last_point': courseGps.distance,
+                    'bearing_from_last_point': courseGps.bearing,
+                }
+            }}, status=200)
         else:
             return JsonResponse({'detail': 'course does not exist'}, status=404)
 

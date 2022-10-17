@@ -1,20 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import { Button } from '@mui/material';
 import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import { Button } from '@mui/material';
-import CourseFormDialog from './CourseFormDialog';
+import { useEffect, useState } from 'react';
 import {
+    BackendGpsPoints,
     createCourse,
     deleteCourse,
-    getCourses,
+    getAllCourses,
     updateCourse,
 } from './CourseApi';
+import CourseFormDialog from './CourseFormDialog';
 
 /**
 Course
@@ -45,7 +46,7 @@ export type CourseData = {
     /** Date and time of the last time the course was changed or created */
     last_updated?: Date;
     /** The GPS data for the course */
-    gps_data?: any;
+    gps_data?: BackendGpsPoints;
 };
 
 type Props = {};
@@ -73,7 +74,7 @@ export default function ManageCoursesPage({}: Props) {
 
     // Fetch courses data from the backend
     useEffect(() => {
-        getCourses()
+        getAllCourses()
             .then((courses) => setData(courses))
             .catch((error: Error) => {
                 alert('Error loading courses: ' + error.message);
@@ -102,7 +103,10 @@ export default function ManageCoursesPage({}: Props) {
     };
 
     // Call to hide the course dialog
-    const handleCreateCourseClose = () => setOpenCourseDialog(false);
+    const handleCreateCourseClose = () => {
+        setEditingCourse({});
+        setOpenCourseDialog(false);
+    };
 
     // Callback for "Save" button on the course dialog to perform the
     // corresponding action
@@ -150,73 +154,80 @@ export default function ManageCoursesPage({}: Props) {
     //  A table to list courses
     //  Each course in the table has buttons to Edit and Remove
     return (
-        <Box sx={{ m: 2 }}>
+        <>
             <CourseFormDialog
                 courseData={editingCourse}
                 open={openCourseDialog}
                 removal={courseDialogRemoval}
                 onSave={handleCreateCourseSave}
                 onCancel={handleCreateCourseClose}
+                isEditing={typeof editingCourse?.id === 'number'}
             />
+            <Box sx={{ m: 2 }}>
+                <Button variant="contained" onClick={onNewCourse}>
+                    + Create
+                </Button>
 
-            <Button variant="contained" onClick={onNewCourse}>
-                + Create
-            </Button>
-
-            {/* The Courses table */}
-            <TableContainer component={Paper}>
-                <Table sx={{ minWidth: 650 }} aria-label="Courses table">
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Name</TableCell>
-                            <TableCell align="right">Location</TableCell>
-                            <TableCell align="right">Updated</TableCell>
-                            <TableCell></TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {
-                            // List all athletes: name, rider mass, bike mass, other mass,
-                            // total mass (sum of rider mass, bike mass, and other mass),
-                            // CP/FTP, and W'
-                            data.map((row) => (
-                                <TableRow
-                                    key={row.id}
-                                    sx={{
-                                        '&:last-child td, &:last-child th': {
-                                            border: 0,
-                                        },
-                                    }}
-                                >
-                                    <TableCell component="th" scope="row">
-                                        {row.name}
-                                    </TableCell>
-                                    <TableCell align="right">
-                                        {row.location}
-                                    </TableCell>
-                                    <TableCell align="right">
-                                        {row.last_updated?.toLocaleDateString()}{' '}
-                                        {row.last_updated?.toLocaleTimeString()}
-                                    </TableCell>
-                                    {/* Button to Remove / Edit course */}
-                                    <TableCell>
-                                        <Button
-                                            onClick={() => onRemoveCourse(row)}
-                                        >
-                                            Remove
-                                        </Button>
-                                        <Button
-                                            onClick={() => onEditCourse(row)}
-                                        >
-                                            Edit
-                                        </Button>
-                                    </TableCell>
-                                </TableRow>
-                            ))
-                        }
-                    </TableBody>
-                </Table>
-            </TableContainer>
-        </Box>
+                {/* The Courses table */}
+                <TableContainer component={Paper}>
+                    <Table sx={{ minWidth: 650 }} aria-label="Courses table">
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>Name</TableCell>
+                                <TableCell align="right">Location</TableCell>
+                                <TableCell align="right">Updated</TableCell>
+                                <TableCell></TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {
+                                // List all athletes: name, rider mass, bike mass, other mass,
+                                // total mass (sum of rider mass, bike mass, and other mass),
+                                // CP/FTP, and W'
+                                data.map((row) => (
+                                    <TableRow
+                                        key={row.id}
+                                        sx={{
+                                            '&:last-child td, &:last-child th':
+                                                {
+                                                    border: 0,
+                                                },
+                                        }}
+                                    >
+                                        <TableCell component="th" scope="row">
+                                            {row.name}
+                                        </TableCell>
+                                        <TableCell align="right">
+                                            {row.location}
+                                        </TableCell>
+                                        <TableCell align="right">
+                                            {row.last_updated?.toLocaleDateString()}{' '}
+                                            {row.last_updated?.toLocaleTimeString()}
+                                        </TableCell>
+                                        {/* Button to Remove / Edit course */}
+                                        <TableCell>
+                                            <Button
+                                                onClick={() =>
+                                                    onRemoveCourse(row)
+                                                }
+                                            >
+                                                Remove
+                                            </Button>
+                                            <Button
+                                                onClick={() =>
+                                                    onEditCourse(row)
+                                                }
+                                            >
+                                                Edit
+                                            </Button>
+                                        </TableCell>
+                                    </TableRow>
+                                ))
+                            }
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            </Box>
+        </>
     );
 }
