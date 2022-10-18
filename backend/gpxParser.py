@@ -11,7 +11,6 @@ if False:
     ensurepip._run_pip(["install", "geojson"])
 
 import pprint
-from xml.dom.minidom import Element # used only for testing code
 import xmltodict
 import great_circle_calculator.great_circle_calculator as gcc
 import geojson
