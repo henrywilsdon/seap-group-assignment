@@ -19,5 +19,5 @@ class CourseModel(admin.ModelAdmin):
 
 @admin.register(Course)
 class Course(admin.ModelAdmin):
-    list_display = ['name', 'location', 'last_updated', 'gps_geo_json']
+    list_display = ['name', 'location', 'last_updated', 'gps_geo_json', 'min_slope_threshold', 'max_slope_threshold']
 
