@@ -38,5 +38,6 @@ urlpatterns = [
     path('api/staticmodels/', views.all_static_model_view, name='static_models'),
     path('api/staticmodels/<int:gpx_model_id>/', views.static_model_view, name='static_models'),
     path('api/course/', views.all_courses_view, name='courses'),
-    path('api/course/<int:course_id>/', views.course_view, name='courses')
+    path('api/course/<int:course_id>/', views.course_view, name='courses'),
+    path('api/prediction', views.all_prediction_parameters, name='all_prediction_parameters'),
 ]
