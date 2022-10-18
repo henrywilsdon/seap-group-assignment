@@ -107,7 +107,7 @@ class UserTestCase(TestCase):
             response = client.post('/api/upload/', {'attachment': gpx})
 
         data = json.loads(response.content)
-        name = data["name"]
+        #name = data["name"]
         self.assertEqual(response.status_code, 200)   
 
 
