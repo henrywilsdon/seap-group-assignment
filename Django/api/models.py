@@ -59,8 +59,8 @@ class StaticModel(models.Model):
     starting_speed = models.FloatField()
 
     # uncategorised, but definitely used
-    delta_cda = models.FloatField()
-    delta_watts = models.FloatField()
+    delta_cda = models.FloatField(default=0)
+    delta_watts = models.FloatField(default=-20)
 
 class DynamicModel(models.Model):
     owner = models.CharField(max_length=30, blank=True)
