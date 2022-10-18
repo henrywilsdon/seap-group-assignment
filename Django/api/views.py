@@ -368,6 +368,9 @@ def get_gpx_data(request):
 
 
 def all_courses_view(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'detail': 'User not authenticated'}, status=401)
+
     if request.method == "GET":
         courses = Course.objects.all().values()
         
@@ -377,7 +380,7 @@ def all_courses_view(request):
             return JsonResponse({'detail': 'No courses exist'}, status=400)
 
 
-    elif request.method == "POST":
+    if request.method == "POST":
         course_data = json.loads(request.body)
 
         gps_json=course_data["gps_geo_json"]
@@ -394,8 +397,10 @@ def all_courses_view(request):
                 ele=gps_json['elevation'],
                 distance=gps_json['horizontal_distance_to_last_point'],
                 bearing=gps_json['bearing_from_last_point'],
-                slope=empty_slope
-            )
+                slope=empty_slope,
+            ),
+            min_slope_threshold = 0,
+            max_slope_threshold = 0,
         )
         course.save()
 
@@ -406,6 +411,9 @@ def all_courses_view(request):
 
 
 def course_view(request, course_id):
+    if not request.user.is_authenticated:
+        return JsonResponse({'detail': 'User not authenticated'}, status=401)
+    
     if request.method == "GET":
         course = Course.objects.get(id=course_id)
 
@@ -447,6 +455,10 @@ def course_view(request, course_id):
                 bearing=gps_json['bearing_from_last_point'],
                 slope=empty_slope
             )
+        #This will be updated in the later parameters view
+        course.min_slope_threshold = 0
+        course.max_slope_threshold = 0
+
 
         course.save()
 
@@ -465,3 +477,142 @@ def course_view(request, course_id):
         else:
             return JsonResponse({'detail': 'course deleted'}, status=200)
 
+
+
+
+
+
+def all_prediction_parameters(request):#, course_id):
+    if not request.user.is_authenticated:
+        return JsonResponse({'detail': 'User not authenticated'}, status=401)
+
+    #course = Course.objects.filter(id=course_id).values()
+
+
+
+    if request.method == "POST":
+        parameters = json.loads(request.body)
+
+        #Unpack paramter boxes
+        athlete_parameters = parameters["athlete_parameters"]
+        environment_parameters = parameters["environment_parameters"]
+        mechanical_parameters = parameters["mechanical_parameters"]
+        course_parameters = parameters["course_parameters"]
+
+        #course.min_slope_threshold = course_parameters["min_slope_threshold"]
+        #course.max_slope_threshold = course_parameters["max_slope_threshold"]
+
+        athlete = Athlete.objects.create(
+            name=athlete_parameters["name"],
+            bike_mass=athlete_parameters["bike_mass"],
+            rider_mass=athlete_parameters["rider_mass"],
+            other_mass=athlete_parameters["other_mass"],
+            total_mass=athlete_parameters["total_mass"],
+            CP_FTP=athlete_parameters["CP_FTP"],
+            W_prime=athlete_parameters["W_prime"],
+        )
+        athlete.save()
+
+
+        bike_plus_rider_model = BikePlusRiderModel.objects.create(
+            mass_rider = athlete_parameters["rider_mass"],
+            mass_bike = athlete_parameters["bike_mass"],
+            mass_other = athlete_parameters["other_mass"],
+            crr = mechanical_parameters["crr"],
+            mechanical_efficiency = mechanical_parameters["mechanical_efficiency"],
+            mol_whl_front = mechanical_parameters["mol_whl_front"],
+            mol_whl_rear = mechanical_parameters["mol_whl_rear"],
+            wheel_radius = mechanical_parameters["wheel_radius"]
+        )
+
+        #Where can we get this data?  and to we need it?
+        cp_model = CPModel.objects.create(
+            cp = athlete_parameters["CP_FTP"], #Called FTP in the athlete paratmers (double up)
+            w_prime = athlete_parameters["W_prime"], #(double up)
+
+            #This is either 1 2 or 3 depending on..
+            #Default is 1
+            #Number determines which function will be used to calculate energy level
+            #Will need to be added to frontend
+            w_prime_recovery_function = 1,
+
+            #These two determine how much power is being used for either up, down or steady
+            #Use default value in spreadsheet
+            below_steady_state_max_slope = -0.01,
+            below_steady_state_power_usage = 0.02,
+            over_threshold_min_slope = 0.075,
+            over_threshold_power_usage = 1.1,
+            steady_state_power_usage = 0.91,
+        )
+
+        #Same deal with this one
+        #Values hardcoded into predictive model.  Will delete this model later
+        position_model = PositionModel.objects.create(
+            climbing_cda_increment = 0,
+            climbing_min_slope = 0,
+            descending_cda_increment = 0,
+            descending_max_slope = 0
+        ) 
+
+
+        environment_model = EnvironmentModel.objects.create(
+            wind_direction = environment_parameters["wind_direction"],
+            wind_speed_mps = environment_parameters["wind_speed_mps"],
+            wind_density = environment_parameters["wind_density"]
+        )
+
+        """ 
+        The parameters in this model can be changed depending on what the predictive model needs
+         """
+        technical_model = TechnicalModel.objects.create(
+            timestep_size = 0.5,
+            starting_distance = 0.1,
+            starting_speed = 0.3,
+        )
+
+        model = StaticModel.objects.create(
+            bike_plus_rider_model = bike_plus_rider_model,
+            cp_model = cp_model,
+            position_model = position_model,
+            environment_model = environment_model,
+            technical_model = technical_model
+        )
+        model.save()
+
+        #Call predictive model
+        #PredictiveModel(model,athlete,course)
+
+
+        segment1 = {'average_yaw' : '5' , 'average_yaw_above_40kmh' : '3' , 'distance' : '300' , 'duration' : '26.5' ,  'min_w_prime_balance' : '10000' , 'power_in' : '5000'}
+        segment2 = {'average_yaw' : '5' , 'average_yaw_above_40kmh' : '3' , 'distance' : '300' , 'duration' : '26.5' ,  'min_w_prime_balance' : '10000' , 'power_in' : '5000'}
+        segment3 = {'average_yaw' : '5' , 'average_yaw_above_40kmh' : '3' , 'distance' : '300' , 'duration' : '26.5' ,  'min_w_prime_balance' : '10000' , 'power_in' : '5000'} 
+
+        segments = {
+            'segments' : [segment1, segment2, segment3]
+        }
+
+
+        distance = [0,0,0]
+        power_in = [0,0,0]
+        speed = [0,0,0]
+        yaw = [0,0,0]
+        power = [0,0,0]
+        elevation = [0,0,0]
+        w_prim_balance = [0,0,0]
+
+        time_steps_data = {'distance' : distance , 'power_in' : power_in , 'speed' : speed, 'yaw' : yaw , 'power' : power , 'elevation' : elevation, 'w_prim_balance' : w_prim_balance}
+
+        full_course_data = {'average_yaw' : '5' , 'average_yaw_above_40kmh' : '3' , 'distance' : '860' , 'duration' : '67.5' ,  'min_w_prime_balance' : '35000' , 'power_in' : '36000'}
+
+        result = {'full_course_data': full_course_data, 'segments': segments, 'time_steps_data' : time_steps_data}
+
+
+
+        return JsonResponse({'detail': 'Prediction complete', 'result' : result}, status=200)
+
+
+
+
+
+
+    
