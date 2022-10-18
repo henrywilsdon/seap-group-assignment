@@ -11,13 +11,14 @@ class Athlete(models.Model):
     total_mass = models.FloatField()
     CP_FTP = models.FloatField()
     W_prime = models.FloatField()
+
 class Course(models.Model):
     name = models.CharField(max_length=30)
     location = models.CharField(max_length=30)
     last_updated = models.DateTimeField()
     gps_geo_json = models.OneToOneField("DynamicModel", on_delete=models.CASCADE)
-    min_slope_threshold = models.FloatField(blank=True)
-    max_slope_threshold = models.FloatField(blank=True)
+    min_slope_threshold = models.FloatField(blank=True, default = 0)
+    max_slope_threshold = models.FloatField(blank=True, default = 0)
 
 class StaticModel(models.Model):
 
@@ -25,7 +26,7 @@ class StaticModel(models.Model):
     mass_rider = models.FloatField()
     mass_bike = models.FloatField()
     mass_other = models.FloatField()
-    delta_kg = models.FloatField()
+    delta_kg = models.FloatField(default = 0)
     crr = models.FloatField()
     mechanical_efficiency = models.FloatField()
     mol_whl_front = models.FloatField()
