@@ -42,7 +42,6 @@ def gpx_to_json(filepath: str) -> dict:
             }
 
     # create json list of segments (the format of this list is detailed in the docstring)
-    segments = []
     for key in gpx_dict['trk']:
         if key == 'trkseg':
             trkpt_list = gpx_dict['trk'][key]['trkpt']
@@ -53,18 +52,22 @@ def gpx_to_json(filepath: str) -> dict:
             # (b) add 'horz_dist_from_prev' and 'bearing_from_prev'
             # (c) throw out 'time' because we don't need it
 
-            new_trkpt_list = []
-
             prev_lat = None
             prev_lon = None
+
+            cumulative_distance = 0
+            final = 0
+            new_trkpt_list = []
+
             for trkpt in trkpt_list:
 
                 new_trkpt = {}
-
+                
                 lat = trkpt['@lat']
                 lon = trkpt['@lon']
                 if prev_lat is not None:
                     new_trkpt['horz_dist_from_prev'] = gcc.distance_between_points([prev_lon, prev_lat], [lon, lat])
+                    cumulative_distance = float(gcc.distance_between_points([prev_lon, prev_lat], [lon, lat]))
                     new_trkpt['bearing_from_prev'] = gcc.bearing_at_p1([prev_lon, prev_lat], [lon, lat])
                 else:
                     new_trkpt['horz_dist_from_prev'] = None
@@ -75,11 +78,14 @@ def gpx_to_json(filepath: str) -> dict:
                 prev_lon = lon
 
                 new_trkpt['ele'] = trkpt['ele']
-                new_trkpt_list += [new_trkpt]
+                new_trkpt['smooth_slope'] = '?'
 
-            segments += [new_trkpt_list]
+                final = float(final) + cumulative_distance
+                new_trkpt['distance'] = final
 
-    return {'info': info, 'segments': segments}
+                new_trkpt_list += [new_trkpt]    
+
+            return {'info': info, 'segments': new_trkpt_list}
 
 
 def gpx_to_geojson(filepath: str) -> geojson.MultiLineString:
@@ -111,9 +117,9 @@ def gpx_to_geojson(filepath: str) -> geojson.MultiLineString:
 
     return geojson.MultiLineString(segments)
 
-if False: # testing code
+if True: # testing code
     filepath = "GPX example files/Tokyo-Olympics-Men's-ITT_track.gpx"
     gpx_json = gpx_to_json(filepath)
-    gpx_geojson = gpx_to_geojson(filepath)
+    ##gpx_geojson = gpx_to_geojson(filepath)
 
-    pprint.PrettyPrinter().pprint(gpx_geojson)
+    pprint.PrettyPrinter().pprint(gpx_json)
