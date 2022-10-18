@@ -1,18 +1,10 @@
 from temporaryModels import *
 import math
 
-def predict_power_aero(course: CourseModel, distance: float, speed: float) -> float:
+def predict_power_aero(course: CourseModel, distance: float, speed: float, index: int) -> dict:
 
     cs = course.static
     cd = course.dynamic
-
-    index = None
-    for checkedIndex in reversed(range(len(cd.distance))):
-        if cd.distance[checkedIndex] <= distance:
-            index = checkedIndex
-            break
-
-
 
     # ---------------------------------------------------------------
     # THE PART THAT FIGURES OUT THE RELATIVE WIND SPEED
@@ -53,27 +45,23 @@ def predict_power_aero(course: CourseModel, distance: float, speed: float) -> fl
 
     # I know that "vlookup_thingy_a" and "vlookup_thingy_b" are terrible, completely unclear names for variables, but that's only because the spreadsheet is also terrible and completely unclear. I legitimately don't know what these variables represent - I'm just copying the behaviour of the spreadsheet.
 
-    vlookup_thingy_a_table = { # at 'Input-Output'!$B$20:$P$22
-        "a": [0.188, 0.188, 0.188, 0.186, 0.184, 0.183, 0.182, 0.182, 0.182, 0.182, 0.182, 0.182, 0.182, 0.182],
-        "b": [0.228, 0.228, 0.228, 0.226, 0.224, 0.223, 0.222, 0.222, 0.222, 0.222, 0.222, 0.222, 0.222, 0.222],
-        "c": [0.193, 0.193, 0.193, 0.191, 0.189, 0.188, 0.187, 0.187, 0.187, 0.187, 0.187, 0.187, 0.187, 0.187]
-    }
-    slope = cd.slope_from_prev[index]
-    if index == 0:
-        position = "b" # this is baked into the spreadsheet at 'Course info'!$M$3
-    elif slope > cs.over_threshold_min_slope:
-        position = "b"
-    elif slope < cs.below_steady_state_max_slope:
-        position = "c"
-    else:
-        position = "a" # position is the row that will be used in the vlookup
-        # the spreadsheet has a bug at 'Course info'!$M:$M where if the value is EXACTLY equal to the min/max, it causes an error - we're not going to emulate that bug
+    # at 'Input-Output'!$B$20:$P$22, for position 'a' specifically (the others are calculated later in this code)
+    vlookup_thingy_a_table = [0.188, 0.188, 0.188, 0.186, 0.184, 0.183, 0.182, 0.182, 0.182, 0.182, 0.182, 0.182, 0.182, 0.182]
 
-    vlookup_thingy_a_col = [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12][math.floor(relative_wind_speed)] -2
+    vlookup_thingy_a_col = [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12][math.floor(relative_wind_speed)] - 2
     # vlookup_thingy_a_col (the value that chooses the col in vlookup_thingy_a_table) is also ITSELF calculated via a vlookup, of a static unlabelled table with no dependencies at 'Calcs'!$AE$2:$AF$82. The above line emulates THAT vlookup.
     # the -2 is because (a) the python code doesn't include the a/b/c column and (b) Python is 0-indexed and vlookup is 1-indexed
 
-    vlookup_thingy_a = vlookup_thingy_a_table[position][vlookup_thingy_a_col]
+    vlookup_thingy_a = vlookup_thingy_a_table[vlookup_thingy_a_col]
+
+    slope = cd.slope_from_prev[index]
+    if index == 0 or slope > cs.climbing_min_slope: # index 0 being position b is baked into the spreadsheet at 'Course info'!$M$3
+        # (calculates position b)
+        vlookup_thingy_a += course.static.climbing_cda_increment
+    elif slope < cs.descending_max_slope:
+        # (calculates position c)
+        vlookup_thingy_a += course.static.descending_cda_increment
+    # else position is a, and the result isn't affected
 
     vlookup_thingy_b_table = [0.0, -0.000400000000000011, -0.000800000000000023, -0.00120000000000003, -0.00160000000000005, -0.00200000000000006, -0.00440000000000007, -0.00680000000000008, -0.0092000000000001, -0.0116000000000001, -0.014, -0.0144, -0.0148, -0.0152, -0.0156000000000001, -0.0160000000000001, -0.0164000000000001, -0.0168000000000001, -0.0172000000000001, -0.0176000000000001, -0.0180000000000001, -0.0184000000000001, -0.0188000000000001, -0.0192000000000002, -0.0196000000000002, -0.0200000000000002, -0.0204000000000002, -0.0208000000000002, -0.0212000000000002, -0.0216000000000002, -0.0220000000000002, -0.0224000000000003, -0.0224000000000003, -0.0224000000000003, -0.0224000000000003, -0.0224000000000003, -0.0224000000000003, -0.0224000000000003, -0.0224000000000003, -0.0224000000000003, -0.0224000000000003, -0.0224000000000003, -0.0224000000000003, -0.0224000000000003, -0.0224000000000003, -0.0224000000000003, -0.0224000000000003, -0.0224000000000003, -0.0224000000000003, -0.0224000000000003, -0.0224000000000003, -0.0224000000000003, -0.0224000000000003, -0.0224000000000003, -0.0224000000000003, -0.0224000000000003, -0.0224000000000003, -0.0224000000000003, -0.0224000000000003, -0.0224000000000003, -0.0224000000000003]
     # The table at 'Yaw response'!$I$66:$I$126 (the table is calculated based on unchanging values in the same sheet, so in the code I've just baked it in)
@@ -94,4 +82,4 @@ def predict_power_aero(course: CourseModel, distance: float, speed: float) -> fl
     # FINAL CALCULATIONS
 
     power_aero = 0.5 * cs.wind_density * relative_wind_speed**3 * cda
-    return power_aero
+    return {"power_aero": power_aero, "yaw": effective_yaw_angle}

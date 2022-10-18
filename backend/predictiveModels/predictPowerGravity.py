@@ -1,12 +1,6 @@
 from temporaryModels import *
 
-def predict_power_gravity(course: CourseModel, distance: float, speed: float) -> float:
-    index = 0
-    for checkedIndex in reversed(range(len(course.dynamic.distance))):
-        if course.dynamic.distance[checkedIndex] <= distance:
-            index = checkedIndex
-        break
-
+def predict_power_gravity(course: CourseModel, distance: float, speed: float, index: int) -> float:
     cs = course.static # for brevity
     cd = course.dynamic
 
