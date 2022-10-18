@@ -1,4 +1,7 @@
+
 import json
+import xmltodict
+import geojson
 from django.test import TestCase
 from django.test import TestCase
 from django.contrib.auth.models import User
@@ -93,6 +96,20 @@ class UserTestCase(TestCase):
         response = client.post('/api/logout/',
                                content_type='application/json')
         self.assertEqual(response.status_code, 200)
+
+    def test_files(self):
+        client = Client()
+
+        client.login(username="blake", password="BlakeMan")
+
+        filepath = "GPX example files/Tokyo-Olympics-Men's-ITT_track.gpx"
+        with open(filepath) as gpx:
+            response = client.post('/api/upload/', {'attachment': gpx})
+
+        data = json.loads(response.content)
+        name = data["name"]
+        self.assertEqual(response.status_code, 200)   
+
 
     """ def test_get_user(self):
         client = Client()
