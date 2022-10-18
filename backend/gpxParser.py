@@ -40,7 +40,8 @@ def gpx_to_json(filepath: str) -> dict:
             'time': gpx_dict['metadata']['time'],
             'track name': gpx_dict['trk']['name']
             }
-
+    
+    segmentNumber = 1
     # create json list of segments (the format of this list is detailed in the docstring)
     for key in gpx_dict['trk']:
         if key == 'trkseg':
@@ -58,6 +59,7 @@ def gpx_to_json(filepath: str) -> dict:
             cumulative_distance = 0
             final = 0
             new_trkpt_list = []
+            segments = []
 
             for trkpt in trkpt_list:
 
@@ -79,13 +81,17 @@ def gpx_to_json(filepath: str) -> dict:
 
                 new_trkpt['ele'] = trkpt['ele']
                 new_trkpt['smooth_slope'] = '?'
+                new_trkpt['segment'] = segmentNumber
+
 
                 final = float(final) + cumulative_distance
                 new_trkpt['distance'] = final
 
-                new_trkpt_list += [new_trkpt]    
+                new_trkpt_list += [new_trkpt]
+            segments += new_trkpt_list
+            segmentNumber += 1    
 
-            return {'info': info, 'segments': new_trkpt_list}
+    return {'info': info, 'segments': segments}
 
 
 def gpx_to_geojson(filepath: str) -> geojson.MultiLineString:
