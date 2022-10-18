@@ -25,11 +25,11 @@ export default function RegisterPage({}: Props) {
     };
 
     //password
-
     const handlePassword = (event: any) => {
         setPassword(event.target.value);
         setErrorMessage('');
     };
+
     //button click
     const handleClick = (event: any) => {
         register(username, email, password)

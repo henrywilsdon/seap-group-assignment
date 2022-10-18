@@ -199,12 +199,7 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
         promise.finally(() => (registerPending.current = false));
 
         return promise.then(async (response) => {
-            console.log(response);
-
             if (response.ok) {
-                console.log('Here');
-                setUser({ username, email });
-                setPass(password);
                 navigate('/login');
             } else {
                 if (response.status === 400) {
