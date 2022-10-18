@@ -29,14 +29,14 @@ const items = [
         path: '/courses',
     },
     {
-        label: 'Profile',
-        Icon: PersonIcon,
-        path: '/profile',
-    },
-    {
         label: 'Predictions',
         Icon: CalculateIcon,
         path: '/predictions',
+    },
+    {
+        label: 'Profile',
+        Icon: PersonIcon,
+        path: '/profile',
     },
 ];
 
