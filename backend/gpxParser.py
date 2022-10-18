@@ -10,7 +10,8 @@ if False:
     ensurepip._run_pip(["install", "great-circle-calculator"])
     ensurepip._run_pip(["install", "geojson"])
 
-import pprint # used only for testing code
+import pprint
+from xml.dom.minidom import Element # used only for testing code
 import xmltodict
 import great_circle_calculator.great_circle_calculator as gcc
 import geojson
@@ -55,6 +56,7 @@ def gpx_to_json(filepath: str) -> dict:
 
             prev_lat = None
             prev_lon = None
+            prev_ele = None
 
             cumulative_distance = 0
             final = 0
@@ -65,8 +67,8 @@ def gpx_to_json(filepath: str) -> dict:
 
                 new_trkpt = {}
                 
-                lat = trkpt['@lat']
-                lon = trkpt['@lon']
+                lat = float(trkpt['@lat'])
+                lon = float(trkpt['@lon'])
                 if prev_lat is not None:
                     new_trkpt['horz_dist_from_prev'] = gcc.distance_between_points([prev_lon, prev_lat], [lon, lat])
                     cumulative_distance = float(gcc.distance_between_points([prev_lon, prev_lat], [lon, lat]))
@@ -76,11 +78,19 @@ def gpx_to_json(filepath: str) -> dict:
                     new_trkpt['bearing_from_prev'] = None
                 new_trkpt['lat'] = lat
                 new_trkpt['lon'] = lon
+                new_trkpt['ele'] = float(trkpt['ele'])
+                if prev_ele is not None:
+                    ele_change = new_trkpt['ele'] - prev_ele
+                    new_trkpt['slope'] = ele_change/new_trkpt['horz_dist_from_prev']
+                else:
+                    ele_change = None
+                    new_trkpt['slope'] = None
                 prev_lat = lat
                 prev_lon = lon
+                prev_ele = float(trkpt['ele'])
+                
 
-                new_trkpt['ele'] = trkpt['ele']
-                new_trkpt['smooth_slope'] = '?'
+
                 new_trkpt['segment'] = segmentNumber
 
 
@@ -89,7 +99,19 @@ def gpx_to_json(filepath: str) -> dict:
 
                 new_trkpt_list += [new_trkpt]
             segments += new_trkpt_list
-            segmentNumber += 1    
+            segmentNumber += 1
+
+
+    for index in range(len(segments)):
+        if index == 0:
+            segments[index]['smooth_slope'] = 0
+        elif index == 1:
+            segments[index]['smooth_slope'] = segments[index]['slope']
+        elif index == len(segments) - 1:
+            segments[index]['smooth_slope'] = (segments[index]['slope'] + segments[index-1]['slope'])/3
+        else:
+            segments[index]['smooth_slope'] = (segments[index]['slope'] + segments[index-1]['slope'] + segments[index+1]['slope'])/3
+
 
     return {'info': info, 'segments': segments}
 
