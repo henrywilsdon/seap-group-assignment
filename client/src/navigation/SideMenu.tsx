@@ -68,7 +68,7 @@ export default function SideMenu() {
 
     const renderItems = () => {
         return items.map((item) => (
-            <ListItem disablePadding>
+            <ListItem disablePadding key={item.label}>
                 <ListItemButton
                     onClick={createClickHandler(item.path)}
                     selected={matchPath(item.path, location.pathname) != null}
