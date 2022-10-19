@@ -101,7 +101,9 @@ export default function MechanicalParams(props: Props) {
                     <CustomTextField
                         label="Crr"
                         inputProps={{
-                            step: '0.1',
+                            step: '0.01',
+                            min: 0,
+                            max: 1,
                         }}
                         value={mechanical.crrValue}
                         onChange={handleCrrChange}
@@ -120,6 +122,11 @@ export default function MechanicalParams(props: Props) {
                                 </InputAdornment>
                             ),
                         }}
+                        inputProps={{
+                            step: '0.1',
+                            min: 0,
+                            max: 100,
+                        }}
                         tool_title="Reflects power lost in mechanical friction"
                         tool_position="bottom"
                     />
@@ -136,6 +143,9 @@ export default function MechanicalParams(props: Props) {
                                     </p>
                                 </InputAdornment>
                             ),
+                        }}
+                        inputProps={{
+                            step: '0.1',
                         }}
                         tool_title="Moment of Inertia - Front Wheel"
                         tool_position="bottom"
@@ -154,6 +164,9 @@ export default function MechanicalParams(props: Props) {
                                 </InputAdornment>
                             ),
                         }}
+                        inputProps={{
+                            step: '0.1',
+                        }}
                         tool_title="Moment of Inertia - Rear Wheel"
                         tool_position="bottom"
                     />
@@ -168,6 +181,10 @@ export default function MechanicalParams(props: Props) {
                                     m
                                 </InputAdornment>
                             ),
+                        }}
+                        inputProps={{
+                            step: '0.01',
+                            min: 0,
                         }}
                         tool_title="Radius of the wheels"
                         tool_position="bottom"

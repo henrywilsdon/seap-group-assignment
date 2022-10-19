@@ -91,6 +91,11 @@ export default function CourseParams(props: Props) {
                                 </InputAdornment>
                             ),
                         }}
+                        inputProps={{
+                            step: '0.01',
+                            min: -100,
+                            max: 100,
+                        }}
                         tool_title="Slope threshold below which rider comes off steady state power"
                         tool_position="bottom"
                     />
@@ -105,6 +110,11 @@ export default function CourseParams(props: Props) {
                                     %
                                 </InputAdornment>
                             ),
+                        }}
+                        inputProps={{
+                            step: '0.01',
+                            min: -100,
+                            max: 100,
                         }}
                         tool_title="Slope threshold above which rider goes over steady state power"
                         tool_position="bottom"

@@ -98,6 +98,9 @@ export default function EnvironmentParams(props: Props) {
                                 </InputAdornment>
                             ),
                         }}
+                        inputProps={{
+                            step: '0.1',
+                        }}
                         tool_title="The expected wind direction"
                         tool_position="bottom"
                     />
@@ -112,6 +115,9 @@ export default function EnvironmentParams(props: Props) {
                                     m/s
                                 </InputAdornment>
                             ),
+                        }}
+                        inputProps={{
+                            step: '0.1',
                         }}
                         tool_title="The expected wind speed"
                         tool_position="bottom"
@@ -129,6 +135,10 @@ export default function EnvironmentParams(props: Props) {
                                     </p>
                                 </InputAdornment>
                             ),
+                        }}
+                        inputProps={{
+                            step: '0.01',
+                            min: 0,
                         }}
                         tool_title="Air density from user calculations"
                         tool_position="bottom"

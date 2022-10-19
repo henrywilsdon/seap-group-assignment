@@ -112,6 +112,10 @@ export default function AthleteParams(props: Props) {
                                 </InputAdornment>
                             ),
                         }}
+                        inputProps={{
+                            step: '0.1',
+                            min: 0,
+                        }}
                         tool_title="The mass of the rider"
                         tool_position="bottom"
                     />
@@ -128,6 +132,10 @@ export default function AthleteParams(props: Props) {
                                 </InputAdornment>
                             ),
                         }}
+                        inputProps={{
+                            step: '0.1',
+                            min: 0,
+                        }}
                         tool_title="The mass of the bicycle"
                         tool_position="bottom"
                     />
@@ -143,6 +151,10 @@ export default function AthleteParams(props: Props) {
                                     kg
                                 </InputAdornment>
                             ),
+                        }}
+                        inputProps={{
+                            step: '0.1',
+                            min: 0,
                         }}
                         tool_title="Other mass - clothing, helmet etc."
                         tool_position="bottom"
@@ -165,7 +177,7 @@ export default function AthleteParams(props: Props) {
                     />
 
                     <CustomTextField
-                        label="FTP"
+                        label="CP"
                         value={athlete.cp}
                         onChange={handleCPChange}
                         hasChanged={hasCPChanged}
@@ -175,9 +187,12 @@ export default function AthleteParams(props: Props) {
                                     W
                                 </InputAdornment>
                             ),
-                            disabled: true,
                         }}
-                        tool_title="Critical power - also known as CP"
+                        inputProps={{
+                            step: '1',
+                            min: 0,
+                        }}
+                        tool_title="Power level sustainable for 1 hour in steady state"
                         tool_position="bottom"
                     />
 
@@ -194,7 +209,10 @@ export default function AthleteParams(props: Props) {
                                     J
                                 </InputAdornment>
                             ),
-                            disabled: true,
+                        }}
+                        inputProps={{
+                            step: '1',
+                            min: 0,
                         }}
                     />
                 </Paper>
