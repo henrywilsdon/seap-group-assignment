@@ -50,6 +50,11 @@ function ParamFields(props: Props) {
                     },
                 }}
             >
+                <AthleteParams
+                    athlete={athlete}
+                    originalAthlete={originalAthlete}
+                    athleteDispatch={athleteDispatch}
+                />
                 <MechanicalParams
                     mechanical={mechanical}
                     mechanicalDispatch={mechanicalDispatch}
@@ -57,11 +62,6 @@ function ParamFields(props: Props) {
                 <EnvironmentParams
                     environment={environment}
                     environmentDispatch={environmentDispatch}
-                />
-                <AthleteParams
-                    athlete={athlete}
-                    originalAthlete={originalAthlete}
-                    athleteDispatch={athleteDispatch}
                 />
                 <CourseParams
                     courseParams={courseParams}
