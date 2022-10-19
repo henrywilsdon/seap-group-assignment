@@ -112,6 +112,8 @@ export default function AthleteParams(props: Props) {
                                 </InputAdornment>
                             ),
                         }}
+                        tool_title="The mass of the rider"
+                        tool_position="bottom"
                     />
 
                     <CustomTextField
@@ -126,6 +128,8 @@ export default function AthleteParams(props: Props) {
                                 </InputAdornment>
                             ),
                         }}
+                        tool_title="The mass of the bicycle"
+                        tool_position="bottom"
                     />
 
                     <CustomTextField
@@ -140,6 +144,8 @@ export default function AthleteParams(props: Props) {
                                 </InputAdornment>
                             ),
                         }}
+                        tool_title="Other mass - clothing, helmet etc."
+                        tool_position="bottom"
                     />
 
                     <CustomTextField
@@ -154,6 +160,8 @@ export default function AthleteParams(props: Props) {
                             ),
                             disabled: true,
                         }}
+                        tool_title="Total mass calculated from previous mass inputs"
+                        tool_position="bottom"
                     />
 
                     <CustomTextField
@@ -161,6 +169,16 @@ export default function AthleteParams(props: Props) {
                         value={athlete.cp}
                         onChange={handleCPChange}
                         hasChanged={hasCPChanged}
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    W
+                                </InputAdornment>
+                            ),
+                            disabled: true,
+                        }}
+                        tool_title="Critical power - also known as CP"
+                        tool_position="bottom"
                     />
 
                     <CustomTextField
@@ -168,6 +186,16 @@ export default function AthleteParams(props: Props) {
                         value={athlete.wPrime}
                         onChange={handleWPrimeChange}
                         hasChanged={hasWPrimeChanged}
+                        tool_title="'over CP' energy reserve - assumes recovery function is 1 - Elite"
+                        tool_position="bottom"
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    J
+                                </InputAdornment>
+                            ),
+                            disabled: true,
+                        }}
                     />
                 </Paper>
             </Box>
@@ -176,25 +204,31 @@ export default function AthleteParams(props: Props) {
 }
 
 function CustomTextField({
+    tool_title,
+    tool_position,
     hasChanged,
     label,
     ...textFieldProps
-}: TextFieldProps & {
-    hasChanged: boolean;
-}) {
+}:
+    | (TextFieldProps & {
+          hasChanged: boolean;
+      })
+    | any) {
     return (
-        <TextField
-            variant="standard"
-            type="number"
-            color={hasChanged ? 'warning' : 'primary'}
-            label={label + (hasChanged ? ' (changed)' : '')}
-            fullWidth
-            sx={{
-                '& label': {
-                    ...(hasChanged && { color: '#ed6c02' }),
-                },
-            }}
-            {...textFieldProps}
-        />
+        <Tooltip title={tool_title} placement={tool_position}>
+            <TextField
+                variant="standard"
+                type="number"
+                color={hasChanged ? 'warning' : 'primary'}
+                label={label + (hasChanged ? ' (changed)' : '')}
+                fullWidth
+                sx={{
+                    '& label': {
+                        ...(hasChanged && { color: '#ed6c02' }),
+                    },
+                }}
+                {...textFieldProps}
+            />
+        </Tooltip>
     );
 }
