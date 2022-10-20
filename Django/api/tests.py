@@ -110,12 +110,24 @@ class UserTestCase(TestCase):
         #name = data["name"]
         self.assertEqual(response.status_code, 200)   
 
-
-    """ def test_get_user(self):
+    def test_full_cycle(self):
         client = Client()
-        data = {'email': 'tim@gmail.com'}
-        response = client.get('/api/user/get/',data,content_type='application/json')
+
+        client.login(username="blake", password="BlakeMan")
+
+        filepath = "GPX example files/Tokyo-Olympics-Men's-ITT_track.gpx"
+
+        with open(filepath) as gpx:
+            response = client.post('/api/upload/', {'attachment': gpx})
+
+        data = json.loads(response.content)
+
+        course_data = {
+                'name':'test',
+                'location':'adelaide',
+                'last_updated':'2022-10-20',
+                'gps_geo_json':data
+        }
+
+        response = client.post('/api/course/', course_data, content_type='application/json')
         self.assertEqual(response.status_code, 200)
-        data = json.loads(response.body)
-        id = data["id"]
-        self.assertEqual(id,2) """

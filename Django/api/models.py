@@ -71,6 +71,8 @@ class DynamicModel(models.Model):
     distance = ArrayField(models.FloatField(), blank=True)
     bearing = ArrayField(models.FloatField(), blank=True)
     slope = ArrayField(models.FloatField(), blank=True)
+    segment = ArrayField(models.FloatField(), blank=True,null=True)
+    roughness = ArrayField(models.FloatField(), blank=True,null=True)
 
 class CourseModel(models.Model):
     static_model = models.OneToOneField("StaticModel", on_delete=models.CASCADE)
