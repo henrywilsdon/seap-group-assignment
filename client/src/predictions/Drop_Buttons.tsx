@@ -11,7 +11,7 @@ import {
 import React, { Dispatch, useEffect, useRef, useState } from 'react';
 import { AthleteData, getAthletes } from '../athletes/athletesAPI';
 import { AthleteInputState } from './useAthleteReducer';
-import { getCourses } from '../courses/CourseApi';
+import { getAllCourses } from '../courses/CourseApi';
 import { CourseData } from '../courses/ManageCoursesPage';
 
 type Props = {
@@ -94,7 +94,7 @@ function DropButtons(props: Props) {
 
     // Get courses from the backend
     useEffect(() => {
-        getCourses()
+        getAllCourses()
             .then((_courses) => {
                 setAllCourses(_courses);
             })
