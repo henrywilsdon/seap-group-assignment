@@ -45,19 +45,17 @@ export default function CoursePolyline({
         segmentPaths.current = [];
 
         let prevSplitEndPoint = 0;
-        segmentPaths.current = [...splits, points.length - 1].map(
-            (splitEndPoint) => {
-                const path = new google.maps.Polyline({
-                    path: points.slice(prevSplitEndPoint, splitEndPoint),
-                    geodesic: true,
-                    strokeColor: '#00aeff',
-                    strokeWeight: 4,
-                });
-                path.setMap(map);
-                prevSplitEndPoint = splitEndPoint;
-                return path;
-            },
-        );
+        segmentPaths.current = splits.map((splitEndPoint) => {
+            const path = new google.maps.Polyline({
+                path: points.slice(prevSplitEndPoint, splitEndPoint),
+                geodesic: true,
+                strokeColor: '#00aeff',
+                strokeWeight: 4,
+            });
+            path.setMap(map);
+            prevSplitEndPoint = splitEndPoint;
+            return path;
+        });
 
         // Remove from map on unmount
         return () => {

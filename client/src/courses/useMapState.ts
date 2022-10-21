@@ -49,7 +49,7 @@ export function useMapState(
 
         // Reset splits if course changes
         if (backendGpsPoints !== prevBackendGpsPoints.current) {
-            setSplits([]);
+            setSplits([backendGpsPoints.elevation.length - 1]);
         }
         prevBackendGpsPoints.current = backendGpsPoints;
 
@@ -126,8 +126,8 @@ export function useMapState(
 
     const removeSplit = useCallback(
         (splitIdx: number) => {
-            if (splits.length <= 1) {
-                setSplits([]);
+            if (splits.length <= 2) {
+                setSplits([points.length - 1]);
                 return;
             }
 
@@ -139,7 +139,7 @@ export function useMapState(
                 return newSplits;
             });
         },
-        [splits],
+        [splits, points],
     );
 
     const createBackendGpsPoints = useCallback(() => {

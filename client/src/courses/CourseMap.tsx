@@ -24,7 +24,7 @@ export default function CourseMap(props: Props) {
 
     const renderSegmentMarkers = (map: google.maps.Map | undefined) => {
         const markers: ReactNode[] = [];
-        const markerPosIdxs = [0, ...splits, points.length - 1];
+        const markerPosIdxs = [0, ...splits];
 
         for (let i = markerPosIdxs.length - 1; i >= 0; i--) {
             const position = points[markerPosIdxs[i]];

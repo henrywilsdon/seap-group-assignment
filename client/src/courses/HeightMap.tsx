@@ -41,7 +41,7 @@ export default function HeightMap({
         }
 
         setData(
-            [...splits, points.length].map((split, splitIdx) => {
+            splits.map((split, splitIdx) => {
                 const _points: GpsPoint[] = [];
                 for (
                     let i = splitIdx > 0 ? splits[splitIdx - 1] : 0;

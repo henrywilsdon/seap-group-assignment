@@ -107,9 +107,8 @@ export default function CourseFormDialog({
             return;
         }
 
-        const lastPointIdx = points.length > 0 ? points.length - 1 : 0;
         setSegments(
-            [...splits, lastPointIdx].map((endPointIdx, splitIdx) => {
+            splits.map((endPointIdx, splitIdx) => {
                 const startPointIdx = splitIdx > 0 ? splits[splitIdx - 1] : 0;
 
                 let distance = 0;
@@ -230,7 +229,7 @@ export default function CourseFormDialog({
                     />
                 </TableCell>
                 <TableCell>
-                    {splits.length > 0 && (
+                    {splits.length > 1 && (
                         <Tooltip title="Remove segment end point">
                             <IconButton
                                 onClick={() => handleRemoveSegment(seg.no - 1)}
