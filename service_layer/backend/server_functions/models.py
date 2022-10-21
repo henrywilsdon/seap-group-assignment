@@ -19,4 +19,3 @@ class Athlete(models.Model):
     total_mass = models.FloatField()
     CP_FTP = models.FloatField()
     W_prime = models.FloatField()
-

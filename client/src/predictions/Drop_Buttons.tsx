@@ -8,13 +8,112 @@ import {
     Select,
     MenuItem,
 } from '@mui/material';
-import React from 'react';
+import React, { Dispatch, useEffect, useRef, useState } from 'react';
+import { AthleteData, getAthletes } from '../athletes/athletesAPI';
+import { AthleteInputState } from './useAthleteReducer';
+import { getAllCourses } from '../courses/CourseApi';
+import { CourseData } from '../courses/ManageCoursesPage';
 
-function DropButtons() {
-    const [athlete, setAthlete] = React.useState('');
+type Props = {
+    athleteDispatch: Dispatch<
+        { type: 'setAthlete'; athlete: AthleteInputState } | { type: 'clear' }
+    >;
+    onCourseSelected: (courseId: number) => any;
+    onPredictionClick: () => any;
+};
 
-    const handleEvent = (event: SelectChangeEvent) => {
-        setAthlete(event.target.value as string);
+function DropButtons(props: Props) {
+    const { athleteDispatch, onCourseSelected, onPredictionClick } = props;
+    const [selectedAthleteId, setSelectedAthleteId] = useState<number | ''>('');
+    const [allAthletes, setAllAthletes] = useState<AthleteData[]>([]);
+    const prevSelectedAthleteId = useRef<number | ''>('');
+
+    const [selectedCourseId, setSelectedCourseId] = useState<number | ''>('');
+    const [allCourses, setAllCourses] = useState<CourseData[]>([]);
+
+    useEffect(() => {
+        getAthletes().then((_athletes) => {
+            setAllAthletes(_athletes);
+        });
+    }, []);
+
+    // Update selected athlete
+    useEffect(() => {
+        // Selected id hasn't changed so do nothing
+        if (selectedAthleteId === prevSelectedAthleteId.current) {
+            return;
+        }
+
+        // Selected athlete id is not blank ''
+        if (selectedAthleteId) {
+            prevSelectedAthleteId.current = selectedAthleteId;
+
+            // Selected athelete exists
+            const selectedAthlete = allAthletes.find(
+                (a) => a.id === selectedAthleteId,
+            );
+            if (selectedAthlete) {
+                athleteDispatch({
+                    type: 'setAthlete',
+                    athlete: {
+                        id: selectedAthlete.id as number,
+                        fullName: selectedAthlete.fullName,
+                        riderMass: String(selectedAthlete.riderMass),
+                        bikeMass: String(selectedAthlete.bikeMass),
+                        otherMass: String(selectedAthlete.otherMass),
+                        totalMass: String(
+                            selectedAthlete.riderMass +
+                                selectedAthlete.bikeMass +
+                                selectedAthlete.otherMass,
+                        ),
+                        cp: String(selectedAthlete.cp),
+                        wPrime: String(selectedAthlete.wPrime),
+                    },
+                });
+                return;
+            }
+        }
+
+        // No athlete selected or athlete does not exist
+        athleteDispatch({ type: 'clear' });
+    }, [selectedAthleteId, allAthletes, athleteDispatch]);
+
+    const handleSelectedAthleteChange = (
+        event: SelectChangeEvent<typeof selectedAthleteId>,
+    ) => {
+        const value = event.target.value;
+        const newId = typeof value === 'string' ? parseInt(value) : value;
+        setSelectedAthleteId(newId);
+    };
+
+    const renderAthleteOptions = () => {
+        return allAthletes.map((a) => (
+            <MenuItem value={a.id}>{a.fullName}</MenuItem>
+        ));
+    };
+
+    // Get courses from the backend
+    useEffect(() => {
+        getAllCourses()
+            .then((_courses) => {
+                setAllCourses(_courses);
+            })
+            .catch(console.warn);
+    }, []);
+
+    const handleSelectedCourseChange = (
+        event: SelectChangeEvent<typeof selectedCourseId>,
+    ) => {
+        const value = event.target.value;
+        const newId = typeof value === 'string' ? parseInt(value) : value;
+        setSelectedCourseId(newId);
+        onCourseSelected(newId);
+    };
+
+    const renderCourseOptions = () => {
+        return allCourses.map((c) => (
+            <MenuItem value={c.id}>{c.name}</MenuItem>
+        ));
     };
 
     return (
@@ -42,14 +141,11 @@ function DropButtons() {
                         </InputLabel>
                         <Select
                             labelId="Select_Athlete"
-                            id="Select_Athlete"
-                            value={athlete}
+                            value={selectedAthleteId}
                             label="Select Athlete"
-                            onChange={handleEvent}
+                            onChange={handleSelectedAthleteChange}
                         >
-                            <MenuItem value={1}>Athlete1</MenuItem>
-                            <MenuItem value={2}>Athlete2</MenuItem>
-                            <MenuItem value={3}>Athlete3</MenuItem>
+                            {renderAthleteOptions()}
                         </Select>
                     </FormControl>
 
@@ -61,13 +157,11 @@ function DropButtons() {
                         <Select
                             labelId="Select_Course"
                             id="Select_Course"
-                            value={athlete}
                             label="Select Course"
-                            onChange={handleEvent}
+                            value={selectedCourseId}
+                            onChange={handleSelectedCourseChange}
                         >
-                            <MenuItem value={1}>Course1</MenuItem>
-                            <MenuItem value={2}>Course2</MenuItem>
-                            <MenuItem value={3}>Course3</MenuItem>
+                            {renderCourseOptions()}
                         </Select>
                     </FormControl>
 
@@ -79,9 +173,8 @@ function DropButtons() {
                         <Select
                             labelId="Load_Prediction"
                             id="Load_Prediction"
-                            value={athlete}
                             label="Load Prediction"
-                            onChange={handleEvent}
+                            value=""
                         >
                             <MenuItem value={1}>Prediction1</MenuItem>
                             <MenuItem value={2}>Prediction2</MenuItem>
@@ -99,24 +192,8 @@ function DropButtons() {
                         Save Prediction
                     </Button>
 
-                    <Button
-                        variant="contained"
-                        onClick={() => {
-                            //Change to necessary functionality
-                            alert('Button Clicked');
-                        }}
-                    >
-                        Recalculate Metrics
-                    </Button>
-
-                    <Button
-                        variant="contained"
-                        onClick={() => {
-                            //Change to necessary functionality
-                            alert('Button Clicked');
-                        }}
-                    >
-                        Reset Course
+                    <Button variant="contained" onClick={onPredictionClick}>
+                        Calculate Metrics
                     </Button>
                 </Paper>
             </Box>
