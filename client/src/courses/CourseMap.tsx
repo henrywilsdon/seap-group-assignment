@@ -10,7 +10,7 @@ type Props = {
     points: GpsPoint[];
     splits: Split[];
     bounds?: google.maps.LatLngBoundsLiteral | null;
-    hoverPoint: Pick<GpsPoint, 'idx'> | null;
+    hoverPoint: number | null;
     hoverSplitIdx: number | null;
 };
 
@@ -67,7 +67,6 @@ export default function CourseMap(props: Props) {
 
         return markers;
     };
-
     return (
         <Wrapper apiKey="AIzaSyDks89zgKUUG0qc_hixpNMndMj6hDOOGWw">
             <GoogleMap
@@ -78,7 +77,13 @@ export default function CourseMap(props: Props) {
                         {renderSegmentMarkers(map)}
                         {hoverPoint && (
                             <Marker
-                                position={points[hoverPoint.idx]}
+                                position={
+                                    points[
+                                        Math.floor(
+                                            hoverPoint * (points.length - 1),
+                                        )
+                                    ]
+                                }
                                 map={map}
                                 zIndex={1001}
                             />

@@ -6,7 +6,7 @@ import { GpsPoint, Split } from './useMapState';
 type Props = {
     points: GpsPoint[];
     splits: Split[];
-    onHoverPointChange: (point: GpsPoint | null) => void;
+    onHoverPointChange: (point: number | null) => void;
     onClick:
         | ((
               datum: Datum<GpsPoint> | null,
@@ -59,7 +59,9 @@ export default function HeightMap({
 
     const handleFocusDatum = (datum: Datum<GpsPoint> | null) => {
         const newHoverPoint = datum ? points[datum.originalDatum.idx] : null;
-        onHoverPointChange(newHoverPoint);
+        onHoverPointChange(
+            newHoverPoint ? newHoverPoint.idx / (points.length - 1) : null,
+        );
     };
 
     const primaryAxis = React.useMemo(

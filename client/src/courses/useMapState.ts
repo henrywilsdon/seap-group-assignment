@@ -25,22 +25,18 @@ export function useMapState(
 ): {
     points: GpsPoint[];
     splits: Split[];
-    hoverPoint: Pick<GpsPoint, 'idx'> | null;
+    hoverPoint: number | null;
     hoverSplitIdx: number | null;
     centerLatLng: google.maps.LatLngLiteral | null;
     boundsLatLng: google.maps.LatLngBoundsLiteral | null;
-    setHoverPoint: React.Dispatch<
-        React.SetStateAction<Pick<GpsPoint, 'idx'> | null>
-    >;
+    setHoverPoint: React.Dispatch<React.SetStateAction<number | null>>;
     setHoverSplitIdx: React.Dispatch<React.SetStateAction<number | null>>;
     addSplit: (pointIdx: number | null) => void;
     removeSplit: (pointIdx: number) => void;
     changeRoughness: (pointIdx: number, roughness: number) => void;
     createBackendGpsPoints: () => BackendCourse['gps_geo_json'] | null;
 } {
-    const [hoverPoint, setHoverPoint] = useState<Pick<GpsPoint, 'idx'> | null>(
-        null,
-    );
+    const [hoverPoint, setHoverPoint] = useState<number | null>(null);
     const [points, setPoints] = useState<GpsPoint[]>([]);
 
     const [splits, setSplits] = useState<Split[]>([]);
@@ -121,21 +117,23 @@ export function useMapState(
     useEffect(() => {
         if (hoverPoint) {
             for (let i = 0; i < splits.length; i++) {
-                if (hoverPoint.idx < splits[i].endPointIdx) {
+                if (hoverPoint * (points.length - 1) < splits[i].endPointIdx) {
                     setHoverSplitIdx(i);
                     return;
                 }
             }
         }
         if (
-            hoverPoint?.idx &&
-            hoverPoint?.idx >= splits[splits.length - 1].endPointIdx
+            hoverPoint != null &&
+            splits.length > 0 &&
+            hoverPoint * (points.length - 1) >=
+                splits[splits.length - 1].endPointIdx
         ) {
             setHoverSplitIdx(splits.length);
             return;
         }
         setHoverSplitIdx(null);
-    }, [hoverPoint, splits]);
+    }, [hoverPoint, splits, points]);
 
     const addSplit = useCallback(
         (pointIdx: number | null) => {
