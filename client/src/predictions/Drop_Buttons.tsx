@@ -11,19 +11,25 @@ import {
 import React, { Dispatch, useEffect, useRef, useState } from 'react';
 import { AthleteData, getAthletes } from '../athletes/athletesAPI';
 import { AthleteInputState } from './useAthleteReducer';
+import { getCourses } from '../courses/CourseApi';
+import { CourseData } from '../courses/ManageCoursesPage';
 
 type Props = {
     athleteDispatch: Dispatch<
         { type: 'setAthlete'; athlete: AthleteInputState } | { type: 'clear' }
     >;
+    onCourseSelected: (courseId: number) => any;
     onPredictionClick: () => any;
 };
 
 function DropButtons(props: Props) {
-    const { athleteDispatch, onPredictionClick } = props;
+    const { athleteDispatch, onCourseSelected, onPredictionClick } = props;
     const [selectedAthleteId, setSelectedAthleteId] = useState<number | ''>('');
     const [allAthletes, setAllAthletes] = useState<AthleteData[]>([]);
     const prevSelectedAthleteId = useRef<number | ''>('');
+
+    const [selectedCourseId, setSelectedCourseId] = useState<number | ''>('');
+    const [allCourses, setAllCourses] = useState<CourseData[]>([]);
 
     useEffect(() => {
         getAthletes().then((_athletes) => {
@@ -86,6 +92,30 @@ function DropButtons(props: Props) {
         ));
     };
 
+    // Get courses from the backend
+    useEffect(() => {
+        getCourses()
+            .then((_courses) => {
+                setAllCourses(_courses);
+            })
+            .catch(console.warn);
+    }, []);
+
+    const handleSelectedCourseChange = (
+        event: SelectChangeEvent<typeof selectedCourseId>,
+    ) => {
+        const value = event.target.value;
+        const newId = typeof value === 'string' ? parseInt(value) : value;
+        setSelectedCourseId(newId);
+        onCourseSelected(newId);
+    };
+
+    const renderCourseOptions = () => {
+        return allCourses.map((c) => (
+            <MenuItem value={c.id}>{c.name}</MenuItem>
+        ));
+    };
+
     return (
         <div className="DropButtons">
             <Box
@@ -128,11 +158,10 @@ function DropButtons(props: Props) {
                             labelId="Select_Course"
                             id="Select_Course"
                             label="Select Course"
-                            value=""
+                            value={selectedCourseId}
+                            onChange={handleSelectedCourseChange}
                         >
-                            <MenuItem value={1}>Course1</MenuItem>
-                            <MenuItem value={2}>Course2</MenuItem>
-                            <MenuItem value={3}>Course3</MenuItem>
+                            {renderCourseOptions()}
                         </Select>
                     </FormControl>
 

@@ -24,8 +24,7 @@ export default function RenderPredictionsPage() {
             mechanical_parameters: mechanical,
             environment_parameters: environment,
             course_parameters: courseParams,
-            //Need to add course ID from when select course is implemented and it can be accessed properly
-            //course_ID: selectedCourseID,
+            course_ID: selectedCourseId,
         });
     };
 
@@ -70,6 +69,7 @@ export default function RenderPredictionsPage() {
                     <CourseMap></CourseMap>
                     <DropButtons
                         athleteDispatch={athleteDispatch}
+                        onCourseSelected={setCourseId}
                         onPredictionClick={handlePredictionClick}
                     />
                 </Box>
