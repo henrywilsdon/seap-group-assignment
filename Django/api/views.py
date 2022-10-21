@@ -343,6 +343,8 @@ def get_gpx_data(request):
         dis = []
         bear = []
         slope = []
+        segment = []
+        roughness = []
         i = 0
         for key in gpx_json['segments'][0]:
             lat.append(gpx_json['segments'][0][i]['lat'])
@@ -350,8 +352,10 @@ def get_gpx_data(request):
             ele.append(gpx_json['segments'][0][i]['ele'])
             dis.append(gpx_json['segments'][0][i]['horz_dist_from_prev'])
             bear.append(gpx_json['segments'][0][i]['bearing_from_prev'])
+            segment.append(0)
+            roughness.append(2)
             i = i + 1
-        dynam = DynamicModel.objects.create(owner=owner,lat=lat,long=lon,ele=ele,distance=dis,bearing=bear,slope=slope)
+        dynam = DynamicModel.objects.create(owner=owner,lat=lat,long=lon,ele=ele,distance=dis,bearing=bear,slope=slope,segment=segment,roughness=roughness)
 
         return JsonResponse({
             'detail': 'Successfully uploaded gpx data.',
@@ -359,7 +363,9 @@ def get_gpx_data(request):
             'longitude': lon,
             'elevation': ele,
             'horizontal_distance_to_last_point': dis,
-            'bearing_from_last_point': bear
+            'bearing_from_last_point': bear,
+            'segment': segment,
+            'roughness': roughness
         }, status=200)
 
 
