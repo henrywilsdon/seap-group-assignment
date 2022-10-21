@@ -1,5 +1,5 @@
 import { Add as AddIcon, Refresh as RefreshIcon } from '@mui/icons-material';
-import { Button } from '@mui/material';
+import { Button, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
@@ -133,6 +133,17 @@ export default function ManageAthletesPage({}: Props) {
     //  Each athlete in the table has buttons to Edit and Remove
     return (
         <Box sx={{ m: 2 }}>
+            {/* Title box */}
+            <Box
+                sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                }}
+            >
+                <Typography variant="h4">Athletes</Typography>
+            </Box>
+
             {/* The athlete dialog */}
             <AthleteFormDialog
                 athleteData={editingAthlete}
