@@ -3,6 +3,7 @@ import xmltodict
 import great_circle_calculator.great_circle_calculator as gcc
 import geojson
 
+from api.predictiveModel import *
 from contextlib import redirect_stderr
 import json
 from django.shortcuts import render, redirect
@@ -229,17 +230,20 @@ def all_static_model_view(request):
     if request.method == "POST":
         model_data = json.loads(request.body)
 
-        bike_plus_rider_model = BikePlusRiderModel.objects.create(
+        
+
+        model = StaticModel.objects.create(
             mass_rider = model_data["mass_rider"],
             mass_bike = model_data["mass_bike"],
             mass_other = model_data["mass_other"],
+            delta_kg = 0,
             crr = model_data["crr"],
             mechanical_efficiency = model_data["mechanical_efficiency"],
             mol_whl_front = model_data["mol_whl_front"],
             mol_whl_rear = model_data["mol_whl_rear"],
-            wheel_radius = model_data["wheel_radius"]
-        )
-        cp_model = CPModel.objects.create(
+            wheel_radius = model_data["wheel_radius"],
+
+            
             cp = model_data["cp"],
             w_prime = model_data["w_prime"],
             w_prime_recovery_function = model_data["w_prime_recovery_function"],
@@ -247,31 +251,23 @@ def all_static_model_view(request):
             below_steady_state_power_usage = model_data["below_steady_state_power_usage"],
             over_threshold_min_slope = model_data["over_threshold_min_slope"],
             over_threshold_power_usage = model_data["over_threshold_power_usage"],
-            steady_state_power_usage = model_data["steady_state_power_usage"]
-        )
-        position_model = PositionModel.objects.create(
+            steady_state_power_usage = model_data["steady_state_power_usage"],
+
             climbing_cda_increment = model_data["climbing_cda_increment"],
             climbing_min_slope = model_data["climbing_min_slope"],
             descending_cda_increment = model_data["descending_cda_increment"],
-            descending_max_slope = model_data["descending_max_slope"]
-        ) 
-        environment_model = EnvironmentModel.objects.create(
+            descending_max_slope = model_data["descending_max_slope"],
+
             wind_direction = model_data["wind_direction"],
             wind_speed_mps = model_data["wind_speed_mps"],
-            wind_density = model_data["wind_density"]
-        )
-        technical_model = TechnicalModel.objects.create(
+            wind_density = model_data["wind_density"],
+
             timestep_size = model_data["timestep_size"],
             starting_distance = model_data["starting_distance"],
-            starting_speed = model_data["starting_speed"]
-        )
+            starting_speed = model_data["starting_speed"],
 
-        model = StaticModel.objects.create(
-            bike_plus_rider_model = bike_plus_rider_model,
-            cp_model = cp_model,
-            position_model = position_model,
-            environment_model = environment_model,
-            technical_model = technical_model
+            delta_cda = 0,
+            delta_watts = -20 
         )
         model.save()
 
@@ -288,36 +284,36 @@ def static_model_view(request, gpx_model_id):
         model_data = json.loads(request.body)
         model = StaticModel.objects.get(id=gpx_model_id)
         
-        model.bike_plus_rider_model.mass_rider = model_data["mass_rider"]
-        model.bike_plus_rider_model.mass_bike = model_data["mass_bike"]
-        model.bike_plus_rider_model.mass_other = model_data["mass_other"]
-        model.bike_plus_rider_model.crr = model_data["crr"]
-        model.bike_plus_rider_model.mechanical_efficiency = model_data["mechanical_efficiency"]
-        model.bike_plus_rider_model.mol_whl_rear = model_data["mol_whl_rear"]
-        model.bike_plus_rider_model.mol_whl_front = model_data["mol_whl_front"]
-        model.bike_plus_rider_model.wheel_radius = model_data["wheel_radius"]
+        model.mass_rider = model_data["mass_rider"]
+        model.mass_bike = model_data["mass_bike"]
+        model.mass_other = model_data["mass_other"]
+        model.crr = model_data["crr"]
+        model.mechanical_efficiency = model_data["mechanical_efficiency"]
+        model.mol_whl_rear = model_data["mol_whl_rear"]
+        model.mol_whl_front = model_data["mol_whl_front"]
+        model.wheel_radius = model_data["wheel_radius"]
 
-        model.cp_model.cp = model_data["cp"]
-        model.cp_model.w_prime = model_data["w_prime"]
-        model.cp_model.w_prime_recovery_function = model_data["w_prime_recovery_function"]
-        model.cp_model.below_steady_state_max_slope = model_data["below_steady_state_max_slope"]
-        model.cp_model.below_steady_state_power_usage = model_data["below_steady_state_power_usage"]
-        model.cp_model.over_threshold_min_slope = model_data["over_threshold_min_slope"]
-        model.cp_model.over_threshold_power_usage = model_data["over_threshold_power_usage"]
-        model.cp_model.steady_state_power_usage = model_data["steady_state_power_usage"]
+        model.cp = model_data["cp"]
+        model.w_prime = model_data["w_prime"]
+        model.w_prime_recovery_function = model_data["w_prime_recovery_function"]
+        model.below_steady_state_max_slope = model_data["below_steady_state_max_slope"]
+        model.below_steady_state_power_usage = model_data["below_steady_state_power_usage"]
+        model.over_threshold_min_slope = model_data["over_threshold_min_slope"]
+        model.over_threshold_power_usage = model_data["over_threshold_power_usage"]
+        model.steady_state_power_usage = model_data["steady_state_power_usage"]
 
-        model.position_model.climbing_min_slope = model_data["climbing_min_slope"]
-        model.position_model.climbing_cda_increment = model_data["climbing_cda_increment"]
-        model.position_model.descending_cda_increment = model_data["descending_cda_increment"]
-        model.position_model.descending_max_slope = model_data["descending_max_slope"]
+        model.climbing_min_slope = model_data["climbing_min_slope"]
+        model.climbing_cda_increment = model_data["climbing_cda_increment"]
+        model.descending_cda_increment = model_data["descending_cda_increment"]
+        model.descending_max_slope = model_data["descending_max_slope"]
 
-        model.environment_model.wind_density = model_data["wind_density"]
-        model.environment_model.wind_direction = model_data["wind_direction"]
-        model.environment_model.wind_speed_mps = model_data["wind_speed_mps"]
+        model.wind_density = model_data["wind_density"]
+        model.wind_direction = model_data["wind_direction"]
+        model.wind_speed_mps = model_data["wind_speed_mps"]
 
-        model.technical_model.timestep_size = model_data["timestep_size"]
-        model.technical_model.starting_speed = model_data["starting_speed"]
-        model.technical_model.starting_distance = model_data["starting_distance"]
+        model.timestep_size = model_data["timestep_size"]
+        model.starting_speed = model_data["starting_speed"]
+        model.starting_distance = model_data["starting_distance"]
 
         model.save()
 
@@ -398,6 +394,8 @@ def all_courses_view(request):
                 distance=gps_json['horizontal_distance_to_last_point'],
                 bearing=gps_json['bearing_from_last_point'],
                 slope=empty_slope,
+                segment=gps_json['segment'],
+                roughness=gps_json['roughness'],
             ),
             min_slope_threshold = 0,
             max_slope_threshold = 0,
@@ -430,6 +428,8 @@ def course_view(request, course_id):
                     'elevation': courseGps.ele,
                     'horizontal_distance_to_last_point': courseGps.distance,
                     'bearing_from_last_point': courseGps.bearing,
+                    'segment' : courseGps.segment,
+                    'roughness' : courseGps.roughness,
                 }
             }}, status=200)
         else:
@@ -453,7 +453,9 @@ def course_view(request, course_id):
                 ele=gps_json['elevation'],
                 distance=gps_json['horizontal_distance_to_last_point'],
                 bearing=gps_json['bearing_from_last_point'],
-                slope=empty_slope
+                slope=empty_slope,
+                segment=gps_json['segment'],
+                roughness=gps_json['roughness']
             )
         #This will be updated in the later parameters view
         course.min_slope_threshold = 0
@@ -482,11 +484,11 @@ def course_view(request, course_id):
 
 
 
-def all_prediction_parameters(request):#, course_id):
+def all_prediction_parameters(request, course_id):
     if not request.user.is_authenticated:
         return JsonResponse({'detail': 'User not authenticated'}, status=401)
 
-    #course = Course.objects.filter(id=course_id).values()
+    course = Course.objects.filter(id=course_id).values()
 
 
 
@@ -514,7 +516,17 @@ def all_prediction_parameters(request):#, course_id):
         athlete.save()
 
 
-        bike_plus_rider_model = BikePlusRiderModel.objects.create(
+
+
+
+        
+
+        """ 
+        The parameters in this model can be changed depending on what the predictive model needs
+         """
+        
+
+        model = StaticModel.objects.create(
             mass_rider = athlete_parameters["rider_mass"],
             mass_bike = athlete_parameters["bike_mass"],
             mass_other = athlete_parameters["other_mass"],
@@ -522,11 +534,8 @@ def all_prediction_parameters(request):#, course_id):
             mechanical_efficiency = mechanical_parameters["mechanical_efficiency"],
             mol_whl_front = mechanical_parameters["mol_whl_front"],
             mol_whl_rear = mechanical_parameters["mol_whl_rear"],
-            wheel_radius = mechanical_parameters["wheel_radius"]
-        )
+            wheel_radius = mechanical_parameters["wheel_radius"],
 
-        #Where can we get this data?  and to we need it?
-        cp_model = CPModel.objects.create(
             cp = athlete_parameters["CP_FTP"], #Called FTP in the athlete paratmers (double up)
             w_prime = athlete_parameters["W_prime"], #(double up)
 
@@ -543,70 +552,76 @@ def all_prediction_parameters(request):#, course_id):
             over_threshold_min_slope = 0.075,
             over_threshold_power_usage = 1.1,
             steady_state_power_usage = 0.91,
-        )
 
-        #Same deal with this one
-        #Values hardcoded into predictive model.  Will delete this model later
-        position_model = PositionModel.objects.create(
             climbing_cda_increment = 0,
             climbing_min_slope = 0,
             descending_cda_increment = 0,
-            descending_max_slope = 0
-        ) 
+            descending_max_slope = 0,
 
-
-        environment_model = EnvironmentModel.objects.create(
             wind_direction = environment_parameters["wind_direction"],
             wind_speed_mps = environment_parameters["wind_speed_mps"],
-            wind_density = environment_parameters["wind_density"]
-        )
+            wind_density = environment_parameters["wind_density"],
 
-        """ 
-        The parameters in this model can be changed depending on what the predictive model needs
-         """
-        technical_model = TechnicalModel.objects.create(
             timestep_size = 0.5,
             starting_distance = 0.1,
             starting_speed = 0.3,
         )
-
-        model = StaticModel.objects.create(
-            bike_plus_rider_model = bike_plus_rider_model,
-            cp_model = cp_model,
-            position_model = position_model,
-            environment_model = environment_model,
-            technical_model = technical_model
-        )
         model.save()
+        
+        
 
+        dynmaic_mod = course.gps_geo_json
+        
+        prediction_input = CourseModel.objects.create(
+            static_model = model,
+            dynamic_model = dynmaic_mod,
+        )
         #Call predictive model
-        #PredictiveModel(model,athlete,course)
+        output = predict_entire_course(prediction_input)
 
 
-        segment1 = {'average_yaw' : '5' , 'average_yaw_above_40kmh' : '3' , 'distance' : '300' , 'duration' : '26.5' ,  'min_w_prime_balance' : '10000' , 'power_in' : '5000'}
-        segment2 = {'average_yaw' : '5' , 'average_yaw_above_40kmh' : '3' , 'distance' : '300' , 'duration' : '26.5' ,  'min_w_prime_balance' : '10000' , 'power_in' : '5000'}
-        segment3 = {'average_yaw' : '5' , 'average_yaw_above_40kmh' : '3' , 'distance' : '300' , 'duration' : '26.5' ,  'min_w_prime_balance' : '10000' , 'power_in' : '5000'} 
+        #Translates objects into JSON
+        segments_data_obj = output.segments_data
+        full_course_data_obj = output.full_course_data
+        timesteps_data_obj = output.timesteps_data
 
-        segments = {
-            'segments' : [segment1, segment2, segment3]
+        segment_list = {}
+        for i in segments_data_obj:
+            #Grab the segment object
+            segment_obj = segments_data_obj[i]
+            segment = {
+                    'average_yaw' : segment_obj.average_yaw , 
+                    'average_yaw_above_40kmh' : segment_obj.average_yaw_above_40kmh , 
+                    'distance' : segment_obj.distance , 
+                    'duration' : segment_obj.duration ,  
+                    'min_w_prime_balance' : segment_obj.min_w_prime_balance , 
+                    'power_in' : segment_obj.power_in
+            }
+            segment_list[i] = segment
+
+
+        full_course_data = {
+                'average_yaw' : full_course_data_obj.average_yaw , 
+                'average_yaw_above_40kmh' : full_course_data_obj.average_yaw_above_40kmh , 
+                'distance' : full_course_data_obj.distance , 
+                'duration' : full_course_data_obj.duration ,  
+                'min_w_prime_balance' : full_course_data_obj.min_w_prime_balance , 
+                'power_in' : full_course_data_obj.power_in
+        }
+        time_steps_data = {
+                'distance' : timesteps_data_obj.distance , 
+                'power_in' : timesteps_data_obj.power_in , 
+                'speed' : timesteps_data_obj.speed, 
+                'yaw' : timesteps_data_obj.yaw , 
+                'elevation' : timesteps_data_obj.elevation, 
+                'w_prim_balance' : timesteps_data_obj.w_prime_balance
         }
 
-
-        distance = [0,0,0]
-        power_in = [0,0,0]
-        speed = [0,0,0]
-        yaw = [0,0,0]
-        power = [0,0,0]
-        elevation = [0,0,0]
-        w_prim_balance = [0,0,0]
-
-        time_steps_data = {'distance' : distance , 'power_in' : power_in , 'speed' : speed, 'yaw' : yaw , 'power' : power , 'elevation' : elevation, 'w_prim_balance' : w_prim_balance}
-
-        full_course_data = {'average_yaw' : '5' , 'average_yaw_above_40kmh' : '3' , 'distance' : '860' , 'duration' : '67.5' ,  'min_w_prime_balance' : '35000' , 'power_in' : '36000'}
+        segments = {
+            'segments' : segment_list
+        }
 
         result = {'full_course_data': full_course_data, 'segments': segments, 'time_steps_data' : time_steps_data}
-
-
 
         return JsonResponse({'detail': 'Prediction complete', 'result' : result}, status=200)
 
