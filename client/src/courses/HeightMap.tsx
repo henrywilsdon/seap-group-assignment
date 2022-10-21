@@ -1,12 +1,11 @@
-import { convertLength } from '@mui/material/styles/cssUtils';
 import { Box } from '@mui/system';
 import React, { useEffect, useState } from 'react';
 import { AxisOptions, Chart, Datum } from 'react-charts';
-import { GpsPoint } from './useMapState';
+import { GpsPoint, Split } from './useMapState';
 
 type Props = {
     points: GpsPoint[];
-    splits: number[];
+    splits: Split[];
     onHoverPointChange: (point: GpsPoint | null) => void;
     onClick:
         | ((
@@ -44,8 +43,8 @@ export default function HeightMap({
             splits.map((split, splitIdx) => {
                 const _points: GpsPoint[] = [];
                 for (
-                    let i = splitIdx > 0 ? splits[splitIdx - 1] : 0;
-                    i < split;
+                    let i = splitIdx > 0 ? splits[splitIdx - 1].endPointIdx : 0;
+                    i < split.endPointIdx;
                     i += 4
                 ) {
                     _points.push(points[i]);

@@ -4,11 +4,11 @@ import { ReactNode } from 'react';
 import GoogleMap from './GoogleMap';
 import CoursePolyline from './CoursePolyline';
 import Marker from './Marker';
-import { GpsPoint } from './useMapState';
+import { GpsPoint, Split } from './useMapState';
 
 type Props = {
     points: GpsPoint[];
-    splits: number[];
+    splits: Split[];
     bounds?: google.maps.LatLngBoundsLiteral | null;
     hoverPoint: GpsPoint | null;
     hoverSplitIdx: number | null;
@@ -24,7 +24,7 @@ export default function CourseMap(props: Props) {
 
     const renderSegmentMarkers = (map: google.maps.Map | undefined) => {
         const markers: ReactNode[] = [];
-        const markerPosIdxs = [0, ...splits];
+        const markerPosIdxs = [0, ...splits.map((s) => s.endPointIdx)];
 
         for (let i = markerPosIdxs.length - 1; i >= 0; i--) {
             const position = points[markerPosIdxs[i]];
