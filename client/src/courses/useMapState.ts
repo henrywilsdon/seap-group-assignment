@@ -13,7 +13,9 @@ export interface GpsPoint extends google.maps.LatLngLiteral {
 /**
  * State for course map and height map.
  */
-export function useMapState(backendGpsPoints: BackendGpsPoints | null): {
+export function useMapState(
+    backendGpsPoints: BackendGpsPoints | null | undefined,
+): {
     points: GpsPoint[];
     splits: number[];
     hoverPoint: GpsPoint | null;
