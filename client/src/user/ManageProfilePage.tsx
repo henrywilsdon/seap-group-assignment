@@ -104,7 +104,7 @@ export default function ManageProfilePage({}: Props) {
                 />
             </Tooltip>
 
-            <Button variant="text" onClick={updateInfo}>
+            <Button variant="contained" onClick={updateInfo}>
                 Update User Info
             </Button>
 
@@ -151,7 +151,7 @@ export default function ManageProfilePage({}: Props) {
                 />
             </Tooltip>
 
-            <Button variant="text" onClick={updatePassword}>
+            <Button variant="contained" onClick={updatePassword}>
                 Change Password
             </Button>
         </div>
