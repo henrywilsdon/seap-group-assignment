@@ -1,15 +1,10 @@
 from temporaryModels import *
 
-def predict_power_in(course: CourseModel, distance: float) -> float:
+def predict_power_in(course: CourseModel, distance: float, index: int) -> float:
 
     cs = course.static
     cd = course.dynamic
 
-    index = 0
-    for checkedIndex in reversed(range(len(cd.distance))):
-        if cd.distance[checkedIndex] <= distance:
-            index = checkedIndex
-        break
     cd.slope_from_prev[0] = 0
     slope = cd.slope_from_prev[index]
 
