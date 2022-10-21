@@ -92,6 +92,9 @@ export default function ManageProfilePage({}: Props) {
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
+                        '& > :not(style)': {
+                            p: 1,
+                        },
                     }}
                 >
                     <Typography variant="h4">Account Profile</Typography>
