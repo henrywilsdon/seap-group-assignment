@@ -20,7 +20,7 @@ export default function RenderPredictionsPage() {
     const { mechanical, mechanicalDispatch } = useMechanicalReducer();
     const { environment, environmentDispatch } = useEnvironmentReducer();
     const { courseParams, courseParamsDispatch } = useCourseParamsReducer();
-    const [selectedCourseId, setCourseId] = useState<number | null>(10);
+    const [selectedCourseId, setCourseId] = useState<number | null>(null);
     const [selectedCourse, setCourse] = useState<CourseData | null>(null);
     const { points, splits, boundsLatLng } = useMapState(
         selectedCourse?.gps_data,
