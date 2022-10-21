@@ -11,10 +11,11 @@ import React, {
 import { AxisOptions, Chart, Datum, UserSerie } from 'react-charts';
 import courseData from './course.json';
 import testData from './csvjson.json';
+import predictiveModel from './predictive model json.json';
 
 type Props = {
     // timesteps: Timestep[]
-    onHoverPointChange: (point: { idx: number } | null) => void;
+    onHoverPointChange: (point: number | null) => void;
 };
 
 interface Timestep {
@@ -27,7 +28,7 @@ interface Timestep {
     wPrimeBalance: number;
     yaw: number;
     elevation: number;
-    courseIdx: number;
+    segment: number;
 }
 
 /**
@@ -50,6 +51,7 @@ export default function HeightMap({ onHoverPointChange }: Props) {
     const [togglebuttonVal, setToggleButtonVal] = useState(
         'wPrimeBalance_powerIn',
     );
+    const [hoverSegment, setHoverSegment] = useState<number | null>(null);
 
     useEffect(() => {
         if (togglebuttonVal === 'wPrimeBalance_powerIn') {
@@ -109,60 +111,137 @@ export default function HeightMap({ onHoverPointChange }: Props) {
         const divisor =
             testData.length > 1000 ? Math.floor(testData.length / 1000) : 1;
 
-        let ei = 0;
-        const _output: Timestep[] = testData
-            .filter((item, i) => i % divisor === 0)
-            .map((o, i) => {
-                while (
-                    ei < courseData.length &&
-                    o.distance > courseData[ei].distance
-                ) {
-                    ei++;
-                }
+        const timesteps: Timestep[] = [];
+        const segments: Timestep[][] = [[]];
+        let cumTimesteps = 0;
+        const splits = Object.values(predictiveModel.segments_data).map(
+            (s) => (cumTimesteps += s.timesteps),
+        );
 
-                return {
-                    ...o,
-                    idx: i,
-                    elevation: courseData[ei].elevation,
-                    courseIdx: ei,
-                };
+        let currentSplitIdx = 0;
+        let ei = 0;
+        let j = 0;
+        for (let i = 0; i < testData.length; i += divisor) {
+            const backendTimestep = testData[i];
+            if (i >= splits[currentSplitIdx]) {
+                console.log(
+                    currentSplitIdx,
+                    splits,
+                    splits[currentSplitIdx],
+                    i,
+                );
+                currentSplitIdx++;
+                segments.push([]);
+            }
+
+            // This will be removed when output view is complete since distance and elevation is
+            // included now
+            while (
+                ei < courseData.length &&
+                backendTimestep.distance > courseData[ei].distance
+            ) {
+                ei++;
+            }
+
+            timesteps.push({
+                ...backendTimestep,
+                idx: i,
+                elevation: courseData[ei].elevation,
+                segment: currentSplitIdx,
             });
+            // segments[currentSplitIdx].push({
+            //     ...backendTimestep,
+            //     idx: i,
+            //     elevation: courseData[ei].elevation,
+            //     segment: currentSplitIdx
+            // });
+        }
+
+        // console.log(segments)
+        // const temp: UserSerie<Timestep>[] = [];
+        // segments.forEach((s, i) => {
+        //     [
+        //         {
+        //             id: 'powerIn',
+        //             label: 'Power In' + s[0].segment,
+        //             data: s,
+        //             secondaryAxisId: 'powerIn',
+        //             color: '#fcb471'
+        //         },
+        //         {
+        //             id: 'power',
+        //             label: 'Power',
+        //             data: s,
+        //             secondaryAxisId: 'power',
+        //             color: '#fcb471'
+        //         },
+        //         {
+        //             id: 'speed',
+        //             label: 'Speed',
+        //             data: s,
+        //             secondaryAxisId: 'speed',
+        //             color: i % 2 ? '#66d4ff' : '#667dff'
+        //         },
+        //         {
+        //             id: 'wPrimeBalance',
+        //             label: "W' Balance",
+        //             data: s,
+        //             secondaryAxisId: 'wPrimeBalance',
+        //             color: i % 2 ? '#66d4ff' : '#667dff'
+        //         },
+        //         {
+        //             id: 'yaw',
+        //             label: 'Yaw',
+        //             data: s,
+        //             secondaryAxisId: 'yaw',
+        //             color:  '#fcb471'
+        //         },
+        //         {
+        //             id: 'elevation',
+        //             label: 'Elevation',
+        //             data: s,
+        //             secondaryAxisId: 'elevation',
+        //             color: '#dddddd'
+        //         },
+        //     ].forEach(ser => temp.push(ser));
+        // })
+        // setSeries(temp);
 
         setSeries([
             {
                 id: 'powerIn',
                 label: 'Power In',
-                data: _output,
+                data: timesteps,
                 secondaryAxisId: 'powerIn',
             },
             {
                 id: 'power',
                 label: 'Power',
-                data: _output,
+                data: timesteps,
                 secondaryAxisId: 'power',
             },
             {
                 id: 'speed',
                 label: 'Speed',
-                data: _output,
+                data: timesteps,
                 secondaryAxisId: 'speed',
             },
             {
                 id: 'wPrimeBalance',
                 label: "W' Balance",
-                data: _output,
+                data: timesteps,
                 secondaryAxisId: 'wPrimeBalance',
             },
             {
                 id: 'yaw',
                 label: 'Yaw',
-                data: _output,
+                data: timesteps,
                 secondaryAxisId: 'yaw',
             },
             {
                 id: 'elevation',
                 label: 'Elevation',
-                data: _output,
+                data: timesteps,
                 secondaryAxisId: 'elevation',
             },
         ]);
@@ -216,7 +295,7 @@ export default function HeightMap({ onHoverPointChange }: Props) {
                 min: 0,
                 show: isVisible.powerIn,
                 styles: {
-                    color: '#ffa24a',
+                    color: '#fcb471',
                 },
             },
             {
@@ -230,7 +309,7 @@ export default function HeightMap({ onHoverPointChange }: Props) {
                 show: isVisible.power,
                 showDatumElements: true,
                 styles: {
-                    color: '#ffa24a',
+                    color: '#fcb471',
                     stroke: 'transparent',
                 },
             },
@@ -272,7 +351,7 @@ export default function HeightMap({ onHoverPointChange }: Props) {
                 hardMax: 20,
                 show: isVisible.yaw,
                 styles: {
-                    color: '#ffa24a',
+                    color: '#fcb471',
                 },
             },
         ],
@@ -297,14 +376,12 @@ export default function HeightMap({ onHoverPointChange }: Props) {
 
     const handleFocusDatum = useCallback(
         (datum: Datum<Timestep> | null) => {
-            const newHoverPoint = datum
-                ? series[0].data[datum.originalDatum.idx]
-                : null;
             onHoverPointChange(
-                newHoverPoint ? { idx: newHoverPoint.courseIdx } : null,
+                datum ? datum.originalDatum.idx / testData.length : null,
             );
+            setHoverSegment(datum ? datum.originalDatum.segment : null);
         },
-        [onHoverPointChange, series],
+        [onHoverPointChange],
     );
 
     const renderLegend = () => {
@@ -349,14 +426,12 @@ export default function HeightMap({ onHoverPointChange }: Props) {
                             secondaryAxes:
                                 secondaryAxes as unknown as AxisOptions<Timestep>[],
                             memoizeSeries: true,
-                            getSeriesStyle(series, status) {
+
+                            getSeriesStyle(_series, status) {
                                 const ax = secondaryAxes.find(
-                                    (sax) => sax.id === series.secondaryAxisId,
+                                    (sax) => sax.id === _series.secondaryAxisId,
                                 );
-                                if (!ax || !ax.styles) {
-                                    return {};
-                                }
-                                return ax.styles;
+                                return ax && ax.styles ? ax.styles : {};
                             },
                             onFocusDatum: handleFocusDatum,
                         }}
