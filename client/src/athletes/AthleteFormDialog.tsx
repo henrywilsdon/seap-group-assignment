@@ -102,6 +102,10 @@ export default function AthleteFormDialog({
                                 fullWidth
                                 label="Rider mass"
                                 type="number"
+                                inputProps={{
+                                    step: '0.1',
+                                    min: 0,
+                                }}
                                 value={riderMass}
                                 onChange={(evt) =>
                                     setRiderMass(parseFloat(evt.target.value))
@@ -120,6 +124,10 @@ export default function AthleteFormDialog({
                                 fullWidth
                                 label="Bike mass"
                                 type="number"
+                                inputProps={{
+                                    step: '0.1',
+                                    min: 0,
+                                }}
                                 value={bikeMass}
                                 onChange={(evt) =>
                                     setBikeMass(parseFloat(evt.target.value))
@@ -138,6 +146,10 @@ export default function AthleteFormDialog({
                                 fullWidth
                                 label="Other mass"
                                 type="number"
+                                inputProps={{
+                                    step: '0.1',
+                                    min: 0,
+                                }}
                                 value={otherMass}
                                 onChange={(evt) =>
                                     setOtherMass(parseFloat(evt.target.value))
@@ -158,6 +170,9 @@ export default function AthleteFormDialog({
                                 fullWidth
                                 label="CP/FTP"
                                 type="number"
+                                inputProps={{
+                                    min: 0,
+                                }}
                                 value={cp}
                                 onChange={(evt) =>
                                     setCp(parseFloat(evt.target.value))
@@ -176,6 +191,9 @@ export default function AthleteFormDialog({
                                 fullWidth
                                 label="W'"
                                 type="number"
+                                inputProps={{
+                                    min: 0,
+                                }}
                                 value={wPrime}
                                 onChange={(evt) =>
                                     setWPrime(parseFloat(evt.target.value))
