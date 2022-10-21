@@ -36,6 +36,9 @@ export default function RenderPredictionsPage() {
     }, [selectedCourseId]);
 
     const handlePredictionClick = () => {
+        if (selectedCourseId == null) {
+            return;
+        }
         makePrediction({
             athlete_parameters: athlete,
             mechanical_parameters: mechanical,
