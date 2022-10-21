@@ -17,15 +17,14 @@ export default function RenderPredictionsPage() {
     const { mechanical, mechanicalDispatch } = useMechanicalReducer();
     const { environment, environmentDispatch } = useEnvironmentReducer();
     const { courseParams, courseParamsDispatch } = useCourseParamsReducer();
-    const [selectedCourseId, setCourseId] = useState(0);
+    const [selectedCourseId, setCourseId] = useState(0); //store course ID
     const handlePredictionClick = () => {
         makePrediction({
-            athlete_parameters: athlete,
+            athlete_parameters: athlete, //add course ID
             mechanical_parameters: mechanical,
             environment_parameters: environment,
             course_parameters: courseParams,
-            //Need to add course ID from when select course is implemented and it can be accessed properly
-            //course_ID: selectedCourseID,
+            course_ID: selectedCourseId,
         });
     };
 
@@ -70,6 +69,7 @@ export default function RenderPredictionsPage() {
                     <CourseMap></CourseMap>
                     <DropButtons
                         athleteDispatch={athleteDispatch}
+                        onCourseSelected={setCourseId} // courseID to be accessible
                         onPredictionClick={handlePredictionClick}
                     />
                 </Box>
