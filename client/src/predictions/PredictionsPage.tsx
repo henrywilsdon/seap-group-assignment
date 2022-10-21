@@ -22,9 +22,8 @@ export default function RenderPredictionsPage() {
     const { courseParams, courseParamsDispatch } = useCourseParamsReducer();
     const [selectedCourseId, setCourseId] = useState<number | null>(null);
     const [selectedCourse, setCourse] = useState<CourseData | null>(null);
-    const { points, splits, boundsLatLng } = useMapState(
-        selectedCourse?.gps_data,
-    );
+    const { points, splits, boundsLatLng, hoverPoint, setHoverPoint } =
+        useMapState(selectedCourse?.gps_data);
 
     useEffect(() => {
         if (selectedCourseId === null) {
@@ -73,7 +72,9 @@ export default function RenderPredictionsPage() {
                     <Typography variant="h6">Predictions Page</Typography>
 
                     {/* Add external functions here to render them, change as needed */}
-                    <OutputPredictionsUI></OutputPredictionsUI>
+                    <OutputPredictionsUI
+                        onHoverPointChange={setHoverPoint}
+                    ></OutputPredictionsUI>
                     <SplitMetrics></SplitMetrics>
                 </Box>
 
@@ -108,7 +109,7 @@ export default function RenderPredictionsPage() {
                             <CourseMap
                                 points={points}
                                 splits={splits}
-                                hoverPoint={null}
+                                hoverPoint={hoverPoint}
                                 hoverSplitIdx={null}
                                 bounds={boundsLatLng}
                             />

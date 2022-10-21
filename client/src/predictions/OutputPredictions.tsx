@@ -1,16 +1,24 @@
 import { HorizontalRule } from '@mui/icons-material';
 import { ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
 import { Box } from '@mui/system';
-import React, { useDeferredValue, useEffect, useState } from 'react';
-import { AxisOptions, Chart, UserSerie } from 'react-charts';
+import React, {
+    useCallback,
+    useDeferredValue,
+    useEffect,
+    useMemo,
+    useState,
+} from 'react';
+import { AxisOptions, Chart, Datum, UserSerie } from 'react-charts';
 import courseData from './course.json';
 import testData from './csvjson.json';
 
 type Props = {
     // timesteps: Timestep[]
+    onHoverPointChange: (point: { idx: number } | null) => void;
 };
 
 interface Timestep {
+    idx: number;
     time: number;
     powerIn: number;
     speed: number;
@@ -19,13 +27,13 @@ interface Timestep {
     wPrimeBalance: number;
     yaw: number;
     elevation: number;
+    courseIdx: number;
 }
 
 /**
  * Graph showing change in elevation over distance.
  */
-export default function HeightMap({}: // timesteps
-Props) {
+export default function HeightMap({ onHoverPointChange }: Props) {
     const [series, setSeries] = useState<UserSerie<Timestep>[]>([]);
     const [visibleSeries, setVisibleSeries] = useState<UserSerie<Timestep>[]>(
         [],
@@ -100,22 +108,25 @@ Props) {
         // Aim for around 1000 data points
         const divisor =
             testData.length > 1000 ? Math.floor(testData.length / 1000) : 1;
-        let _output = testData.filter((item, i) => i % divisor === 0);
 
         let ei = 0;
-        _output = _output.map((o) => {
-            while (
-                ei < courseData.length &&
-                o.distance > courseData[ei].distance
-            ) {
-                ei++;
-            }
+        const _output: Timestep[] = testData
+            .filter((item, i) => i % divisor === 0)
+            .map((o, i) => {
+                while (
+                    ei < courseData.length &&
+                    o.distance > courseData[ei].distance
+                ) {
+                    ei++;
+                }
 
-            return {
-                ...o,
-                elevation: courseData[ei].elevation,
-            };
-        });
+                return {
+                    ...o,
+                    idx: i,
+                    elevation: courseData[ei].elevation,
+                    courseIdx: ei,
+                };
+            });
 
         setSeries([
             {
@@ -284,6 +295,18 @@ Props) {
         setToggleButtonVal(newToggleButtonVal);
     };
 
+    const handleFocusDatum = useCallback(
+        (datum: Datum<Timestep> | null) => {
+            const newHoverPoint = datum
+                ? series[0].data[datum.originalDatum.idx]
+                : null;
+            onHoverPointChange(
+                newHoverPoint ? { idx: newHoverPoint.courseIdx } : null,
+            );
+        },
+        [onHoverPointChange, series],
+    );
+
     const renderLegend = () => {
         return secondaryAxes.map((sax) => {
             if (typeof sax?.id !== 'string' || !isVisible[sax.id]) {
@@ -335,6 +358,7 @@ Props) {
                                 }
                                 return ax.styles;
                             },
+                            onFocusDatum: handleFocusDatum,
                         }}
                     />
                 )}

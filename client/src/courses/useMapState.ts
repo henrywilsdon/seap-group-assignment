@@ -25,18 +25,22 @@ export function useMapState(
 ): {
     points: GpsPoint[];
     splits: Split[];
-    hoverPoint: GpsPoint | null;
+    hoverPoint: Pick<GpsPoint, 'idx'> | null;
     hoverSplitIdx: number | null;
     centerLatLng: google.maps.LatLngLiteral | null;
     boundsLatLng: google.maps.LatLngBoundsLiteral | null;
-    setHoverPoint: React.Dispatch<React.SetStateAction<GpsPoint | null>>;
+    setHoverPoint: React.Dispatch<
+        React.SetStateAction<Pick<GpsPoint, 'idx'> | null>
+    >;
     setHoverSplitIdx: React.Dispatch<React.SetStateAction<number | null>>;
     addSplit: (pointIdx: number | null) => void;
     removeSplit: (pointIdx: number) => void;
     changeRoughness: (pointIdx: number, roughness: number) => void;
     createBackendGpsPoints: () => BackendCourse['gps_geo_json'] | null;
 } {
-    const [hoverPoint, setHoverPoint] = useState<GpsPoint | null>(null);
+    const [hoverPoint, setHoverPoint] = useState<Pick<GpsPoint, 'idx'> | null>(
+        null,
+    );
     const [points, setPoints] = useState<GpsPoint[]>([]);
 
     const [splits, setSplits] = useState<Split[]>([]);
