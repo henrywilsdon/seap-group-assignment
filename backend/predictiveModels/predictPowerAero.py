@@ -3,8 +3,8 @@ import math
 
 def predict_power_aero(course: CourseModel, distance: float, speed: float, index: int) -> dict:
 
-    cs = course.static
-    cd = course.dynamic
+    cs = course.static_model
+    cd = course.dynamic_model
 
     # ---------------------------------------------------------------
     # THE PART THAT FIGURES OUT THE RELATIVE WIND SPEED
@@ -26,13 +26,13 @@ def predict_power_aero(course: CourseModel, distance: float, speed: float, index
         # converts it to a {roughness class: v/msec} dictionary, for ease of lookup
         roughness_to_vmpsecs[factor_lookup_table[row_index][0]] = factor_lookup_table[row_index][2]
     # looks up the current roughness in that dictionary
-    v_mpsec = roughness_to_vmpsecs[cd.roughness_class[index]]
+    v_mpsec = roughness_to_vmpsecs[cd.roughness[index]]
 
     wind_speed_1m = v_mpsec
 
     headwind_bearing_deg = cs.wind_direction - 180
-    cd.bearing_from_prev[0] = 0 # baked into the sheet, since the blank at 'Course info'!$H$3 is counted as 0 by vlookup (likely a bug)
-    relative_wind_angle_deg = cd.bearing_from_prev[index] - headwind_bearing_deg
+    cd.bearing[0] = 0 # baked into the sheet, since the blank at 'Course info'!$H$3 is counted as 0 by vlookup (likely a bug)
+    relative_wind_angle_deg = cd.bearing[index] - headwind_bearing_deg
 
     headwind = wind_speed_1m * math.cos(math.radians(relative_wind_angle_deg))
     sidewind = wind_speed_1m * math.sin(math.radians(relative_wind_angle_deg))
@@ -54,13 +54,13 @@ def predict_power_aero(course: CourseModel, distance: float, speed: float, index
 
     vlookup_thingy_a = vlookup_thingy_a_table[vlookup_thingy_a_col]
 
-    slope = cd.slope_from_prev[index]
+    slope = cd.slope[index]
     if index == 0 or slope > cs.climbing_min_slope: # index 0 being position b is baked into the spreadsheet at 'Course info'!$M$3
         # (calculates position b)
-        vlookup_thingy_a += course.static.climbing_cda_increment
+        vlookup_thingy_a += course.static_model.climbing_cda_increment
     elif slope < cs.descending_max_slope:
         # (calculates position c)
-        vlookup_thingy_a += course.static.descending_cda_increment
+        vlookup_thingy_a += course.static_model.descending_cda_increment
     # else position is a, and the result isn't affected
 
     vlookup_thingy_b_table = [0.0, -0.000400000000000011, -0.000800000000000023, -0.00120000000000003, -0.00160000000000005, -0.00200000000000006, -0.00440000000000007, -0.00680000000000008, -0.0092000000000001, -0.0116000000000001, -0.014, -0.0144, -0.0148, -0.0152, -0.0156000000000001, -0.0160000000000001, -0.0164000000000001, -0.0168000000000001, -0.0172000000000001, -0.0176000000000001, -0.0180000000000001, -0.0184000000000001, -0.0188000000000001, -0.0192000000000002, -0.0196000000000002, -0.0200000000000002, -0.0204000000000002, -0.0208000000000002, -0.0212000000000002, -0.0216000000000002, -0.0220000000000002, -0.0224000000000003, -0.0224000000000003, -0.0224000000000003, -0.0224000000000003, -0.0224000000000003, -0.0224000000000003, -0.0224000000000003, -0.0224000000000003, -0.0224000000000003, -0.0224000000000003, -0.0224000000000003, -0.0224000000000003, -0.0224000000000003, -0.0224000000000003, -0.0224000000000003, -0.0224000000000003, -0.0224000000000003, -0.0224000000000003, -0.0224000000000003, -0.0224000000000003, -0.0224000000000003, -0.0224000000000003, -0.0224000000000003, -0.0224000000000003, -0.0224000000000003, -0.0224000000000003, -0.0224000000000003, -0.0224000000000003, -0.0224000000000003, -0.0224000000000003]
