@@ -15,6 +15,7 @@ import { matchPath, useLocation, useNavigate } from 'react-router-dom';
 import logo from '../logo.svg';
 import UserContext from '../user/UserContext';
 import ConfirmLogoutDialog from '../user/ConfirmLogoutDialog';
+import CalculateIcon from '@mui/icons-material/Calculate';
 
 const items = [
     {
@@ -26,6 +27,11 @@ const items = [
         label: 'Courses',
         Icon: RouteIcon,
         path: '/courses',
+    },
+    {
+        label: 'Predictions',
+        Icon: CalculateIcon,
+        path: '/predictions',
     },
     {
         label: 'Profile',
@@ -62,7 +68,7 @@ export default function SideMenu() {
 
     const renderItems = () => {
         return items.map((item) => (
-            <ListItem disablePadding>
+            <ListItem disablePadding key={item.label}>
                 <ListItemButton
                     onClick={createClickHandler(item.path)}
                     selected={matchPath(item.path, location.pathname) != null}

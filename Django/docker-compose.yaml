@@ -1,10 +1,16 @@
 version: "3.9"
-   
+
+volumes:
+  web_data:
+    name: my_volume_001
+
 services:
   db:
     image: postgres
     volumes:
-      - ./data/db:/var/lib/postgresql/data
+      - web_data:/var/lib/postgresql/data
+#    volumes:
+#      - ./data/db:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
@@ -25,10 +31,3 @@ services:
       - POSTGRES_PASSWORD=postgres
     depends_on:
       - db
-
-  db-adminer:
-    image: adminer
-    container_name: db-adminer
-    restart: always
-    ports:
-      - 8080:8080
