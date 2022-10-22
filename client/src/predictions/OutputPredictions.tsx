@@ -8,7 +8,13 @@ import React, {
     useMemo,
     useState,
 } from 'react';
-import { AxisOptions, Chart, Datum, UserSerie } from 'react-charts';
+import {
+    AxisOptions,
+    Chart,
+    ChartOptions,
+    Datum,
+    UserSerie,
+} from 'react-charts';
 import courseData from './course.json';
 import testData from './csvjson.json';
 import predictiveModel from './predictive model json.json';
@@ -149,102 +155,102 @@ export default function HeightMap({ onHoverPointChange }: Props) {
                 elevation: courseData[ei].elevation,
                 segment: currentSplitIdx,
             });
-            // segments[currentSplitIdx].push({
-            //     ...backendTimestep,
-            //     idx: i,
-            //     elevation: courseData[ei].elevation,
-            //     segment: currentSplitIdx
-            // });
+            segments[currentSplitIdx].push({
+                ...backendTimestep,
+                idx: i,
+                elevation: courseData[ei].elevation,
+                segment: currentSplitIdx,
+            });
         }
 
-        // console.log(segments)
-        // const temp: UserSerie<Timestep>[] = [];
-        // segments.forEach((s, i) => {
-        //     [
-        //         {
-        //             id: 'powerIn',
-        //             label: 'Power In' + s[0].segment,
-        //             data: s,
-        //             secondaryAxisId: 'powerIn',
-        //             color: '#fcb471'
-        //         },
-        //         {
-        //             id: 'power',
-        //             label: 'Power',
-        //             data: s,
-        //             secondaryAxisId: 'power',
-        //             color: '#fcb471'
-        //         },
-        //         {
-        //             id: 'speed',
-        //             label: 'Speed',
-        //             data: s,
-        //             secondaryAxisId: 'speed',
-        //             color: i % 2 ? '#66d4ff' : '#667dff'
-        //         },
-        //         {
-        //             id: 'wPrimeBalance',
-        //             label: "W' Balance",
-        //             data: s,
-        //             secondaryAxisId: 'wPrimeBalance',
-        //             color: i % 2 ? '#66d4ff' : '#667dff'
-        //         },
-        //         {
-        //             id: 'yaw',
-        //             label: 'Yaw',
-        //             data: s,
-        //             secondaryAxisId: 'yaw',
-        //             color:  '#fcb471'
-        //         },
-        //         {
-        //             id: 'elevation',
-        //             label: 'Elevation',
-        //             data: s,
-        //             secondaryAxisId: 'elevation',
-        //             color: '#dddddd'
-        //         },
-        //     ].forEach(ser => temp.push(ser));
-        // })
-        // setSeries(temp);
+        console.log(segments);
+        const temp: UserSerie<Timestep>[] = [];
+        segments.forEach((s, i) => {
+            [
+                {
+                    id: 'powerIn',
+                    label: 'Power In',
+                    data: s,
+                    secondaryAxisId: 'powerIn',
+                    color: '#fcb471',
+                },
+                {
+                    id: 'power',
+                    label: 'Power',
+                    data: s,
+                    secondaryAxisId: 'power',
+                    color: '#fcb471',
+                },
+                {
+                    id: 'speed',
+                    label: 'Speed',
+                    data: s,
+                    secondaryAxisId: 'speed',
+                    color: '#667dff',
+                },
+                {
+                    id: 'wPrimeBalance',
+                    label: "W' Balance",
+                    data: s,
+                    secondaryAxisId: 'wPrimeBalance',
+                    color: '#667dff',
+                },
+                {
+                    id: 'yaw',
+                    label: 'Yaw',
+                    data: s,
+                    secondaryAxisId: 'yaw',
+                    color: '#fcb471',
+                },
+                {
+                    id: 'elevation',
+                    label: 'Elevation',
+                    data: s,
+                    secondaryAxisId: 'elevation',
+                    color: '#dddddd',
+                },
+            ].forEach((ser) => temp.push(ser));
+        });
+        setSeries(temp);
 
-        setSeries([
-            {
-                id: 'powerIn',
-                label: 'Power In',
-                data: timesteps,
-                secondaryAxisId: 'powerIn',
-            },
-            {
-                id: 'power',
-                label: 'Power',
-                data: timesteps,
-                secondaryAxisId: 'power',
-            },
-            {
-                id: 'speed',
-                label: 'Speed',
-                data: timesteps,
-                secondaryAxisId: 'speed',
-            },
-            {
-                id: 'wPrimeBalance',
-                label: "W' Balance",
-                data: timesteps,
-                secondaryAxisId: 'wPrimeBalance',
-            },
-            {
-                id: 'yaw',
-                label: 'Yaw',
-                data: timesteps,
-                secondaryAxisId: 'yaw',
-            },
-            {
-                id: 'elevation',
-                label: 'Elevation',
-                data: timesteps,
-                secondaryAxisId: 'elevation',
-            },
-        ]);
+        // setSeries([
+        //     {
+        //         id: 'powerIn',
+        //         label: 'Power In',
+        //         data: timesteps,
+        //         secondaryAxisId: 'powerIn',
+        //     },
+        //     {
+        //         id: 'power',
+        //         label: 'Power',
+        //         data: timesteps,
+        //         secondaryAxisId: 'power',
+        //     },
+        //     {
+        //         id: 'speed',
+        //         label: 'Speed',
+        //         data: timesteps,
+        //         secondaryAxisId: 'speed',
+        //     },
+        //     {
+        //         id: 'wPrimeBalance',
+        //         label: "W' Balance",
+        //         data: timesteps,
+        //         secondaryAxisId: 'wPrimeBalance',
+        //     },
+        //     {
+        //         id: 'yaw',
+        //         label: 'Yaw',
+        //         data: timesteps,
+        //         secondaryAxisId: 'yaw',
+        //     },
+        //     {
+        //         id: 'elevation',
+        //         label: 'Elevation',
+        //         data: timesteps,
+        //         secondaryAxisId: 'elevation',
+        //     },
+        // ]);
     }, []);
 
     useEffect(() => {
@@ -295,7 +301,7 @@ export default function HeightMap({ onHoverPointChange }: Props) {
                 min: 0,
                 show: isVisible.powerIn,
                 styles: {
-                    color: '#fcb471',
+                    color: '#ffa149',
                 },
             },
             {
@@ -338,7 +344,7 @@ export default function HeightMap({ onHoverPointChange }: Props) {
                 min: 0,
                 show: isVisible.wPrimeBalance,
                 styles: {
-                    color: '#667dff',
+                    color: '#566fff',
                 },
             },
             {
@@ -408,6 +414,38 @@ export default function HeightMap({ onHoverPointChange }: Props) {
         });
     };
 
+    const options = useMemo(
+        (): ChartOptions<Timestep> => ({
+            data: deferredSeries,
+            primaryAxis,
+            secondaryAxes: secondaryAxes as unknown as AxisOptions<Timestep>[],
+            memoizeSeries: false,
+            getSeriesStyle(_series, status) {
+                const ax = secondaryAxes.find(
+                    (sax) => sax.id === _series.secondaryAxisId,
+                );
+                console.log(hoverSegment, _series);
+                return {
+                    ...ax?.styles,
+                    opacity:
+                        hoverSegment != null
+                            ? _series.indexPerAxis === hoverSegment
+                                ? 1
+                                : 0.5
+                            : 1,
+                };
+            },
+            onFocusDatum: handleFocusDatum,
+        }),
+        [
+            deferredSeries,
+            handleFocusDatum,
+            primaryAxis,
+            secondaryAxes,
+            hoverSegment,
+        ],
+    );
+
     return (
         <Box>
             <Box
@@ -418,25 +456,7 @@ export default function HeightMap({ onHoverPointChange }: Props) {
                     height: '300px',
                 }}
             >
-                {deferredSeries.length > 0 && (
-                    <Chart
-                        options={{
-                            data: deferredSeries,
-                            primaryAxis,
-                            secondaryAxes:
-                                secondaryAxes as unknown as AxisOptions<Timestep>[],
-                            memoizeSeries: true,
-
-                            getSeriesStyle(_series, status) {
-                                const ax = secondaryAxes.find(
-                                    (sax) => sax.id === _series.secondaryAxisId,
-                                );
-                                return ax && ax.styles ? ax.styles : {};
-                            },
-                            onFocusDatum: handleFocusDatum,
-                        }}
-                    />
-                )}
+                {deferredSeries.length > 0 && <Chart options={options} />}
             </Box>
             <Box
                 sx={{
