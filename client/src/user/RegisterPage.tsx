@@ -1,16 +1,16 @@
+import { Button, TextField, Typography } from '@mui/material';
 import { useContext, useState } from 'react';
-import { Button, TextField, Typography, Alert } from '@mui/material';
-import './RegisterPage.css';
+import { useNavigate } from 'react-router-dom';
 import UserContext from '../user/UserContext';
+import './RegisterPage.css';
 
-type Props = {};
-
-export default function RegisterPage({}: Props) {
+export default function RegisterPage() {
     const { register } = useContext(UserContext);
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+    const navigate = useNavigate();
 
     //username
     const handleName = (event: any) => {
@@ -25,11 +25,11 @@ export default function RegisterPage({}: Props) {
     };
 
     //password
-
     const handlePassword = (event: any) => {
         setPassword(event.target.value);
         setErrorMessage('');
     };
+
     //button click
     const handleClick = (event: any) => {
         register(username, email, password)
@@ -42,6 +42,10 @@ export default function RegisterPage({}: Props) {
                 //display error (user already exists)
                 setErrorMessage(error.message);
             });
+    };
+
+    const handleLoginClick = () => {
+        navigate('/login');
     };
 
     return (
@@ -82,8 +86,11 @@ export default function RegisterPage({}: Props) {
                 sx={{ marginBottom: 4 }}
             />
 
-            <Button variant="contained" onClick={handleClick}>
+            <Button variant="contained" onClick={handleClick} sx={{ mb: 2 }}>
                 Create Account
+            </Button>
+            <Button variant="contained" onClick={handleLoginClick}>
+                Login
             </Button>
         </div>
     );
