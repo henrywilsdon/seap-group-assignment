@@ -567,15 +567,6 @@ def all_prediction_parameters(request, course_id):
     
         dynamic_mod = course.gps_geo_json
 
-        # caleb temp fix stuff
-        new_agg_dist = []
-        dist_total = 0
-        for d in dynamic_mod.distance:
-            dist_total += d
-            new_agg_dist.append(dist_total)
-        dynamic_mod.distance = new_agg_dist
-        # /end fix stuff
-
         prediction_input = CourseModel(
             static_model = model,
             dynamic_model = dynamic_mod,
