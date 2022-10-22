@@ -40,12 +40,43 @@ type BackendPredictionParams = {
     };
 };
 
+export type PredictionOutput = {
+    full_course_data: {
+        average_yaw: number;
+        average_yaw_above_40kmh: number | null;
+        distance: number;
+        duration: number;
+        min_w_prime_balance: number;
+        power_in: number;
+    };
+    segments: PredictionOutputSegment[];
+    time_steps_data: PredictionOutputTimeSteps;
+};
+
+export interface PredictionOutputSegment {
+    average_yaw: number;
+    average_yaw_above_40kmh: number;
+    distance: number;
+    duration: number;
+    min_w_prime_balance: number;
+    power_in: number;
+}
+
+export interface PredictionOutputTimeSteps {
+    distance: number[];
+    power_in: number[];
+    speed: number[];
+    yaw: number[];
+    elevation: number[];
+    w_prim_balance: number[];
+}
+
 /**
  * Make a new prediction
  */
 export function makePrediction(
     predictionData: PredictionObjects,
-): Promise<any> {
+): Promise<PredictionOutput> {
     console.log('makePrediction Request Called');
     return fetch(
         'http://localhost:8000/api/prediction/' +
@@ -61,7 +92,7 @@ export function makePrediction(
         },
     ).then(async (response) => {
         if (response.ok) {
-            return await response.json();
+            return (await response.json()).result;
         } else {
             if (response.headers.get('Content-Type') === 'application/json') {
                 const data = await response.json();

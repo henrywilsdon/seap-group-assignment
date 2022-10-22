@@ -8,7 +8,11 @@ import useAthleteReducer from './useAthleteReducer';
 import useMechanicalReducer from './useMechanicalReducer';
 import useEnvironmentReducer from './useEnvironmentReducer';
 import useCourseParamsReducer from './useCourseParamsReducer';
-import { makePrediction, predictionPresets } from './PredictionsAPI';
+import {
+    makePrediction,
+    PredictionOutput,
+    predictionPresets,
+} from './PredictionsAPI';
 import { useEffect, useState } from 'react';
 import CourseMap from '../courses/CourseMap';
 import { getCourse } from '../courses/CourseApi';
@@ -25,6 +29,8 @@ export default function RenderPredictionsPage() {
     const { points, splits, boundsLatLng } = useMapState(
         selectedCourse?.gps_data,
     );
+    const [predictionOutput, setPredictionOutput] =
+        useState<PredictionOutput | null>(null);
 
     useEffect(() => {
         if (selectedCourseId === null) {
@@ -45,7 +51,9 @@ export default function RenderPredictionsPage() {
             environment_parameters: environment,
             course_parameters: courseParams,
             course_ID: selectedCourseId,
-        });
+        })
+            .then(setPredictionOutput)
+            .catch(alert);
     };
 
     const handlePredictionPresetChanged = (presetId: number) => {
