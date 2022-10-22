@@ -589,7 +589,7 @@ def all_prediction_parameters(request, course_id):
         full_course_data_obj = output.full_course_data
         timesteps_data_obj = output.timesteps_data
 
-        segment_list = {}
+        segment_list = []
         for i, segment_obj in enumerate(segments_data_obj):
             segment = {
                     'average_yaw' : segment_obj[0].average_yaw , 
@@ -599,7 +599,7 @@ def all_prediction_parameters(request, course_id):
                     'min_w_prime_balance' : segment_obj[0].min_w_prime_balance , 
                     'power_in' : segment_obj[0].power_in
             }
-            segment_list[i] = segment
+            segment_list.append(segment)
 
 
         full_course_data = {
@@ -619,11 +619,7 @@ def all_prediction_parameters(request, course_id):
                 'w_prim_balance' : timesteps_data_obj.w_prime_balance
         }
 
-        segments = {
-            'segments' : segment_list
-        }
-
-        result = {'full_course_data': full_course_data, 'segments': segments, 'time_steps_data' : time_steps_data}
+        result = {'full_course_data': full_course_data, 'segments': segment_list, 'time_steps_data' : time_steps_data}
 
         return JsonResponse({'detail': 'Prediction complete', 'result' : result}, status=200)
 
