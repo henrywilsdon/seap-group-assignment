@@ -42,7 +42,7 @@ def predict_single_timestep(course: CourseModel, # time doesn't need to be an ar
     power_net = power_in - power_aero - power_roll - power_gravity
     propulsive_force = power_net / speed
     mass_total = cs.mass_rider + cs.mass_bike + cs.mass_other
-    acceleration = propulsive_force / (mass_total + ( (cs.moi_whl_front + cs.moi_whl_rear) / cs.wheel_radius**2))
+    acceleration = propulsive_force / (mass_total + ( (cs.mol_whl_front + cs.mol_whl_rear) / cs.wheel_radius**2))
 
     return SingleTimestepOutput(distance=distance,
                                 speed=speed, # current speed is based on the previous speed and acceleration
