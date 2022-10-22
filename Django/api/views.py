@@ -352,6 +352,7 @@ def get_gpx_data(request):
             ele.append(gpx_json['segments'][0][i]['ele'])
             dis.append(gpx_json['segments'][0][i]['horz_dist_from_prev'])
             bear.append(gpx_json['segments'][0][i]['bearing_from_prev'])
+            slope.append(0)
             segment.append(0)
             roughness.append(2)
             i = i + 1
@@ -364,6 +365,7 @@ def get_gpx_data(request):
             'elevation': ele,
             'horizontal_distance_to_last_point': dis,
             'bearing_from_last_point': bear,
+            'slope': slope,
             'segment': segment,
             'roughness': roughness
         }, status=200)
@@ -399,7 +401,7 @@ def all_courses_view(request):
                 ele=gps_json['elevation'],
                 distance=gps_json['horizontal_distance_to_last_point'],
                 bearing=gps_json['bearing_from_last_point'],
-                slope=empty_slope,
+                slope=gps_json['slope'],
                 segment=gps_json['segment'],
                 roughness=gps_json['roughness'],
             ),
@@ -434,6 +436,7 @@ def course_view(request, course_id):
                     'elevation': courseGps.ele,
                     'horizontal_distance_to_last_point': courseGps.distance,
                     'bearing_from_last_point': courseGps.bearing,
+                    'slope': courseGps.slope,
                     'segment' : courseGps.segment,
                     'roughness' : courseGps.roughness,
                 }
@@ -459,7 +462,7 @@ def course_view(request, course_id):
                 ele=gps_json['elevation'],
                 distance=gps_json['horizontal_distance_to_last_point'],
                 bearing=gps_json['bearing_from_last_point'],
-                slope=empty_slope,
+                slope=gps_json['slope'],
                 segment=gps_json['segment'],
                 roughness=gps_json['roughness']
             )
