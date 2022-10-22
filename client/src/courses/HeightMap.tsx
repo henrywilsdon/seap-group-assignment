@@ -32,8 +32,6 @@ export default function HeightMap({
     const [data, setData] = useState<Series[]>([]);
 
     useEffect(() => {
-        console.log('create height map data');
-
         if (points.length === 0) {
             setData([]);
             return;
@@ -70,8 +68,9 @@ export default function HeightMap({
             formatters: {
                 scale: (v: number) => v + ' km',
             },
+            max: points && points[points.length - 1]?.distance,
         }),
-        [],
+        [points],
     );
 
     const secondaryAxes = React.useMemo(
