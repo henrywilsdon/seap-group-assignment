@@ -125,7 +125,7 @@ export default function RenderPredictionsPage() {
                         },
                     }}
                 >
-                    <Typography variant="h6">Predictions Page</Typography>
+                    <Typography variant="h4">Predictions</Typography>
 
                     {/* Add external functions here to render them, change as needed */}
                     <OutputPredictionsUI></OutputPredictionsUI>
