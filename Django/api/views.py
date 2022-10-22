@@ -352,6 +352,7 @@ def get_gpx_data(request):
             ele.append(gpx_json['segments'][0][i]['ele'])
             dis.append(gpx_json['segments'][0][i]['horz_dist_from_prev'])
             bear.append(gpx_json['segments'][0][i]['bearing_from_prev'])
+            slope.append(0)
             segment.append(0)
             roughness.append(2)
             i = i + 1
@@ -364,6 +365,7 @@ def get_gpx_data(request):
             'elevation': ele,
             'horizontal_distance_to_last_point': dis,
             'bearing_from_last_point': bear,
+            'slope': slope,
             'segment': segment,
             'roughness': roughness
         }, status=200)
@@ -386,8 +388,6 @@ def all_courses_view(request):
         course_data = json.loads(request.body)
 
         gps_json=course_data["gps_geo_json"]
-        empty_slope = []
-
         course = Course.objects.create(
             name=course_data["name"],
             location=course_data["location"],
@@ -399,7 +399,7 @@ def all_courses_view(request):
                 ele=gps_json['elevation'],
                 distance=gps_json['horizontal_distance_to_last_point'],
                 bearing=gps_json['bearing_from_last_point'],
-                slope=empty_slope,
+                slope=gps_json['slope'],
                 segment=gps_json['segment'],
                 roughness=gps_json['roughness'],
             ),
@@ -434,6 +434,7 @@ def course_view(request, course_id):
                     'elevation': courseGps.ele,
                     'horizontal_distance_to_last_point': courseGps.distance,
                     'bearing_from_last_point': courseGps.bearing,
+                    'slope': courseGps.slope,
                     'segment' : courseGps.segment,
                     'roughness' : courseGps.roughness,
                 }
@@ -447,7 +448,6 @@ def course_view(request, course_id):
         course = Course.objects.get(id=course_id)
 
         gps_json=course_data["gps_geo_json"]
-        empty_slope = []
 
         course.name = course_data["name"]
         course.location = course_data["location"]
@@ -459,7 +459,7 @@ def course_view(request, course_id):
                 ele=gps_json['elevation'],
                 distance=gps_json['horizontal_distance_to_last_point'],
                 bearing=gps_json['bearing_from_last_point'],
-                slope=empty_slope,
+                slope=gps_json['slope'],
                 segment=gps_json['segment'],
                 roughness=gps_json['roughness']
             )
@@ -494,7 +494,7 @@ def all_prediction_parameters(request, course_id):
     if not request.user.is_authenticated:
         return JsonResponse({'detail': 'User not authenticated'}, status=401)
 
-    course = Course.objects.filter(id=course_id).values()
+    course = Course.objects.get(id=course_id)
 
 
 
@@ -507,10 +507,10 @@ def all_prediction_parameters(request, course_id):
         mechanical_parameters = parameters["mechanical_parameters"]
         course_parameters = parameters["course_parameters"]
 
-        #course.min_slope_threshold = course_parameters["min_slope_threshold"]
-        #course.max_slope_threshold = course_parameters["max_slope_threshold"]
+        course.min_slope_threshold = course_parameters["min_slope_threshold"]
+        course.max_slope_threshold = course_parameters["max_slope_threshold"]
 
-        athlete = Athlete.objects.create(
+        athlete = Athlete(
             name=athlete_parameters["name"],
             bike_mass=athlete_parameters["bike_mass"],
             rider_mass=athlete_parameters["rider_mass"],
@@ -519,20 +519,12 @@ def all_prediction_parameters(request, course_id):
             CP_FTP=athlete_parameters["CP_FTP"],
             W_prime=athlete_parameters["W_prime"],
         )
-        athlete.save()
-
-
-
-
-
-        
 
         """ 
         The parameters in this model can be changed depending on what the predictive model needs
          """
         
-
-        model = StaticModel.objects.create(
+        model = StaticModel(
             mass_rider = athlete_parameters["rider_mass"],
             mass_bike = athlete_parameters["bike_mass"],
             mass_other = athlete_parameters["other_mass"],
@@ -572,15 +564,21 @@ def all_prediction_parameters(request, course_id):
             starting_distance = 0.1,
             starting_speed = 0.3,
         )
-        model.save()
-        
-        
+    
+        dynamic_mod = course.gps_geo_json
 
-        dynmaic_mod = course.gps_geo_json
-        
-        prediction_input = CourseModel.objects.create(
+        # caleb temp fix stuff
+        new_agg_dist = []
+        dist_total = 0
+        for d in dynamic_mod.distance:
+            dist_total += d
+            new_agg_dist.append(dist_total)
+        dynamic_mod.distance = new_agg_dist
+        # /end fix stuff
+
+        prediction_input = CourseModel(
             static_model = model,
-            dynamic_model = dynmaic_mod,
+            dynamic_model = dynamic_mod,
         )
         #Call predictive model
         output = predict_entire_course(prediction_input)
@@ -591,28 +589,26 @@ def all_prediction_parameters(request, course_id):
         full_course_data_obj = output.full_course_data
         timesteps_data_obj = output.timesteps_data
 
-        segment_list = {}
-        for i in segments_data_obj:
-            #Grab the segment object
-            segment_obj = segments_data_obj[i]
+        segment_list = []
+        for i, segment_obj in enumerate(segments_data_obj):
             segment = {
-                    'average_yaw' : segment_obj.average_yaw , 
-                    'average_yaw_above_40kmh' : segment_obj.average_yaw_above_40kmh , 
-                    'distance' : segment_obj.distance , 
-                    'duration' : segment_obj.duration ,  
-                    'min_w_prime_balance' : segment_obj.min_w_prime_balance , 
-                    'power_in' : segment_obj.power_in
+                    'average_yaw' : segment_obj[0].average_yaw , 
+                    'average_yaw_above_40kmh' : segment_obj[0].average_yaw_above_40kmh , 
+                    'distance' : segment_obj[0].distance , 
+                    'duration' : segment_obj[0].duration ,  
+                    'min_w_prime_balance' : segment_obj[0].min_w_prime_balance , 
+                    'power_in' : segment_obj[0].power_in
             }
-            segment_list[i] = segment
+            segment_list.append(segment)
 
 
         full_course_data = {
-                'average_yaw' : full_course_data_obj.average_yaw , 
-                'average_yaw_above_40kmh' : full_course_data_obj.average_yaw_above_40kmh , 
-                'distance' : full_course_data_obj.distance , 
-                'duration' : full_course_data_obj.duration ,  
-                'min_w_prime_balance' : full_course_data_obj.min_w_prime_balance , 
-                'power_in' : full_course_data_obj.power_in
+                'average_yaw' : full_course_data_obj[0].average_yaw , 
+                'average_yaw_above_40kmh' : full_course_data_obj[0].average_yaw_above_40kmh , 
+                'distance' : full_course_data_obj[0].distance , 
+                'duration' : full_course_data_obj[0].duration ,  
+                'min_w_prime_balance' : full_course_data_obj[0].min_w_prime_balance , 
+                'power_in' : full_course_data_obj[0].power_in
         }
         time_steps_data = {
                 'distance' : timesteps_data_obj.distance , 
@@ -623,11 +619,7 @@ def all_prediction_parameters(request, course_id):
                 'w_prim_balance' : timesteps_data_obj.w_prime_balance
         }
 
-        segments = {
-            'segments' : segment_list
-        }
-
-        result = {'full_course_data': full_course_data, 'segments': segments, 'time_steps_data' : time_steps_data}
+        result = {'full_course_data': full_course_data, 'segments': segment_list, 'time_steps_data' : time_steps_data}
 
         return JsonResponse({'detail': 'Prediction complete', 'result' : result}, status=200)
 

@@ -200,10 +200,10 @@ export function useMapState(
         let currentSplitIdx = 0;
         for (let i = 0; i < points.length; i++) {
             const currentSplit = splits[currentSplitIdx];
-            if (i >= currentSplit.endPointIdx) {
-                if (currentSplitIdx + 1 >= splits.length) {
-                    break;
-                }
+            if (
+                i >= currentSplit.endPointIdx &&
+                currentSplitIdx + 1 < splits.length
+            ) {
                 currentSplitIdx++;
             }
 

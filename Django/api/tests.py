@@ -121,13 +121,48 @@ class UserTestCase(TestCase):
             response = client.post('/api/upload/', {'attachment': gpx})
 
         data = json.loads(response.content)
+        data['horizontal_distance_to_last_point'][0]=0.0
 
         course_data = {
                 'name':'test',
                 'location':'adelaide',
-                'last_updated':'2022-10-20',
+                'last_updated':'2022-01-01 01:00',
                 'gps_geo_json':data
         }
 
         response = client.post('/api/course/', course_data, content_type='application/json')
-        self.assertEqual(response.status_code, 200)
+        
+        all_parameter_data = {
+            "athlete_parameters": {
+                "id": 1,
+                "name": "test",
+                "rider_mass": 71,
+                "bike_mass": 7,
+                "other_mass": 1,
+                "total_mass": 79,
+                "CP_FTP": 430,
+                "W_prime": 35000
+            },
+            "environment_parameters": {
+                "wind_density" : 1.13,
+                "wind_direction" : 30,
+                "wind_speed_mps" : 2
+            },
+            "mechanical_parameters": {
+                "crr": 0.0025,
+                "mechanical_efficiency": 0.98,
+                "mol_whl_front": 0.08,
+                "mol_whl_rear": 0.08,
+                "wheel_radius": 0.335
+            },
+            "course_parameters": {
+                "max_slope_threshold": 0.03,
+                "min_slope_threshold": -0.01
+            }
+                
+        }
+
+        response = client.post('/api/prediction/1/', all_parameter_data, content_type='application/json')
+
+
+        
