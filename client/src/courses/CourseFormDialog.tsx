@@ -1,11 +1,8 @@
 import { Close } from '@mui/icons-material';
 import {
     Button,
-    FormControl,
     Grid,
     IconButton,
-    MenuItem,
-    Select,
     Stack,
     TextField,
     Tooltip,
@@ -83,7 +80,6 @@ export default function CourseFormDialog({
         setHoverPoint,
         addSplit,
         removeSplit,
-        changeRoughness,
         createBackendGpsPoints,
     } = useMapState(backendCourseGps);
 
@@ -111,15 +107,15 @@ export default function CourseFormDialog({
             return;
         }
 
+        const lastPointIdx = points.length > 0 ? points.length - 1 : 0;
         setSegments(
-            splits.map((splt, splitIdx) => {
-                const startPointIdx =
-                    splitIdx > 0 ? splits[splitIdx - 1].endPointIdx : 0;
+            [...splits, lastPointIdx].map((endPointIdx, splitIdx) => {
+                const startPointIdx = splitIdx > 0 ? splits[splitIdx - 1] : 0;
 
                 let distance = 0;
                 const elevation =
-                    points[splt.endPointIdx].elev - points[startPointIdx].elev;
-                for (let i = startPointIdx; i < splt.endPointIdx; i++) {
+                    points[endPointIdx].elev - points[startPointIdx].elev;
+                for (let i = startPointIdx; i < endPointIdx; i++) {
                     distance += points[i].distance;
                 }
 
@@ -127,7 +123,7 @@ export default function CourseFormDialog({
                     no: splitIdx + 1,
                     distance: parseFloat((distance / 1000).toFixed(2)),
                     elevation: parseFloat(elevation.toFixed(1)),
-                    roughness: splt.roughness,
+                    roughness: 0,
                 };
             }),
         );
@@ -174,10 +170,6 @@ export default function CourseFormDialog({
             location,
             gps_data,
         });
-    };
-
-    const createHandleRoughnessChange = (splitIdx: number) => (event: any) => {
-        changeRoughness(splitIdx, +event.target.value);
     };
 
     if (removal) {
@@ -230,24 +222,15 @@ export default function CourseFormDialog({
                 </TableCell>
                 <TableCell align="right">{seg.distance} km</TableCell>
                 <TableCell align="right">{seg.elevation} m</TableCell>
-                <TableCell>
-                    <FormControl fullWidth>
-                        <Select
-                            labelId="roughness"
-                            variant="standard"
-                            value={seg.roughness}
-                            label="Roughness"
-                            onChange={createHandleRoughnessChange(seg.no - 1)}
-                        >
-                            <MenuItem value={2}>Race circuit - open</MenuItem>
-                            <MenuItem value={2.5}>Tree-lined - light</MenuItem>
-                            <MenuItem value={3}>Tree-lined - medium</MenuItem>
-                            <MenuItem value={3.5}>Tree-lined - dense</MenuItem>
-                        </Select>
-                    </FormControl>
+                <TableCell sx={{ width: '1rem' }}>
+                    <TextField
+                        type="number"
+                        size="small"
+                        value={seg.roughness}
+                    />
                 </TableCell>
                 <TableCell>
-                    {splits.length > 1 && (
+                    {splits.length > 0 && (
                         <Tooltip title="Remove segment end point">
                             <IconButton
                                 onClick={() => handleRemoveSegment(seg.no - 1)}
@@ -398,7 +381,9 @@ export default function CourseFormDialog({
                                             <TableCell align="right">
                                                 Elev Chng
                                             </TableCell>
-                                            <TableCell>Roughness</TableCell>
+                                            <TableCell align="right">
+                                                Roughness
+                                            </TableCell>
                                             <TableCell></TableCell>
                                         </TableRow>
                                     </TableHead>

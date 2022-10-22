@@ -10,21 +10,12 @@ export interface GpsPoint extends google.maps.LatLngLiteral {
     totalDistanceKm: number;
 }
 
-export interface Split {
-    endPointIdx: number;
-    roughness: number;
-}
-
-const DEFAULT_ROUGHNESS = 2;
-
 /**
  * State for course map and height map.
  */
-export function useMapState(
-    backendGpsPoints: BackendGpsPoints | null | undefined,
-): {
+export function useMapState(backendGpsPoints: BackendGpsPoints | null): {
     points: GpsPoint[];
-    splits: Split[];
+    splits: number[];
     hoverPoint: GpsPoint | null;
     hoverSplitIdx: number | null;
     centerLatLng: google.maps.LatLngLiteral | null;
@@ -33,13 +24,11 @@ export function useMapState(
     setHoverSplitIdx: React.Dispatch<React.SetStateAction<number | null>>;
     addSplit: (pointIdx: number | null) => void;
     removeSplit: (pointIdx: number) => void;
-    changeRoughness: (pointIdx: number, roughness: number) => void;
     createBackendGpsPoints: () => BackendCourse['gps_geo_json'] | null;
 } {
     const [hoverPoint, setHoverPoint] = useState<GpsPoint | null>(null);
     const [points, setPoints] = useState<GpsPoint[]>([]);
-
-    const [splits, setSplits] = useState<Split[]>([]);
+    const [splits, setSplits] = useState<number[]>([]);
     const [hoverSplitIdx, setHoverSplitIdx] = useState<number | null>(null);
     const [centerLatLng, setCenterLatLng] =
         useState<google.maps.LatLngLiteral | null>(null);
@@ -56,16 +45,18 @@ export function useMapState(
             return;
         }
 
+        // Reset splits if course changes
+        if (backendGpsPoints !== prevBackendGpsPoints.current) {
+            setSplits([]);
+        }
         prevBackendGpsPoints.current = backendGpsPoints;
 
-        const newSplits: Split[] = [];
         const newPoints: GpsPoint[] = [];
         let maxLat = -90;
         let minLat = 90;
         let maxLng = -180;
         let minLng = 180;
 
-        let lastSegNum = 0;
         let totalDistanceKm = 0;
         for (let i = 0; i < backendGpsPoints.latitude.length; i++) {
             maxLat = Math.max(maxLat, backendGpsPoints.latitude[i]);
@@ -83,19 +74,8 @@ export function useMapState(
                 elev: backendGpsPoints.elevation[i],
                 distance: backendGpsPoints.horizontal_distance_to_last_point[i],
                 totalDistanceKm: parseFloat(totalDistanceKm.toFixed(3)),
-                segment: backendGpsPoints.segment[i],
+                segment: 0,
             });
-
-            if (
-                backendGpsPoints.segment[i] !== lastSegNum ||
-                i === backendGpsPoints.elevation.length - 1
-            ) {
-                lastSegNum = backendGpsPoints.segment[i];
-                newSplits.push({
-                    endPointIdx: i,
-                    roughness: backendGpsPoints.roughness[i - 1],
-                });
-            }
         }
 
         setBoundsLatLng({
@@ -109,7 +89,6 @@ export function useMapState(
             lng: minLng + (maxLng - minLng) / 2,
         });
 
-        setSplits(newSplits);
         setPoints(newPoints);
     }, [backendGpsPoints]);
 
@@ -117,16 +96,13 @@ export function useMapState(
     useEffect(() => {
         if (hoverPoint) {
             for (let i = 0; i < splits.length; i++) {
-                if (hoverPoint.idx < splits[i].endPointIdx) {
+                if (hoverPoint.idx < splits[i]) {
                     setHoverSplitIdx(i);
                     return;
                 }
             }
         }
-        if (
-            hoverPoint?.idx &&
-            hoverPoint?.idx >= splits[splits.length - 1].endPointIdx
-        ) {
+        if (hoverPoint?.idx && hoverPoint?.idx >= splits[splits.length - 1]) {
             setHoverSplitIdx(splits.length);
             return;
         }
@@ -135,18 +111,12 @@ export function useMapState(
 
     const addSplit = useCallback(
         (pointIdx: number | null) => {
-            if (!pointIdx || splits.find((s) => s.endPointIdx === pointIdx)) {
+            if (!pointIdx || splits.includes(pointIdx)) {
                 return;
             }
 
-            const newSplits: Split[] = [
-                ...splits,
-                {
-                    endPointIdx: pointIdx,
-                    roughness: DEFAULT_ROUGHNESS,
-                },
-            ];
-            newSplits.sort((a, b) => a.endPointIdx - b.endPointIdx);
+            const newSplits = [...splits, pointIdx];
+            newSplits.sort((a, b) => a - b);
             setSplits(newSplits);
         },
         [splits],
@@ -154,67 +124,28 @@ export function useMapState(
 
     const removeSplit = useCallback(
         (splitIdx: number) => {
-            if (splits.length <= 2) {
-                setSplits([
-                    {
-                        endPointIdx: points.length - 1,
-                        roughness: DEFAULT_ROUGHNESS,
-                    },
-                ]);
+            if (splits.length <= 1) {
+                setSplits([]);
                 return;
             }
+
+            // TODO  Keep rouchness class
+
             setSplits((prevSplits) => {
                 const newSplits = [...prevSplits];
                 newSplits.splice(splitIdx, 1);
-                if (splitIdx === splits.length - 1) {
-                    newSplits[newSplits.length - 1].endPointIdx =
-                        points.length - 1;
-                }
                 return newSplits;
             });
-        },
-        [splits, points],
-    );
-
-    const changeRoughness = useCallback(
-        (splitIdx: number, roughness: number) => {
-            const newSplits = [...splits];
-            newSplits[splitIdx].roughness = roughness;
-            setSplits(newSplits);
         },
         [splits],
     );
 
-    const createBackendGpsPoints = useCallback<
-        () => BackendGpsPoints | null
-    >(() => {
+    const createBackendGpsPoints = useCallback(() => {
         if (!backendGpsPoints) {
             return null;
         }
-
-        const segment: number[] = [];
-        const roughness: number[] = [];
-
-        let currentSplitIdx = 0;
-        for (let i = 0; i < points.length; i++) {
-            const currentSplit = splits[currentSplitIdx];
-            if (i >= currentSplit.endPointIdx) {
-                if (currentSplitIdx + 1 >= splits.length) {
-                    break;
-                }
-                currentSplitIdx++;
-            }
-
-            segment[i] = currentSplitIdx;
-            roughness[i] = currentSplit.roughness;
-        }
-
-        return {
-            ...backendGpsPoints,
-            segment,
-            roughness,
-        } as BackendGpsPoints;
-    }, [backendGpsPoints, splits, points]);
+        return backendGpsPoints;
+    }, [backendGpsPoints]);
 
     return {
         points,
@@ -227,7 +158,6 @@ export function useMapState(
         setHoverSplitIdx,
         addSplit,
         removeSplit,
-        changeRoughness,
         createBackendGpsPoints,
     };
 }

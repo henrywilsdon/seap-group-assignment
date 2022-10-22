@@ -1,5 +1,6 @@
-import { Container, Paper, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import { Box } from '@mui/system';
+import CourseMap from './CourseMap';
 import DropButtons from './Drop_Buttons';
 import OutputPredictionsUI from './OutputPredictions';
 import ParamFields from './ParamFields';
@@ -9,42 +10,22 @@ import useMechanicalReducer from './useMechanicalReducer';
 import useEnvironmentReducer from './useEnvironmentReducer';
 import useCourseParamsReducer from './useCourseParamsReducer';
 import { makePrediction } from './PredictionsAPI';
-import { useEffect, useState } from 'react';
-import CourseMap from '../courses/CourseMap';
-import { getCourse } from '../courses/CourseApi';
-import { CourseData } from '../courses/ManageCoursesPage';
-import { useMapState } from '../courses/useMapState';
+import { useState } from 'react';
 
 export default function RenderPredictionsPage() {
     const { athlete, athleteDispatch, originalAthlete } = useAthleteReducer();
     const { mechanical, mechanicalDispatch } = useMechanicalReducer();
     const { environment, environmentDispatch } = useEnvironmentReducer();
     const { courseParams, courseParamsDispatch } = useCourseParamsReducer();
-    const [selectedCourseId, setCourseId] = useState<number | null>(null);
-    const [selectedCourse, setCourse] = useState<CourseData | null>(null);
-    const { points, splits, boundsLatLng } = useMapState(
-        selectedCourse?.gps_data,
-    );
-
-    useEffect(() => {
-        if (selectedCourseId === null) {
-            setCourse(null);
-            return;
-        }
-
-        getCourse(selectedCourseId).then(setCourse);
-    }, [selectedCourseId]);
-
+    const [selectedCourseId, setCourseId] = useState(0);
     const handlePredictionClick = () => {
-        if (selectedCourseId == null) {
-            return;
-        }
         makePrediction({
             athlete_parameters: athlete,
             mechanical_parameters: mechanical,
             environment_parameters: environment,
             course_parameters: courseParams,
-            course_ID: selectedCourseId,
+            //Need to add course ID from when select course is implemented and it can be accessed properly
+            //course_ID: selectedCourseID,
         });
     };
 
@@ -77,49 +58,21 @@ export default function RenderPredictionsPage() {
                     <SplitMetrics></SplitMetrics>
                 </Box>
 
-                <Container
-                    maxWidth="md"
+                <Box
                     sx={{
                         display: 'flex',
                         alignItems: 'center',
                         '& > :not(style)': {
-                            m: 1,
+                            p: 1,
                         },
                     }}
                 >
-                    <Paper
-                        sx={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            minHeight: '25rem',
-                            textAlign: 'center',
-                            flexGrow: 1,
-                            overflow: 'hidden',
-                        }}
-                    >
-                        <Box
-                            sx={{
-                                flexGrow: 1,
-                                flexDirection: 'column',
-                                display: 'flex',
-                                height: '100%',
-                            }}
-                        >
-                            <CourseMap
-                                points={points}
-                                splits={splits}
-                                hoverPoint={null}
-                                hoverSplitIdx={null}
-                                bounds={boundsLatLng}
-                            />
-                        </Box>
-                    </Paper>
+                    <CourseMap></CourseMap>
                     <DropButtons
                         athleteDispatch={athleteDispatch}
-                        onCourseSelected={setCourseId}
                         onPredictionClick={handlePredictionClick}
                     />
-                </Container>
+                </Box>
 
                 <Box>
                     <ParamFields

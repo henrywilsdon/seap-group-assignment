@@ -1,10 +1,10 @@
 /** global google */
 import React, { useEffect, useRef } from 'react';
-import { GpsPoint, Split } from './useMapState';
+import { GpsPoint } from './useMapState';
 
 type Props = {
     points: GpsPoint[];
-    splits: Split[];
+    splits: number[];
     hoverSegment: number | null;
     map?: google.maps.Map;
     bounds?: google.maps.LatLngBoundsLiteral | null;
@@ -45,17 +45,19 @@ export default function CoursePolyline({
         segmentPaths.current = [];
 
         let prevSplitEndPoint = 0;
-        segmentPaths.current = splits.map((splt) => {
-            const path = new google.maps.Polyline({
-                path: points.slice(prevSplitEndPoint, splt.endPointIdx),
-                geodesic: true,
-                strokeColor: '#00aeff',
-                strokeWeight: 4,
-            });
-            path.setMap(map);
-            prevSplitEndPoint = splt.endPointIdx;
-            return path;
-        });
+        segmentPaths.current = [...splits, points.length - 1].map(
+            (splitEndPoint) => {
+                const path = new google.maps.Polyline({
+                    path: points.slice(prevSplitEndPoint, splitEndPoint),
+                    geodesic: true,
+                    strokeColor: '#00aeff',
+                    strokeWeight: 4,
+                });
+                path.setMap(map);
+                prevSplitEndPoint = splitEndPoint;
+                return path;
+            },
+        );
 
         // Remove from map on unmount
         return () => {

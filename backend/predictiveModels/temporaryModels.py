@@ -15,8 +15,8 @@ class StaticModel():
     delta_kg = 0 # mass_total is mass_rider + mass_bike + mass_other + delta_kg
     crr = 0.0025
     mechanical_efficiency = 0.98
-    mol_whl_front = 0.08 # in the spreadsheet, written as MoI (cap i, not lowercase l)
-    mol_whl_rear = 0.08
+    moi_whl_front = 0.08 # in the spreadsheet, written as MoI (cap i, not lowercase l)
+    moi_whl_rear = 0.08
     wheel_radius = 0.335
 
     # the cp model

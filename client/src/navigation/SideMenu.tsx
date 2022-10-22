@@ -29,14 +29,14 @@ const items = [
         path: '/courses',
     },
     {
-        label: 'Predictions',
-        Icon: CalculateIcon,
-        path: '/predictions',
-    },
-    {
         label: 'Profile',
         Icon: PersonIcon,
         path: '/profile',
+    },
+    {
+        label: 'Predictions',
+        Icon: CalculateIcon,
+        path: '/predictions',
     },
 ];
 
@@ -68,7 +68,7 @@ export default function SideMenu() {
 
     const renderItems = () => {
         return items.map((item) => (
-            <ListItem disablePadding key={item.label}>
+            <ListItem disablePadding>
                 <ListItemButton
                     onClick={createClickHandler(item.path)}
                     selected={matchPath(item.path, location.pathname) != null}

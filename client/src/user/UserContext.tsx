@@ -8,14 +8,6 @@ import React, {
 
 import { useLocation, useNavigate } from 'react-router-dom';
 import useOnLoad from '../common/useOnLoad';
-import {
-    changeUserPassword,
-    getMyself,
-    loginUser,
-    logoutUser,
-    registerUser,
-    updateUser,
-} from './userAPI';
 
 interface ProviderProps {
     children: React.ReactNode;
@@ -58,48 +50,78 @@ export const UserConsumer = UserContext.Consumer;
 export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
     const location = useLocation();
     const navigate = useNavigate();
+    const [password, setPass] = useState('');
     const [user, setUser] = useState<User | null>(null);
+    const [newPassword] = useState('');
     const registerPending = useRef(false);
     const loginPending = useRef(false);
     const updatePending = useRef(false);
-    const prevUser = useRef<User | null>(null);
 
-    const checkUserLoggedIn = useCallback(() => {
-        getMyself()
-            .then(async (_user) => {
-                setUser({ username: _user.username, email: _user.email });
-                if (
-                    location.pathname.startsWith('/login') ||
-                    location.pathname.startsWith('/register')
-                ) {
-                    navigate('/predictions');
+    useEffect(() => {
+        if (!user && !['/login', '/register'].includes(location.pathname)) {
+            navigate('/login');
+        }
+    }, [location, user, navigate]);
+
+    const getUser = useCallback(() => {
+        return fetch('http://localhost:8000/api/user/me/', {
+            method: 'GET',
+            credentials: 'include',
+        })
+            .then(async (response) => {
+                if (response.ok) {
+                    const _user = await response.json();
+                    setUser({ username: _user.username, email: _user.email });
+                    navigate('athletes');
+                } else {
+                    if (
+                        response.headers.get('Content-Type') ===
+                        'application/json'
+                    ) {
+                        const data = await response.json();
+                        throw new Error(data?.detail);
+                    } else {
+                        throw new Error(response.statusText + response.status);
+                    }
                 }
             })
             .catch((error) => {
                 console.error(error);
-                navigate('/login');
             });
-    }, [navigate, location]);
+    }, [navigate]);
 
-    // Check if user already logged in
     useOnLoad(() => {
-        checkUserLoggedIn();
+        getUser();
     });
 
-    // If user is set to null, check they are logged out
-    useEffect(() => {
-        if (!!prevUser.current && !user) {
-            checkUserLoggedIn();
-        }
-        prevUser.current = user;
-    }, [user, checkUserLoggedIn]);
-
     const logout = useCallback(() => {
-        return logoutUser().finally(() => {
-            // Log user out from client regardless of if the request succeeded
-            setUser(null);
-            document.cookie = 'sessionid=; Max-Age=-99999999;';
-        });
+        return fetch('http://localhost:8000/api/logout/', {
+            method: 'POST',
+            credentials: 'include',
+        })
+            .then(async (response) => {
+                if (response.ok) {
+                    setUser(null);
+                } else {
+                    if (
+                        response.headers.get('Content-Type') ===
+                        'application/json'
+                    ) {
+                        const data = await response.json();
+                        throw new Error(data?.detail);
+                    } else {
+                        throw new Error(response.statusText + response.status);
+                    }
+                }
+            })
+            .catch((error) => {
+                console.error(error);
+            })
+            .finally(() => {
+                // Log user out from client regardless of if the request succeeded
+                setUser(null);
+                document.cookie = 'sessionid=; Max-Age=-99999999;';
+            });
     }, []);
 
     const login = (username: string, password: string): Promise<any> => {
@@ -110,15 +132,42 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
         loginPending.current = true;
 
         // Create new request
-        const promise = loginUser(username, password);
+        const promise = fetch('http://localhost:8000/api/login/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                username,
+                password,
+            }),
+            credentials: 'include',
+        });
 
         promise.finally(() => (loginPending.current = false));
-        return promise.then(async (sessionId) => {
-            setUser({ username });
-            navigate('athletes');
-            const sessionExpire = new Date();
-            sessionExpire.setDate(sessionExpire.getDate() + 14);
-            document.cookie = `sessionid=${sessionId}; expires=${sessionExpire.toTimeString()}; Path=/; SameSite=Lax`;
+
+        // Do stuff if the request returned a response
+        // Return the promise so that if an error occured creating the response
+        //  or if the server reponse is an error/failure it can be caught by the
+        //  callee of this function(maybe to provide an error message for the user)
+        return promise.then(async (response) => {
+            if (response.ok) {
+                const { sessionId } = await response.json();
+                setUser({ username });
+                navigate('athletes');
+                const sessionExpire = new Date();
+                sessionExpire.setDate(sessionExpire.getDate() + 14);
+                document.cookie = `sessionid=${sessionId}; expires=${sessionExpire.toTimeString()}; Path=/; SameSite=Lax`;
+            } else {
+                if (
+                    response.headers.get('Content-Type') === 'application/json'
+                ) {
+                    const data = await response.json();
+                    throw new Error(data?.detail);
+                } else {
+                    throw new Error(response.statusText + response.status);
+                }
+            }
         });
     };
 
@@ -134,9 +183,42 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
         registerPending.current = true;
 
         //new Request to register account
-        return registerUser(username, email, password).finally(
-            () => (registerPending.current = false),
-        );
+        const promise = fetch('http://localhost:8000/api/register/', {
+            credentials: 'include',
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                username,
+                email,
+                password,
+            }),
+        });
+
+        promise.finally(() => (registerPending.current = false));
+
+        return promise.then(async (response) => {
+            console.log(response);
+
+            if (response.ok) {
+                console.log('Here');
+                setUser({ username, email });
+                setPass(password);
+                navigate('/login');
+            } else {
+                if (response.status === 400) {
+                    throw new Error('Username or email already in use');
+                } else if (
+                    response.headers.get('Content-Type') === 'application/json'
+                ) {
+                    const data = await response.json();
+                    throw new Error(data?.detail);
+                } else {
+                    throw new Error(response.statusText + response.status);
+                }
+            }
+        });
     };
 
     const changeUserInfo = (username: string, email: string): Promise<any> => {
@@ -145,13 +227,34 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
         }
         updatePending.current = true;
 
-        const promise = updateUser(username, email);
+        const promise = fetch('http://localhost:8000/api/user/me/', {
+            method: 'PUT',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                username,
+                email,
+            }),
+        });
 
         promise.finally(() => (updatePending.current = false));
 
-        return promise.then(async () => {
-            setUser({ username, email });
-            alert('Profile successfully updated.');
+        return promise.then(async (response) => {
+            if (response.ok) {
+                setUser({ username, email });
+                alert('Profile successfully updated.');
+            } else {
+                if (
+                    response.headers.get('Content-Type') === 'application/json'
+                ) {
+                    const data = await response.json();
+                    throw new Error(data?.detail);
+                } else {
+                    throw new Error(response.statusText + response.status);
+                }
+            }
         });
     };
 
@@ -164,13 +267,35 @@ export const UserProvider = ({ children }: ProviderProps): JSX.Element => {
         }
         updatePending.current = true;
 
-        const promise = changeUserPassword(newPassword, currentPassword);
+        const promise = fetch('http://localhost:8000/api/user/me/password/', {
+            method: 'PUT',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                newPassword,
+                currentPassword,
+            }),
+        });
 
         promise.finally(() => (updatePending.current = false));
 
-        return promise.then(async () => {
-            setUser(null);
-            alert('Password successfully updated.');
+        return promise.then(async (response) => {
+            if (response.ok) {
+                setPass(newPassword);
+                setUser(null);
+                alert('Password successfully updated.');
+            } else {
+                if (
+                    response.headers.get('Content-Type') === 'application/json'
+                ) {
+                    const data = await response.json();
+                    throw new Error(data?.detail);
+                } else {
+                    throw new Error(response.statusText + response.status);
+                }
+            }
         });
     };
 
