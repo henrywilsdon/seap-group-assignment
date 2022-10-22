@@ -15,8 +15,8 @@ def predict_single_timestep(course: CourseModel, # time doesn't need to be an ar
                             is_first: bool) \
                             -> SingleTimestepOutput:
 
-    cs = course.static # for brevity
-    cd = course.dynamic
+    cs = course.static_model # for brevity
+    cd = course.dynamic_model
 
     if not is_first:
         speed += acceleration * cs.timestep_size
@@ -56,8 +56,8 @@ def predict_single_timestep(course: CourseModel, # time doesn't need to be an ar
 
 def predict_entire_course(course) -> PredictEntireCourseOutput:
 
-    cs = course.static # for brevity
-    cd = course.dynamic
+    cs = course.static_model # for brevity
+    cd = course.dynamic_model
 
     max_distance = cd.distance[-1] # last distance in list
     current_distance = cs.starting_distance
@@ -68,7 +68,7 @@ def predict_entire_course(course) -> PredictEntireCourseOutput:
     is_first = True
 
     segments_data = {} # Dictionary not list, because segments are 1-indexed
-    for index in set(course.dynamic.segment):
+    for index in set(course.dynamic_model.segment):
         segments_data[index] = SingleSegmentData()
     timesteps_data = AllTimestepsData()
     full_course_data = FullCourseData()

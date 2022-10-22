@@ -494,7 +494,7 @@ def all_prediction_parameters(request, course_id):
     if not request.user.is_authenticated:
         return JsonResponse({'detail': 'User not authenticated'}, status=401)
 
-    course = Course.objects.filter(id=course_id).values()
+    course = Course.objects.get(id=course_id)
 
 
 
@@ -507,10 +507,10 @@ def all_prediction_parameters(request, course_id):
         mechanical_parameters = parameters["mechanical_parameters"]
         course_parameters = parameters["course_parameters"]
 
-        #course.min_slope_threshold = course_parameters["min_slope_threshold"]
-        #course.max_slope_threshold = course_parameters["max_slope_threshold"]
+        course.min_slope_threshold = course_parameters["min_slope_threshold"]
+        course.max_slope_threshold = course_parameters["max_slope_threshold"]
 
-        athlete = Athlete.objects.create(
+        athlete = Athlete(
             name=athlete_parameters["name"],
             bike_mass=athlete_parameters["bike_mass"],
             rider_mass=athlete_parameters["rider_mass"],
@@ -519,7 +519,7 @@ def all_prediction_parameters(request, course_id):
             CP_FTP=athlete_parameters["CP_FTP"],
             W_prime=athlete_parameters["W_prime"],
         )
-        athlete.save()
+        #athlete.save()
 
 
 
@@ -532,7 +532,7 @@ def all_prediction_parameters(request, course_id):
          """
         
 
-        model = StaticModel.objects.create(
+        model = StaticModel(
             mass_rider = athlete_parameters["rider_mass"],
             mass_bike = athlete_parameters["bike_mass"],
             mass_other = athlete_parameters["other_mass"],
@@ -572,15 +572,15 @@ def all_prediction_parameters(request, course_id):
             starting_distance = 0.1,
             starting_speed = 0.3,
         )
-        model.save()
+        #model.save()
         
         
 
-        dynmaic_mod = course.gps_geo_json
+        dynamic_mod = course.gps_geo_json
         
-        prediction_input = CourseModel.objects.create(
+        prediction_input = CourseModel(
             static_model = model,
-            dynamic_model = dynmaic_mod,
+            dynamic_model = dynamic_mod,
         )
         #Call predictive model
         output = predict_entire_course(prediction_input)
