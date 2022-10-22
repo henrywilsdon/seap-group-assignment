@@ -8,7 +8,7 @@ import useAthleteReducer from './useAthleteReducer';
 import useMechanicalReducer from './useMechanicalReducer';
 import useEnvironmentReducer from './useEnvironmentReducer';
 import useCourseParamsReducer from './useCourseParamsReducer';
-import { makePrediction } from './PredictionsAPI';
+import { makePrediction, predictionPresets } from './PredictionsAPI';
 import { useEffect, useState } from 'react';
 import CourseMap from '../courses/CourseMap';
 import { getCourse } from '../courses/CourseApi';
@@ -45,6 +45,61 @@ export default function RenderPredictionsPage() {
             environment_parameters: environment,
             course_parameters: courseParams,
             course_ID: selectedCourseId,
+        });
+    };
+
+    const handlePredictionPresetChanged = (presetId: number) => {
+        console.log(presetId);
+        const preset = predictionPresets[presetId];
+
+        athleteDispatch({
+            type: 'setAthlete',
+            athlete: {
+                ...preset.athlete_parameters,
+            },
+        });
+
+        mechanicalDispatch({
+            type: 'setCrr',
+            crrValue: preset.mechanical_parameters.crrValue,
+        });
+        mechanicalDispatch({
+            type: 'setMechEfficiency',
+            mechEfficiency: preset.mechanical_parameters.mechEfficiency,
+        });
+        mechanicalDispatch({
+            type: 'setMolWhlFront',
+            molWhlFront: preset.mechanical_parameters.molWhlFront,
+        });
+        mechanicalDispatch({
+            type: 'setMolWhlRear',
+            molWhlRear: preset.mechanical_parameters.molWhlRear,
+        });
+        mechanicalDispatch({
+            type: 'setWheelRadius',
+            wheelRadius: preset.mechanical_parameters.wheelRadius,
+        });
+
+        environmentDispatch({
+            type: 'setAirDensity',
+            airDensity: preset.environment_parameters.airDensity,
+        });
+        environmentDispatch({
+            type: 'setWindDirection',
+            windDirection: preset.environment_parameters.windDirection,
+        });
+        environmentDispatch({
+            type: 'setWindSpeed',
+            windSpeed: preset.environment_parameters.windSpeed,
+        });
+
+        courseParamsDispatch({
+            type: 'setMaxSlopeThreshold',
+            maxSlopeThreshold: preset.course_parameters.maxSlopeThreshold,
+        });
+        courseParamsDispatch({
+            type: 'setMinSlopeThreshold',
+            minSlopeThreshold: preset.course_parameters.minSlopeThreshold,
         });
     };
 
@@ -118,6 +173,7 @@ export default function RenderPredictionsPage() {
                         athleteDispatch={athleteDispatch}
                         onCourseSelected={setCourseId}
                         onPredictionClick={handlePredictionClick}
+                        onPredictionPresetChange={handlePredictionPresetChanged}
                     />
                 </Container>
 

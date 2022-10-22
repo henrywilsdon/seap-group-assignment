@@ -38,3 +38,38 @@ export function makePrediction(
         }
     });
 }
+
+export const predictionPresets: Omit<
+    PredictionObjects & { label: string },
+    'course_ID'
+>[] = [
+    {
+        label: 'Test1',
+        athlete_parameters: {
+            id: -1,
+            fullName: 'test',
+            riderMass: '71',
+            bikeMass: '7',
+            otherMass: '1',
+            totalMass: '79',
+            cp: '430',
+            wPrime: '35000',
+        },
+        mechanical_parameters: {
+            crrValue: '0.0025',
+            mechEfficiency: '0.98',
+            molWhlFront: '0.08',
+            molWhlRear: '0.08',
+            wheelRadius: '0.335',
+        },
+        course_parameters: {
+            minSlopeThreshold: '0.03',
+            maxSlopeThreshold: '-0.01',
+        },
+        environment_parameters: {
+            windDirection: '30',
+            windSpeed: '2',
+            airDensity: '1.13',
+        },
+    },
+];
