@@ -11,7 +11,7 @@ class StaticModelAdmin(admin.ModelAdmin):
 
 @admin.register(DynamicModel)
 class DynamicModel(admin.ModelAdmin):
-    list_display = ['lat', 'long', 'ele', 'distance', 'bearing', 'slope']
+    list_display = ['lat', 'long', 'ele', 'distance', 'bearing', 'slope', 'segment', 'roughness']
 
 @admin.register(CourseModel)
 class CourseModel(admin.ModelAdmin):
