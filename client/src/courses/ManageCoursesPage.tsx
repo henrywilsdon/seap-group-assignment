@@ -1,4 +1,4 @@
-import { Button } from '@mui/material';
+import { Button, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
@@ -164,6 +164,17 @@ export default function ManageCoursesPage({}: Props) {
                 isEditing={typeof editingCourse?.id === 'number'}
             />
             <Box sx={{ m: 2 }}>
+                {/* Title box */}
+                <Box
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                    }}
+                >
+                    <Typography variant="h4">Courses</Typography>
+                </Box>
+
                 <Button variant="contained" onClick={onNewCourse}>
                     + Create
                 </Button>
