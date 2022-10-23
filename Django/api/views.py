@@ -352,7 +352,7 @@ def get_gpx_data(request):
             ele.append(gpx_json['segments'][0][i]['ele'])
             dis.append(gpx_json['segments'][0][i]['horz_dist_from_prev'])
             bear.append(gpx_json['segments'][0][i]['bearing_from_prev'])
-            slope.append(0)
+            slope.append(gpx_json['segments'][0][i]['slope'])
             segment.append(0)
             roughness.append(2)
             i = i + 1
