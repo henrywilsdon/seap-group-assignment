@@ -352,7 +352,7 @@ def get_gpx_data(request):
             ele.append(gpx_json['segments'][0][i]['ele'])
             dis.append(gpx_json['segments'][0][i]['horz_dist_from_prev'])
             bear.append(gpx_json['segments'][0][i]['bearing_from_prev'])
-            slope.append(0)
+            slope.append(gpx_json['segments'][0][i]['slope'])
             segment.append(0)
             roughness.append(2)
             i = i + 1
@@ -585,21 +585,22 @@ def all_prediction_parameters(request, course_id):
 
 
         #Translates objects into JSON
-        segments_data_obj = output.segments_data
+        segments_data_obj = output.segments_data[0]
         full_course_data_obj = output.full_course_data
         timesteps_data_obj = output.timesteps_data
-
-        segment_list = []
-        for i, segment_obj in enumerate(segments_data_obj):
+        
+        segment_list = list(None for _ in range(len(segments_data_obj.keys())))
+        for i, segment_obj in segments_data_obj.items():
             segment = {
-                    'average_yaw' : segment_obj[0].average_yaw , 
-                    'average_yaw_above_40kmh' : segment_obj[0].average_yaw_above_40kmh , 
-                    'distance' : segment_obj[0].distance , 
-                    'duration' : segment_obj[0].duration ,  
-                    'min_w_prime_balance' : segment_obj[0].min_w_prime_balance , 
-                    'power_in' : segment_obj[0].power_in
+                    'average_yaw' : segment_obj.average_yaw , 
+                    'average_yaw_above_40kmh' : segment_obj.average_yaw_above_40kmh , 
+                    'distance' : segment_obj.distance , 
+                    'duration' : segment_obj.duration ,  
+                    'min_w_prime_balance' : segment_obj.min_w_prime_balance , 
+                    'power_in' : segment_obj.power_in,
+                    'timesteps': segment_obj.timesteps
             }
-            segment_list.append(segment)
+            segment_list[int(i)] = segment
 
 
         full_course_data = {
