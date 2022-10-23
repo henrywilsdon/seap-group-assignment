@@ -11,6 +11,38 @@ export type PredictionObjects = {
     course_ID: number;
 };
 
+export type PredictionOutput = {
+    full_course_data: {
+        average_yaw: number;
+        average_yaw_above_40kmh: number | null;
+        distance: number;
+        duration: number;
+        min_w_prime_balance: number;
+        power_in: number;
+    };
+    segments: PredictionOutputSegment[];
+    time_steps_data: PredictionOutputTimeSteps;
+};
+
+export interface PredictionOutputSegment {
+    average_yaw: number;
+    average_yaw_above_40kmh: number;
+    distance: number;
+    duration: number;
+    min_w_prime_balance: number;
+    power_in: number;
+    timesteps: number;
+}
+
+export interface PredictionOutputTimeSteps {
+    distance: number[];
+    power_in: number[];
+    speed: number[];
+    yaw: number[];
+    elevation: number[];
+    w_prim_balance: number[];
+}
+
 /**
  * Make a new prediction
  */

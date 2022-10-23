@@ -8,7 +8,7 @@ import useAthleteReducer from './useAthleteReducer';
 import useMechanicalReducer from './useMechanicalReducer';
 import useEnvironmentReducer from './useEnvironmentReducer';
 import useCourseParamsReducer from './useCourseParamsReducer';
-import { makePrediction } from './PredictionsAPI';
+import { makePrediction, PredictionOutput } from './PredictionsAPI';
 import { useEffect, useState } from 'react';
 import CourseMap from '../courses/CourseMap';
 import { getCourse } from '../courses/CourseApi';
@@ -25,6 +25,54 @@ export default function RenderPredictionsPage() {
     const { points, splits, boundsLatLng } = useMapState(
         selectedCourse?.gps_data,
     );
+    const [predictionOutput, setPredictionOutput] =
+        useState<PredictionOutput | null>(() => ({
+            full_course_data: {
+                average_yaw: 0.01865052145501622,
+                average_yaw_above_40kmh: 0,
+                distance: 44194.11108322753,
+                duration: 3008.5,
+                min_w_prime_balance: 35000.0,
+                power_in: 2187023.057999831,
+            },
+            segments: [
+                {
+                    average_yaw: 0.5572512365277602,
+                    average_yaw_above_40kmh: 0,
+                    distance: 10208.640819142618,
+                    duration: 715.0,
+                    min_w_prime_balance: 35000.0,
+                    power_in: 519767.819999987,
+                    timesteps: 1430,
+                },
+                {
+                    average_yaw: -0.3266481600192335,
+                    average_yaw_above_40kmh: 0,
+                    distance: 19351.160570127508,
+                    duration: 1307.0,
+                    min_w_prime_balance: 35000.0,
+                    power_in: 950121.0360000404,
+                    timesteps: 2614,
+                },
+                {
+                    average_yaw: 0.0857623971872338,
+                    average_yaw_above_40kmh: 0,
+                    distance: 14634.309693957402,
+                    duration: 986.5,
+                    min_w_prime_balance: 35000.0,
+                    power_in: 717134.2020000111,
+                    timesteps: 1973,
+                },
+            ],
+            time_steps_data: {
+                distance: [],
+                elevation: [],
+                power_in: [],
+                speed: [],
+                w_prim_balance: [],
+                yaw: [],
+            },
+        }));
 
     useEffect(() => {
         if (selectedCourseId === null) {
