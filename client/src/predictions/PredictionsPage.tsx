@@ -134,10 +134,13 @@ export default function RenderPredictionsPage() {
                 >
                     <Typography variant="h4">Predictions</Typography>
 
-                    {/* Add external functions here to render them, change as needed */}
-                    <OutputPredictionsUI
-                        onHoverPointChange={setHoverPoint}
-                    ></OutputPredictionsUI>
+                    {predictionOutput && (
+                        <OutputPredictionsUI
+                            outputTimesteps={predictionOutput.time_steps_data}
+                            outputSegments={predictionOutput.segments}
+                            onHoverPointChange={setHoverPoint}
+                        ></OutputPredictionsUI>
+                    )}
                     <SplitMetrics></SplitMetrics>
                 </Box>
 

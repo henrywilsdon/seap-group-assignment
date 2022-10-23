@@ -15,12 +15,14 @@ import {
     Datum,
     UserSerie,
 } from 'react-charts';
-import courseData from './course.json';
-import testData from './csvjson.json';
-import predictiveModel from './predictive model json.json';
+import {
+    PredictionOutputSegment,
+    PredictionOutputTimeSteps,
+} from './PredictionsAPI';
 
 type Props = {
-    // timesteps: Timestep[]
+    outputTimesteps: PredictionOutputTimeSteps;
+    outputSegments: PredictionOutputSegment[];
     onHoverPointChange: (point: number | null) => void;
 };
 
@@ -29,7 +31,6 @@ interface Timestep {
     time: number;
     powerIn: number;
     speed: number;
-    speedKmh: number;
     distance: number;
     wPrimeBalance: number;
     yaw: number;
@@ -40,7 +41,12 @@ interface Timestep {
 /**
  * Graph showing change in elevation over distance.
  */
-export default function HeightMap({ onHoverPointChange }: Props) {
+export default function HeightMap({
+    onHoverPointChange,
+    outputTimesteps,
+    outputSegments,
+}: Props) {
+    const ogDataLength = outputTimesteps.distance.length;
     const [series, setSeries] = useState<UserSerie<Timestep>[]>([]);
     const [visibleSeries, setVisibleSeries] = useState<UserSerie<Timestep>[]>(
         [],
@@ -58,6 +64,7 @@ export default function HeightMap({ onHoverPointChange }: Props) {
         'wPrimeBalance_powerIn',
     );
     const [hoverSegment, setHoverSegment] = useState<number | null>(null);
+    const [sampleDataLength, setSampleDataLength] = useState(0);
 
     useEffect(() => {
         if (togglebuttonVal === 'wPrimeBalance_powerIn') {
@@ -115,55 +122,35 @@ export default function HeightMap({ onHoverPointChange }: Props) {
     useEffect(() => {
         // Aim for around 1000 data points
         const divisor =
-            testData.length > 1000 ? Math.floor(testData.length / 1000) : 1;
+            ogDataLength > 1000 ? Math.floor(ogDataLength / 1000) : 1;
 
-        const timesteps: Timestep[] = [];
         const segments: Timestep[][] = [[]];
         let cumTimesteps = 0;
-        const splits = Object.values(predictiveModel.segments_data).map(
-            (s) => (cumTimesteps += s.timesteps),
-        );
-
+        const splits = outputSegments.map((s) => (cumTimesteps += s.timesteps));
         let currentSplitIdx = 0;
-        let ei = 0;
-        let j = 0;
-        for (let i = 0; i < testData.length; i += divisor) {
-            const backendTimestep = testData[i];
+        let count = 0;
+        for (let i = 0; i < ogDataLength; i += divisor) {
             if (i >= splits[currentSplitIdx]) {
-                console.log(
-                    currentSplitIdx,
-                    splits,
-                    splits[currentSplitIdx],
-                    i,
-                );
                 currentSplitIdx++;
                 segments.push([]);
             }
 
-            // This will be removed when output view is complete since distance and elevation is
-            // included now
-            while (
-                ei < courseData.length &&
-                backendTimestep.distance > courseData[ei].distance
-            ) {
-                ei++;
-            }
+            const tStep: Timestep = {
+                idx: i,
+                distance: outputTimesteps.distance[i],
+                elevation: outputTimesteps.elevation[i],
+                powerIn: outputTimesteps.power_in[i],
+                speed: outputTimesteps.speed[i],
+                time: 0,
+                wPrimeBalance: outputTimesteps.w_prim_balance[i],
+                yaw: outputTimesteps.yaw[i],
+                segment: currentSplitIdx,
+            };
 
-            timesteps.push({
-                ...backendTimestep,
-                idx: i,
-                elevation: courseData[ei].elevation,
-                segment: currentSplitIdx,
-            });
-            segments[currentSplitIdx].push({
-                ...backendTimestep,
-                idx: i,
-                elevation: courseData[ei].elevation,
-                segment: currentSplitIdx,
-            });
+            segments[currentSplitIdx].push(tStep);
+            count++;
         }
 
-        console.log(segments);
         const temp: UserSerie<Timestep>[] = [];
         segments.forEach((s, i) => {
             [
@@ -211,47 +198,9 @@ export default function HeightMap({ onHoverPointChange }: Props) {
                 },
             ].forEach((ser) => temp.push(ser));
         });
+        setSampleDataLength(count);
         setSeries(temp);
-
-        // setSeries([
-        //     {
-        //         id: 'powerIn',
-        //         label: 'Power In',
-        //         data: timesteps,
-        //         secondaryAxisId: 'powerIn',
-        //     },
-        //     {
-        //         id: 'power',
-        //         label: 'Power',
-        //         data: timesteps,
-        //         secondaryAxisId: 'power',
-        //     },
-        //     {
-        //         id: 'speed',
-        //         label: 'Speed',
-        //         data: timesteps,
-        //         secondaryAxisId: 'speed',
-        //     },
-        //     {
-        //         id: 'wPrimeBalance',
-        //         label: "W' Balance",
-        //         data: timesteps,
-        //         secondaryAxisId: 'wPrimeBalance',
-        //     },
-        //     {
-        //         id: 'yaw',
-        //         label: 'Yaw',
-        //         data: timesteps,
-        //         secondaryAxisId: 'yaw',
-        //     },
-        //     {
-        //         id: 'elevation',
-        //         label: 'Elevation',
-        //         data: timesteps,
-        //         secondaryAxisId: 'elevation',
-        //     },
-        // ]);
-    }, []);
+    }, [outputSegments, outputTimesteps, ogDataLength]);
 
     useEffect(() => {
         setVisibleSeries(
@@ -266,9 +215,9 @@ export default function HeightMap({ onHoverPointChange }: Props) {
                 cursor: (v: number) => (v / 1000).toFixed(3) + ' km',
                 scale: (v: number) => (v / 1000).toFixed(1) + ' km',
             },
-            max: testData[testData.length - 1].distance,
+            max: outputTimesteps.distance[ogDataLength - 1],
         }),
-        [],
+        [ogDataLength, outputTimesteps],
     );
 
     const secondaryAxes = React.useMemo(
@@ -383,11 +332,11 @@ export default function HeightMap({ onHoverPointChange }: Props) {
     const handleFocusDatum = useCallback(
         (datum: Datum<Timestep> | null) => {
             onHoverPointChange(
-                datum ? datum.originalDatum.idx / testData.length : null,
+                datum ? datum.originalDatum.idx / ogDataLength : null,
             );
             setHoverSegment(datum ? datum.originalDatum.segment : null);
         },
-        [onHoverPointChange],
+        [onHoverPointChange, ogDataLength],
     );
 
     const renderLegend = () => {
@@ -424,7 +373,6 @@ export default function HeightMap({ onHoverPointChange }: Props) {
                 const ax = secondaryAxes.find(
                     (sax) => sax.id === _series.secondaryAxisId,
                 );
-                console.log(hoverSegment, _series);
                 return {
                     ...ax?.styles,
                     opacity:
