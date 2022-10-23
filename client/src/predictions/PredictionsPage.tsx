@@ -8,7 +8,11 @@ import useAthleteReducer from './useAthleteReducer';
 import useMechanicalReducer from './useMechanicalReducer';
 import useEnvironmentReducer from './useEnvironmentReducer';
 import useCourseParamsReducer from './useCourseParamsReducer';
-import { makePrediction, PredictionOutput } from './PredictionsAPI';
+import {
+    makePrediction,
+    PredictionOutput,
+    predictionPresets,
+} from './PredictionsAPI';
 import { useEffect, useState } from 'react';
 import CourseMap from '../courses/CourseMap';
 import { getCourse } from '../courses/CourseApi';
@@ -26,53 +30,7 @@ export default function RenderPredictionsPage() {
         selectedCourse?.gps_data,
     );
     const [predictionOutput, setPredictionOutput] =
-        useState<PredictionOutput | null>(() => ({
-            full_course_data: {
-                average_yaw: 0.01865052145501622,
-                average_yaw_above_40kmh: 0,
-                distance: 44194.11108322753,
-                duration: 3008.5,
-                min_w_prime_balance: 35000.0,
-                power_in: 2187023.057999831,
-            },
-            segments: [
-                {
-                    average_yaw: 0.5572512365277602,
-                    average_yaw_above_40kmh: 0,
-                    distance: 10208.640819142618,
-                    duration: 715.0,
-                    min_w_prime_balance: 35000.0,
-                    power_in: 519767.819999987,
-                    timesteps: 1430,
-                },
-                {
-                    average_yaw: -0.3266481600192335,
-                    average_yaw_above_40kmh: 0,
-                    distance: 19351.160570127508,
-                    duration: 1307.0,
-                    min_w_prime_balance: 35000.0,
-                    power_in: 950121.0360000404,
-                    timesteps: 2614,
-                },
-                {
-                    average_yaw: 0.0857623971872338,
-                    average_yaw_above_40kmh: 0,
-                    distance: 14634.309693957402,
-                    duration: 986.5,
-                    min_w_prime_balance: 35000.0,
-                    power_in: 717134.2020000111,
-                    timesteps: 1973,
-                },
-            ],
-            time_steps_data: {
-                distance: [],
-                elevation: [],
-                power_in: [],
-                speed: [],
-                w_prim_balance: [],
-                yaw: [],
-            },
-        }));
+        useState<PredictionOutput | null>(null);
 
     useEffect(() => {
         if (selectedCourseId === null) {
@@ -93,6 +51,63 @@ export default function RenderPredictionsPage() {
             environment_parameters: environment,
             course_parameters: courseParams,
             course_ID: selectedCourseId,
+        })
+            .then(setPredictionOutput)
+            .catch(alert);
+    };
+
+    const handlePredictionPresetChanged = (presetId: number) => {
+        console.log(presetId);
+        const preset = predictionPresets[presetId];
+
+        athleteDispatch({
+            type: 'setAthlete',
+            athlete: {
+                ...preset.athlete_parameters,
+            },
+        });
+
+        mechanicalDispatch({
+            type: 'setCrr',
+            crrValue: preset.mechanical_parameters.crrValue,
+        });
+        mechanicalDispatch({
+            type: 'setMechEfficiency',
+            mechEfficiency: preset.mechanical_parameters.mechEfficiency,
+        });
+        mechanicalDispatch({
+            type: 'setMolWhlFront',
+            molWhlFront: preset.mechanical_parameters.molWhlFront,
+        });
+        mechanicalDispatch({
+            type: 'setMolWhlRear',
+            molWhlRear: preset.mechanical_parameters.molWhlRear,
+        });
+        mechanicalDispatch({
+            type: 'setWheelRadius',
+            wheelRadius: preset.mechanical_parameters.wheelRadius,
+        });
+
+        environmentDispatch({
+            type: 'setAirDensity',
+            airDensity: preset.environment_parameters.airDensity,
+        });
+        environmentDispatch({
+            type: 'setWindDirection',
+            windDirection: preset.environment_parameters.windDirection,
+        });
+        environmentDispatch({
+            type: 'setWindSpeed',
+            windSpeed: preset.environment_parameters.windSpeed,
+        });
+
+        courseParamsDispatch({
+            type: 'setMaxSlopeThreshold',
+            maxSlopeThreshold: preset.course_parameters.maxSlopeThreshold,
+        });
+        courseParamsDispatch({
+            type: 'setMinSlopeThreshold',
+            minSlopeThreshold: preset.course_parameters.minSlopeThreshold,
         });
     };
 
@@ -168,6 +183,7 @@ export default function RenderPredictionsPage() {
                         athleteDispatch={athleteDispatch}
                         onCourseSelected={setCourseId}
                         onPredictionClick={handlePredictionClick}
+                        onPredictionPresetChange={handlePredictionPresetChanged}
                     />
                 </Container>
 
