@@ -1,6 +1,6 @@
-import { Button, TextField, Tooltip, Typography } from '@mui/material';
+import { Box, Button, TextField, Tooltip, Typography } from '@mui/material';
 import { useContext, useState } from 'react';
-import './ManageProfilePage.css';
+//import './ManageProfilePage.css';
 import useOnLoad from '../common/useOnLoad';
 import UserContext from '../user/UserContext';
 
@@ -76,84 +76,110 @@ export default function ManageProfilePage({}: Props) {
 
     return (
         <div className="ManageProfilePage">
-            <Typography variant="h4">Account Profile</Typography>
-
-            <Tooltip title="Enter your new username" placement="right-end">
-                <TextField
-                    color="primary"
-                    variant="standard"
-                    label="New Username"
-                    value={username}
-                    onChange={handleName}
-                    error={!!userErrorMessage}
-                />
-            </Tooltip>
-
-            <Tooltip title="Enter your new email" placement="right-end">
-                <TextField
-                    color="primary"
-                    variant="standard"
-                    label="New Email"
-                    value={email}
-                    onChange={handleEmail}
-                    error={!!userErrorMessage}
-                    helperText={userErrorMessage}
-                    sx={{
-                        marginBottom: 2,
-                    }}
-                />
-            </Tooltip>
-
-            <Button variant="text" onClick={updateInfo}>
-                Update User Info
-            </Button>
-
-            <Tooltip title="Enter your current password" placement="right-end">
-                <TextField
-                    color="primary"
-                    variant="standard"
-                    label="Current Password"
-                    type="password"
-                    value={currentPassword}
-                    onChange={handleCurrentPassword}
-                    error={!!passwordErrorMessage}
-                />
-            </Tooltip>
-
-            <Tooltip title="Enter your new password" placement="right-end">
-                <TextField
-                    color="primary"
-                    variant="standard"
-                    label="New Password"
-                    type="password"
-                    value={newPassword}
-                    onChange={handleNewPassword}
-                    error={!!passwordErrorMessage}
-                />
-            </Tooltip>
-
-            <Tooltip
-                title="Enter your new password again"
-                placement="right-end"
+            <Box
+                sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    '& > :not(style)': {
+                        p: 1,
+                    },
+                }}
             >
-                <TextField
-                    color="primary"
-                    variant="standard"
-                    label="New Password"
-                    type="password"
-                    value={newPassword2}
-                    onChange={handleNewPassword2}
-                    error={!!passwordErrorMessage}
-                    helperText={passwordErrorMessage}
+                {/* Title box */}
+                <Box
                     sx={{
-                        marginBottom: 2,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        '& > :not(style)': {
+                            p: 1,
+                        },
                     }}
-                />
-            </Tooltip>
+                >
+                    <Typography variant="h4">Account Profile</Typography>
+                </Box>
 
-            <Button variant="text" onClick={updatePassword}>
-                Change Password
-            </Button>
+                <Tooltip title="Enter your new username" placement="right-end">
+                    <TextField
+                        color="primary"
+                        variant="standard"
+                        label="New Username"
+                        value={username}
+                        onChange={handleName}
+                        error={!!userErrorMessage}
+                    />
+                </Tooltip>
+
+                <Tooltip title="Enter your new email" placement="right-end">
+                    <TextField
+                        color="primary"
+                        variant="standard"
+                        label="New Email"
+                        value={email}
+                        onChange={handleEmail}
+                        error={!!userErrorMessage}
+                        helperText={userErrorMessage}
+                        sx={{
+                            marginBottom: 2,
+                        }}
+                    />
+                </Tooltip>
+
+                <Button variant="contained" onClick={updateInfo}>
+                    Update User Info
+                </Button>
+
+                <Tooltip
+                    title="Enter your current password"
+                    placement="right-end"
+                >
+                    <TextField
+                        color="primary"
+                        variant="standard"
+                        label="Current Password"
+                        type="password"
+                        value={currentPassword}
+                        onChange={handleCurrentPassword}
+                        error={!!passwordErrorMessage}
+                    />
+                </Tooltip>
+
+                <Tooltip title="Enter your new password" placement="right-end">
+                    <TextField
+                        color="primary"
+                        variant="standard"
+                        label="New Password"
+                        type="password"
+                        value={newPassword}
+                        onChange={handleNewPassword}
+                        error={!!passwordErrorMessage}
+                    />
+                </Tooltip>
+
+                <Tooltip
+                    title="Enter your new password again"
+                    placement="right-end"
+                >
+                    <TextField
+                        color="primary"
+                        variant="standard"
+                        label="New Password"
+                        type="password"
+                        value={newPassword2}
+                        onChange={handleNewPassword2}
+                        error={!!passwordErrorMessage}
+                        helperText={passwordErrorMessage}
+                        sx={{
+                            marginBottom: 2,
+                        }}
+                    />
+                </Tooltip>
+
+                <Button variant="contained" onClick={updatePassword}>
+                    Change Password
+                </Button>
+            </Box>
         </div>
     );
 }

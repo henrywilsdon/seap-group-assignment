@@ -8,7 +8,7 @@ export type PredictionObjects = {
     mechanical_parameters: MechanicalInputState;
     course_parameters: CourseParamsInputState;
     environment_parameters: EnvironmentInputState;
-    //course_ID: number;    Need to add when select course is implemented
+    course_ID: number;
 };
 
 /**
@@ -38,5 +38,3 @@ export function makePrediction(
         }
     });
 }
-
-//export{}
