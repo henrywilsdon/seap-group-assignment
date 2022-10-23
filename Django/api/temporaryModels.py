@@ -20,36 +20,39 @@ class SingleTimestepOutput():
         self.elevation=elevation
 
 class SingleSegmentData():
-    duration = 0
-    min_w_prime_balance = float("inf")
-    power_in = 0
-    distance = 0
-    average_yaw = None
-    average_yaw_above_40kmh = None
-    total_yaw = 0
-    total_yaw_over_40kmh = 0
-    timesteps = 0
-    timesteps_over_40kmh = 0
+    def __init__(self):
+        self.duration = 0
+        self.min_w_prime_balance = float("inf")
+        self.power_in = 0
+        self.distance = 0
+        self.average_yaw = None
+        self.average_yaw_above_40kmh = None
+        self.total_yaw = 0
+        self.total_yaw_over_40kmh = 0
+        self.timesteps = 0
+        self.timesteps_over_40kmh = 0
 
 class FullCourseData():
-    duration = 0
-    min_w_prime_balance = float("inf")
-    power_in = 0
-    distance = 0
-    average_yaw = None
-    average_yaw_above_40kmh = None
-    total_yaw = 0
-    total_yaw_over_40kmh = 0
-    timesteps = 0
-    timesteps_over_40kmh = 0
+    def __init__(self):
+        self.duration = 0
+        self.min_w_prime_balance = float("inf")
+        self.power_in = 0
+        self.distance = 0
+        self.average_yaw = None
+        self.average_yaw_above_40kmh = None
+        self.total_yaw = 0
+        self.total_yaw_over_40kmh = 0
+        self.timesteps = 0
+        self.timesteps_over_40kmh = 0
 
 class AllTimestepsData():
-    elevation = []
-    w_prime_balance = []
-    power_in = []
-    speed = []
-    yaw = []
-    distance = []
+    def __init__(self):
+        self.elevation = []
+        self.w_prime_balance = []
+        self.power_in = []
+        self.speed = []
+        self.yaw = []
+        self.distance = []
 
 class PredictEntireCourseOutput():
     def __init__(self,
