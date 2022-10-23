@@ -4,7 +4,7 @@ import math
 def predict_w_prime_balance(course: CourseModel, prev_w_prime_balance, power_in) -> float:
     # this takes place in the columns Calcs!$X:$AA
 
-    cs = course.static # for brevity
+    cs = course.static_model # for brevity
 
     dcp = max(0, -((power_in*(1/cs.mechanical_efficiency))-cs.cp))
 
