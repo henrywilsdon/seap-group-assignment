@@ -101,10 +101,14 @@ export default function MechanicalParams(props: Props) {
                     <CustomTextField
                         label="Crr"
                         inputProps={{
-                            step: '0.1',
+                            step: '0.01',
+                            min: 0,
+                            max: 1,
                         }}
                         value={mechanical.crrValue}
                         onChange={handleCrrChange}
+                        tool_title="Tyre rolling resistance coefficient"
+                        tool_position="bottom"
                     />
 
                     <CustomTextField
@@ -118,6 +122,13 @@ export default function MechanicalParams(props: Props) {
                                 </InputAdornment>
                             ),
                         }}
+                        inputProps={{
+                            step: '0.1',
+                            min: 0,
+                            max: 100,
+                        }}
+                        tool_title="Reflects power lost in mechanical friction"
+                        tool_position="bottom"
                     />
 
                     <CustomTextField
@@ -127,10 +138,17 @@ export default function MechanicalParams(props: Props) {
                         InputProps={{
                             endAdornment: (
                                 <InputAdornment position="end">
-                                    kg.m^2
+                                    <p>
+                                        kg.m<sup>2</sup>
+                                    </p>
                                 </InputAdornment>
                             ),
                         }}
+                        inputProps={{
+                            step: '0.1',
+                        }}
+                        tool_title="Moment of Inertia - Front Wheel"
+                        tool_position="bottom"
                     />
 
                     <CustomTextField
@@ -140,10 +158,17 @@ export default function MechanicalParams(props: Props) {
                         InputProps={{
                             endAdornment: (
                                 <InputAdornment position="end">
-                                    kg.m^2
+                                    <p>
+                                        kg.m<sup>2</sup>
+                                    </p>
                                 </InputAdornment>
                             ),
                         }}
+                        inputProps={{
+                            step: '0.1',
+                        }}
+                        tool_title="Moment of Inertia - Rear Wheel"
+                        tool_position="bottom"
                     />
 
                     <CustomTextField
@@ -157,6 +182,12 @@ export default function MechanicalParams(props: Props) {
                                 </InputAdornment>
                             ),
                         }}
+                        inputProps={{
+                            step: '0.01',
+                            min: 0,
+                        }}
+                        tool_title="Radius of the wheels"
+                        tool_position="bottom"
                     />
                 </Paper>
             </Box>
@@ -164,14 +195,21 @@ export default function MechanicalParams(props: Props) {
     );
 }
 
-function CustomTextField({ label, ...textFieldProps }: TextFieldProps & {}) {
+function CustomTextField({
+    tool_position,
+    tool_title,
+    label,
+    ...textFieldProps
+}: (TextFieldProps & {}) | any) {
     return (
-        <TextField
-            variant="standard"
-            type="number"
-            label={label}
-            fullWidth
-            {...textFieldProps}
-        />
+        <Tooltip title={tool_title} placement={tool_position}>
+            <TextField
+                variant="standard"
+                type="number"
+                label={label}
+                fullWidth
+                {...textFieldProps}
+            />
+        </Tooltip>
     );
 }
