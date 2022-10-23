@@ -15,7 +15,7 @@ import xmltodict
 import great_circle_calculator.great_circle_calculator as gcc
 import geojson
 
-def gpx_to_json(filepath: str) -> dict:
+def gpx_to_json(file) -> dict:
     """Convert gpx files to a custom json format.
 
     The outermost level is a dict with {info, segments}.
@@ -28,8 +28,7 @@ def gpx_to_json(filepath: str) -> dict:
                {lon, lat, ele, horz_dist_from_prev, bearing_from_prev}
     """
 
-    with open(filepath) as gpx:
-        gpx_dict = xmltodict.parse(gpx.read())['gpx']
+    gpx_dict = xmltodict.parse(file.read())['gpx']
 
     info = {'creator': gpx_dict['@creator'],
             'version': gpx_dict['@version'],
@@ -41,7 +40,7 @@ def gpx_to_json(filepath: str) -> dict:
             'track name': gpx_dict['trk']['name']
             }
     
-    segmentNumber = 1
+    segmentNumber = 0
     # create json list of segments (the format of this list is detailed in the docstring)
     for key in gpx_dict['trk']:
         if key == 'trkseg':
@@ -97,19 +96,19 @@ def gpx_to_json(filepath: str) -> dict:
                 new_trkpt['distance'] = final
 
                 new_trkpt_list += [new_trkpt]
-            segments += new_trkpt_list
+            segments.append(new_trkpt_list)
             segmentNumber += 1
 
 
-    for index in range(len(segments)):
-        if index == 0:
-            segments[index]['smooth_slope'] = 0
-        elif index == 1:
-            segments[index]['smooth_slope'] = segments[index]['slope']
-        elif index == len(segments) - 1:
-            segments[index]['smooth_slope'] = (segments[index]['slope'] + segments[index-1]['slope'])/3
-        else:
-            segments[index]['smooth_slope'] = (segments[index]['slope'] + segments[index-1]['slope'] + segments[index+1]['slope'])/3
+    # for index in range(len(segments)):
+    #     if index == 0:
+    #         segments[index]['smooth_slope'] = 0
+    #     elif index == 1:
+    #         segments[index]['smooth_slope'] = segments[index]['slope']
+    #     elif index == len(segments) - 1:
+    #         segments[index]['smooth_slope'] = (segments[index]['slope'] + segments[index-1]['slope'])/3
+    #     else:
+    #         segments[index]['smooth_slope'] = (segments[index]['slope'] + segments[index-1]['slope'] + segments[index+1]['slope'])/3
 
 
     return {'info': info, 'segments': segments}
@@ -144,7 +143,7 @@ def gpx_to_geojson(filepath: str) -> geojson.MultiLineString:
 
     return geojson.MultiLineString(segments)
 
-if True: # testing code
+if False: # testing code
     filepath = "GPX example files/Tokyo-Olympics-Men's-ITT_track.gpx"
     gpx_json = gpx_to_json(filepath)
     ##gpx_geojson = gpx_to_geojson(filepath)
