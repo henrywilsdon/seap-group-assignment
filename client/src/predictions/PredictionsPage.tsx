@@ -122,7 +122,9 @@ export default function RenderPredictionsPage() {
 
                     {/* Add external functions here to render them, change as needed */}
                     <OutputPredictionsUI></OutputPredictionsUI>
-                    <SplitMetrics></SplitMetrics>
+                    {predictionOutput != null && (
+                        <SplitMetrics predict={predictionOutput} />
+                    )}
                 </Box>
 
                 <Container
