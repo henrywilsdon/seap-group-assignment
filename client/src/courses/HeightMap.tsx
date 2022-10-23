@@ -6,7 +6,7 @@ import { GpsPoint, Split } from './useMapState';
 type Props = {
     points: GpsPoint[];
     splits: Split[];
-    onHoverPointChange: (point: number | null) => void;
+    onHoverDistanceChange: (point: number | null) => void;
     onClick:
         | ((
               datum: Datum<GpsPoint> | null,
@@ -26,7 +26,7 @@ type Series = {
 export default function HeightMap({
     points,
     splits,
-    onHoverPointChange,
+    onHoverDistanceChange,
     onClick,
 }: Props) {
     const [data, setData] = useState<Series[]>([]);
@@ -57,14 +57,14 @@ export default function HeightMap({
 
     const handleFocusDatum = (datum: Datum<GpsPoint> | null) => {
         const newHoverPoint = datum ? points[datum.originalDatum.idx] : null;
-        onHoverPointChange(
-            newHoverPoint ? newHoverPoint.idx / (points.length - 1) : null,
+        onHoverDistanceChange(
+            newHoverPoint ? newHoverPoint.totalDistance : null,
         );
     };
 
     const primaryAxis = React.useMemo(
         (): AxisOptions<GpsPoint> => ({
-            getValue: (datum) => datum.totalDistanceKm,
+            getValue: (datum) => datum.totalDistance,
             formatters: {
                 scale: (v: number) => v + ' km',
             },

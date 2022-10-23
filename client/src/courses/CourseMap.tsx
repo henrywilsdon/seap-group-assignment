@@ -1,6 +1,6 @@
 /* global google */
 import { Wrapper } from '@googlemaps/react-wrapper';
-import { ReactNode } from 'react';
+import { ReactNode, useMemo } from 'react';
 import GoogleMap from './GoogleMap';
 import CoursePolyline from './CoursePolyline';
 import Marker from './Marker';
@@ -10,7 +10,7 @@ type Props = {
     points: GpsPoint[];
     splits: Split[];
     bounds?: google.maps.LatLngBoundsLiteral | null;
-    hoverPoint: number | null;
+    hoverDistance: number | null;
     hoverSplitIdx: number | null;
 };
 
@@ -20,7 +20,21 @@ const mapStyle = { flexGrow: '1', height: '100%' };
  * Show google map with course path segments overlayed.
  */
 export default function CourseMap(props: Props) {
-    const { points, splits, bounds, hoverPoint, hoverSplitIdx } = props;
+    const { points, splits, bounds, hoverDistance, hoverSplitIdx } = props;
+    const hoverPoint = useMemo<google.maps.LatLngLiteral | null>(() => {
+        if (hoverDistance === null) {
+            return null;
+        }
+        const pointIdx = binSearchDist(points, hoverDistance);
+
+        if (pointIdx < 0 || pointIdx >= points.length) {
+            return null;
+        }
+        return {
+            lat: points[pointIdx].lat,
+            lng: points[pointIdx].lng,
+        } as google.maps.LatLngLiteral;
+    }, [hoverDistance, points]);
 
     const renderSegmentMarkers = (map: google.maps.Map | undefined) => {
         const markers: ReactNode[] = [];
@@ -77,13 +91,7 @@ export default function CourseMap(props: Props) {
                         {renderSegmentMarkers(map)}
                         {hoverPoint && (
                             <Marker
-                                position={
-                                    points[
-                                        Math.floor(
-                                            hoverPoint * (points.length - 1),
-                                        )
-                                    ]
-                                }
+                                position={hoverPoint}
                                 map={map}
                                 zIndex={1001}
                             />
@@ -129,3 +137,21 @@ const createCircleIcon = () => ({
     strokeColor: '#000000',
     scale: 0.035,
 });
+
+function binSearchDist(points: GpsPoint[], dist: number): number | never {
+    let low = 0;
+    let mid = 0;
+    let high = points.length - 1;
+
+    while (low <= high) {
+        mid = Math.floor((low + high) / 2);
+        if (dist < points[mid].totalDistance) {
+            high = mid - 1;
+        } else if (dist > points[mid].totalDistance) {
+            low = mid + 1;
+        } else {
+            return mid;
+        }
+    }
+    return mid;
+}

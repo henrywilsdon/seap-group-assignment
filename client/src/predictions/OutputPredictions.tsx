@@ -23,7 +23,7 @@ import {
 type Props = {
     outputTimesteps: PredictionOutputTimeSteps;
     outputSegments: PredictionOutputSegment[];
-    onHoverPointChange: (point: number | null) => void;
+    onHoverDistanceChange: (distance: number | null) => void;
 };
 
 interface Timestep {
@@ -42,7 +42,7 @@ interface Timestep {
  * Graph showing change in elevation over distance.
  */
 export default function HeightMap({
-    onHoverPointChange,
+    onHoverDistanceChange,
     outputTimesteps,
     outputSegments,
 }: Props) {
@@ -331,12 +331,10 @@ export default function HeightMap({
 
     const handleFocusDatum = useCallback(
         (datum: Datum<Timestep> | null) => {
-            onHoverPointChange(
-                datum ? datum.originalDatum.idx / ogDataLength : null,
-            );
+            onHoverDistanceChange(datum ? datum.originalDatum.distance : null);
             setHoverSegment(datum ? datum.originalDatum.segment : null);
         },
-        [onHoverPointChange, ogDataLength],
+        [onHoverDistanceChange],
     );
 
     const renderLegend = () => {

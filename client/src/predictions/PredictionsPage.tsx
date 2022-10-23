@@ -26,7 +26,7 @@ export default function RenderPredictionsPage() {
     const { courseParams, courseParamsDispatch } = useCourseParamsReducer();
     const [selectedCourseId, setCourseId] = useState<number | null>(null);
     const [selectedCourse, setCourse] = useState<CourseData | null>(null);
-    const { points, splits, boundsLatLng, hoverPoint, setHoverPoint } =
+    const { points, splits, boundsLatLng, hoverDistance, setHoverDistance } =
         useMapState(selectedCourse?.gps_data);
     const [predictionOutput, setPredictionOutput] =
         useState<PredictionOutput | null>(null);
@@ -138,7 +138,7 @@ export default function RenderPredictionsPage() {
                         <OutputPredictionsUI
                             outputTimesteps={predictionOutput.time_steps_data}
                             outputSegments={predictionOutput.segments}
-                            onHoverPointChange={setHoverPoint}
+                            onHoverDistanceChange={setHoverDistance}
                         ></OutputPredictionsUI>
                     )}
                     <SplitMetrics></SplitMetrics>
@@ -175,7 +175,7 @@ export default function RenderPredictionsPage() {
                             <CourseMap
                                 points={points}
                                 splits={splits}
-                                hoverPoint={hoverPoint}
+                                hoverDistance={hoverDistance}
                                 hoverSplitIdx={null}
                                 bounds={boundsLatLng}
                             />
