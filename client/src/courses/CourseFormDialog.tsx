@@ -77,10 +77,10 @@ export default function CourseFormDialog({
     const {
         points,
         splits,
-        hoverPoint,
+        hoverDistance,
         hoverSplitIdx,
         boundsLatLng,
-        setHoverPoint,
+        setHoverDistance,
         addSplit,
         removeSplit,
         changeRoughness,
@@ -353,7 +353,7 @@ export default function CourseFormDialog({
                                         <CourseMap
                                             points={points}
                                             splits={splits}
-                                            hoverPoint={hoverPoint}
+                                            hoverDistance={hoverDistance}
                                             hoverSplitIdx={hoverSplitIdx}
                                             bounds={boundsLatLng}
                                         />
@@ -372,7 +372,7 @@ export default function CourseFormDialog({
                                     <HeightMap
                                         points={points}
                                         splits={splits}
-                                        onHoverPointChange={setHoverPoint}
+                                        onHoverDistanceChange={setHoverDistance}
                                         onClick={handleHeightMapClick}
                                     />
                                 </Paper>

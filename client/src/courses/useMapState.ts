@@ -7,7 +7,7 @@ export interface GpsPoint extends google.maps.LatLngLiteral {
     elev: number;
     segment: number;
     distance: number;
-    totalDistanceKm: number;
+    totalDistance: number;
 }
 
 export interface Split {
@@ -25,18 +25,18 @@ export function useMapState(
 ): {
     points: GpsPoint[];
     splits: Split[];
-    hoverPoint: GpsPoint | null;
+    hoverDistance: number | null;
     hoverSplitIdx: number | null;
     centerLatLng: google.maps.LatLngLiteral | null;
     boundsLatLng: google.maps.LatLngBoundsLiteral | null;
-    setHoverPoint: React.Dispatch<React.SetStateAction<GpsPoint | null>>;
+    setHoverDistance: React.Dispatch<React.SetStateAction<number | null>>;
     setHoverSplitIdx: React.Dispatch<React.SetStateAction<number | null>>;
     addSplit: (pointIdx: number | null) => void;
     removeSplit: (pointIdx: number) => void;
     changeRoughness: (pointIdx: number, roughness: number) => void;
     createBackendGpsPoints: () => BackendCourse['gps_geo_json'] | null;
 } {
-    const [hoverPoint, setHoverPoint] = useState<GpsPoint | null>(null);
+    const [hoverDistance, setHoverDistance] = useState<number | null>(null);
     const [points, setPoints] = useState<GpsPoint[]>([]);
 
     const [splits, setSplits] = useState<Split[]>([]);
@@ -66,23 +66,22 @@ export function useMapState(
         let minLng = 180;
 
         let lastSegNum = 0;
-        let totalDistanceKm = 0;
+        let totalDistance = 0;
         for (let i = 0; i < backendGpsPoints.latitude.length; i++) {
             maxLat = Math.max(maxLat, backendGpsPoints.latitude[i]);
             minLat = Math.min(minLat, backendGpsPoints.latitude[i]);
             maxLng = Math.max(maxLng, backendGpsPoints.longitude[i]);
             minLng = Math.min(minLng, backendGpsPoints.longitude[i]);
 
-            totalDistanceKm +=
-                (backendGpsPoints.horizontal_distance_to_last_point[i] || 0) /
-                1000;
+            totalDistance +=
+                backendGpsPoints.horizontal_distance_to_last_point[i] || 0;
             newPoints.push({
                 idx: i,
                 lat: backendGpsPoints.latitude[i],
                 lng: backendGpsPoints.longitude[i],
                 elev: backendGpsPoints.elevation[i],
                 distance: backendGpsPoints.horizontal_distance_to_last_point[i],
-                totalDistanceKm: parseFloat(totalDistanceKm.toFixed(3)),
+                totalDistance: parseFloat(totalDistance.toFixed(3)),
                 segment: backendGpsPoints.segment[i],
             });
 
@@ -115,23 +114,28 @@ export function useMapState(
 
     // Set the current hover split
     useEffect(() => {
-        if (hoverPoint) {
+        if (hoverDistance) {
             for (let i = 0; i < splits.length; i++) {
-                if (hoverPoint.idx < splits[i].endPointIdx) {
+                if (
+                    hoverDistance * (points.length - 1) <
+                    splits[i].endPointIdx
+                ) {
                     setHoverSplitIdx(i);
                     return;
                 }
             }
         }
         if (
-            hoverPoint?.idx &&
-            hoverPoint?.idx >= splits[splits.length - 1].endPointIdx
+            hoverDistance != null &&
+            splits.length > 0 &&
+            hoverDistance * (points.length - 1) >=
+                splits[splits.length - 1].endPointIdx
         ) {
             setHoverSplitIdx(splits.length);
             return;
         }
         setHoverSplitIdx(null);
-    }, [hoverPoint, splits]);
+    }, [hoverDistance, splits, points]);
 
     const addSplit = useCallback(
         (pointIdx: number | null) => {
@@ -219,11 +223,11 @@ export function useMapState(
     return {
         points,
         splits,
-        hoverPoint,
+        hoverDistance,
         hoverSplitIdx,
         centerLatLng,
         boundsLatLng,
-        setHoverPoint,
+        setHoverDistance,
         setHoverSplitIdx,
         addSplit,
         removeSplit,
