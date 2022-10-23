@@ -163,6 +163,8 @@ class UserTestCase(TestCase):
         }
 
         response = client.post('/api/prediction/1/', all_parameter_data, content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+
 
 
         
