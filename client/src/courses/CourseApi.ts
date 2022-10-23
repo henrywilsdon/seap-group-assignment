@@ -16,6 +16,9 @@ export interface BackendGpsPoints {
     elevation: number[];
     horizontal_distance_to_last_point: number[];
     bearing_from_last_point: number[];
+    segment: number[];
+    roughness: number[];
+    slope: number[];
 }
 
 /**
@@ -176,6 +179,9 @@ export function parseGpx(gpxFile: File): Promise<BackendGpsPoints> {
                     ),
                 bearing_from_last_point:
                     responseObj.bearing_from_last_point.map((v) => Number(v)),
+                segment: responseObj.segment.map((v) => Number(v)),
+                roughness: responseObj.roughness.map((v) => Number(v)),
+                slope: responseObj.slope.map((v) => Number(v)),
             };
         } else {
             if (response.headers.get('Content-Type') === 'application/json') {

@@ -8,11 +8,18 @@ import {
     Select,
     MenuItem,
 } from '@mui/material';
-import React, { Dispatch, useEffect, useRef, useState } from 'react';
+import React, {
+    ChangeEvent,
+    Dispatch,
+    useEffect,
+    useRef,
+    useState,
+} from 'react';
 import { AthleteData, getAthletes } from '../athletes/athletesAPI';
 import { AthleteInputState } from './useAthleteReducer';
 import { getAllCourses } from '../courses/CourseApi';
 import { CourseData } from '../courses/ManageCoursesPage';
+import { predictionPresets } from './PredictionsAPI';
 
 type Props = {
     athleteDispatch: Dispatch<
@@ -20,10 +27,16 @@ type Props = {
     >;
     onCourseSelected: (courseId: number) => any;
     onPredictionClick: () => any;
+    onPredictionPresetChange: (presetIdx: number) => void;
 };
 
 function DropButtons(props: Props) {
-    const { athleteDispatch, onCourseSelected, onPredictionClick } = props;
+    const {
+        athleteDispatch,
+        onCourseSelected,
+        onPredictionClick,
+        onPredictionPresetChange,
+    } = props;
     const [selectedAthleteId, setSelectedAthleteId] = useState<number | ''>('');
     const [allAthletes, setAllAthletes] = useState<AthleteData[]>([]);
     const prevSelectedAthleteId = useRef<number | ''>('');
@@ -86,6 +99,10 @@ function DropButtons(props: Props) {
         setSelectedAthleteId(newId);
     };
 
+    const handlePredictionPresetChange = (event: any) => {
+        onPredictionPresetChange(event.target.value as number);
+    };
+
     const renderAthleteOptions = () => {
         return allAthletes.map((a) => (
             <MenuItem value={a.id}>{a.fullName}</MenuItem>
@@ -114,6 +131,12 @@ function DropButtons(props: Props) {
         return allCourses.map((c) => (
             <MenuItem value={c.id}>{c.name}</MenuItem>
         ));
+    };
+
+    const renderPredictionPresets = () => {
+        return predictionPresets.map((pp, i) => {
+            return <MenuItem value={i}>{pp.label}</MenuItem>;
+        });
     };
 
     return (
@@ -174,11 +197,9 @@ function DropButtons(props: Props) {
                             labelId="Load_Prediction"
                             id="Load_Prediction"
                             label="Load Prediction"
-                            value=""
+                            onChange={handlePredictionPresetChange}
                         >
-                            <MenuItem value={1}>Prediction1</MenuItem>
-                            <MenuItem value={2}>Prediction2</MenuItem>
-                            <MenuItem value={3}>Prediction3</MenuItem>
+                            {renderPredictionPresets()}
                         </Select>
                     </FormControl>
 
