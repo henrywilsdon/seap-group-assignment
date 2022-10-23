@@ -98,6 +98,11 @@ export default function EnvironmentParams(props: Props) {
                                 </InputAdornment>
                             ),
                         }}
+                        inputProps={{
+                            step: '0.1',
+                        }}
+                        tool_title="The expected wind direction"
+                        tool_position="bottom"
                     />
 
                     <CustomTextField
@@ -111,6 +116,11 @@ export default function EnvironmentParams(props: Props) {
                                 </InputAdornment>
                             ),
                         }}
+                        inputProps={{
+                            step: '0.1',
+                        }}
+                        tool_title="The expected wind speed"
+                        tool_position="bottom"
                     />
 
                     <CustomTextField
@@ -120,10 +130,18 @@ export default function EnvironmentParams(props: Props) {
                         InputProps={{
                             endAdornment: (
                                 <InputAdornment position="end">
-                                    kg/m^3
+                                    <p>
+                                        kg/m<sup>3</sup>
+                                    </p>
                                 </InputAdornment>
                             ),
                         }}
+                        inputProps={{
+                            step: '0.01',
+                            min: 0,
+                        }}
+                        tool_title="Air density from user calculations"
+                        tool_position="bottom"
                     />
                 </Paper>
             </Box>
@@ -131,14 +149,21 @@ export default function EnvironmentParams(props: Props) {
     );
 }
 
-function CustomTextField({ label, ...textFieldProps }: TextFieldProps & {}) {
+function CustomTextField({
+    tool_position,
+    tool_title,
+    label,
+    ...textFieldProps
+}: (TextFieldProps & {}) | any) {
     return (
-        <TextField
-            variant="standard"
-            type="number"
-            label={label}
-            fullWidth
-            {...textFieldProps}
-        />
+        <Tooltip title={tool_title} placement={tool_position}>
+            <TextField
+                variant="standard"
+                type="number"
+                label={label}
+                fullWidth
+                {...textFieldProps}
+            />
+        </Tooltip>
     );
 }
