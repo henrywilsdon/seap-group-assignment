@@ -60,6 +60,7 @@ export interface PredictionOutputSegment {
     duration: number;
     min_w_prime_balance: number;
     power_in: number;
+    timesteps: number;
 }
 
 export interface PredictionOutputTimeSteps {
