@@ -141,7 +141,9 @@ export default function RenderPredictionsPage() {
                             onHoverDistanceChange={setHoverDistance}
                         ></OutputPredictionsUI>
                     )}
-                    <SplitMetrics></SplitMetrics>
+                    {predictionOutput != null && (
+                        <SplitMetrics predict={predictionOutput} />
+                    )}
                 </Box>
 
                 <Container
