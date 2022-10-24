@@ -59,12 +59,12 @@ export default function RenderPredictionsPage() {
         console.log(presetId);
         const preset = predictionPresets[presetId];
 
-        athleteDispatch({
-            type: 'setAthlete',
-            athlete: {
-                ...preset.athlete_parameters,
-            },
-        });
+        // athleteDispatch({
+        //     type: 'setAthlete',
+        //     athlete: {
+        //         ...preset.athlete_parameters,
+        //     },
+        // });
 
         mechanicalDispatch({
             type: 'setCrr',
@@ -188,6 +188,7 @@ export default function RenderPredictionsPage() {
                         onCourseSelected={setCourseId}
                         onPredictionClick={handlePredictionClick}
                         onPredictionPresetChange={handlePredictionPresetChanged}
+                        disableCalculate={!selectedCourseId}
                     />
                 </Container>
 

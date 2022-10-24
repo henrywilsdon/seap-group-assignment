@@ -28,6 +28,7 @@ type Props = {
     onCourseSelected: (courseId: number) => any;
     onPredictionClick: () => any;
     onPredictionPresetChange: (presetIdx: number) => void;
+    disableCalculate?: boolean;
 };
 
 function DropButtons(props: Props) {
@@ -36,6 +37,7 @@ function DropButtons(props: Props) {
         onCourseSelected,
         onPredictionClick,
         onPredictionPresetChange,
+        disableCalculate,
     } = props;
     const [selectedAthleteId, setSelectedAthleteId] = useState<number | ''>('');
     const [allAthletes, setAllAthletes] = useState<AthleteData[]>([]);
@@ -209,11 +211,16 @@ function DropButtons(props: Props) {
                             //Change to necessary functionality
                             alert('Button Clicked');
                         }}
+                        disabled
                     >
                         Save Prediction
                     </Button>
 
-                    <Button variant="contained" onClick={onPredictionClick}>
+                    <Button
+                        variant="contained"
+                        onClick={onPredictionClick}
+                        disabled={disableCalculate}
+                    >
                         Calculate Metrics
                     </Button>
                 </Paper>

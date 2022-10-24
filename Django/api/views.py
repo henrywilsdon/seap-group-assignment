@@ -551,10 +551,11 @@ def all_prediction_parameters(request, course_id):
             over_threshold_power_usage = 1.1,
             steady_state_power_usage = 0.91,
 
-            climbing_cda_increment = 0,
-            climbing_min_slope = 0,
-            descending_cda_increment = 0,
-            descending_max_slope = 0,
+
+            climbing_cda_increment = 0.04,
+            climbing_min_slope = course.min_slope_threshold,
+            descending_cda_increment = -0.005,
+            descending_max_slope = course.max_slope_threshold,
 
             wind_direction = environment_parameters["wind_direction"],
             wind_speed_mps = environment_parameters["wind_speed_mps"],
