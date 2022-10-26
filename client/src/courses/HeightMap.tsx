@@ -66,7 +66,7 @@ export default function HeightMap({
         (): AxisOptions<GpsPoint> => ({
             getValue: (datum) => datum.totalDistance,
             formatters: {
-                scale: (v: number) => v + ' km',
+                scale: (v: number) => (v / 1000).toPrecision(2) + ' km',
             },
             max: points && points[points.length - 1]?.distance,
         }),
